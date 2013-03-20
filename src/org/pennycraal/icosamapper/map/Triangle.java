@@ -2,7 +2,7 @@ package org.pennycraal.icosamapper.map;
 
 /**
  *
- * @author Ville Jokela
+ * @author Ville Jokela & James Pearce
  */
 public interface Triangle {
     
