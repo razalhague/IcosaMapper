@@ -2,10 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pennycraal.icosamapper.map;
+package org.penny_craal.icosamapper.map;
 
-import org.pennycraal.icosamapper.map.AccessPath;
-import org.pennycraal.icosamapper.map.Icosahedron;
+import org.penny_craal.icosamapper.map.AccessPath;
+import org.penny_craal.icosamapper.map.Icosahedron;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

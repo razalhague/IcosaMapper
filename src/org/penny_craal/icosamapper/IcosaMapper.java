@@ -1,4 +1,4 @@
-package org.pennycraal.icosamapper;
+package org.penny_craal.icosamapper;
 
 /**
  *

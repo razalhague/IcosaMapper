@@ -1,75 +1,66 @@
-package org.pennycraal.icosamapper.map;
+package org.penny_craal.icosamapper.map;
 
 /**
  *
- * @author Ville Jokela
+ * @author Ville Jokela & James Pearce
  */
-public class ArrayTriangle implements Triangle {
+public class Icosahedron {
     private byte[] vals;        // values
     private Triangle[] tris;    // triangles
     
-    public ArrayTriangle(byte init) {
-        vals = new byte[9];
+    public Icosahedron(byte init) {
+        vals = new byte[20];
+        tris = null;
+        
         for (int i = 0; i < vals.length; i++) {
             vals[i] = init;
         }
-        tris = null;
     }
-    
-    @Override
+
     public byte access(AccessPath ap) {
         if (ap.length() == 1) {
             return vals[ap.head()];
-        } else if (tris == null) {
-            throw new RuntimeException("Bad path, no such triangle");   // TODO: proper exception?
-        } else {
+        } else if (tris != null) {
             return tris[ap.head()].access(ap.rest());
+        } else {
+            throw new RuntimeException("Bad path, no such triangle");   // TODO: proper exception?
         }
     }
-
-    @Override
+    
     public void subdivide(AccessPath ap) {
         if (ap.length() == 1) {
             if (tris == null) {
-                tris = new Triangle[9];
+                tris = new Triangle[20];
                 for (int i = 0; i < tris.length; i++) {
                     tris[i] = null;
                 }
             }
             tris[ap.head()] = new ArrayTriangle(vals[ap.head()]);
-        } else {
+        } else if (tris != null) {
             tris[ap.head()].subdivide(ap.rest());
-        }
-    }
-
-    @Override
-    public void setAtPath(AccessPath ap, byte val) {
-        if (ap.length() == 1) {
-            vals[ap.head()] = val;
         } else {
-            tris[ap.head()].setAtPath(ap.rest(), val);
-            vals[ap.head()] = tris[ap.head()].getMeanValue();
+            throw new RuntimeException("Bad path, no such triangle");   // TODO: proper exception?
         }
     }
     
-    @Override
-    public byte getMeanValue() {
-        int n = 0;
-        
-        for (byte v: vals) {
-            n += v;
+    public void setAtPath(AccessPath ap, byte val) {
+        if (ap.length() == 1) {
+            vals[ap.head()] = val;
+        } else if (tris != null) {
+            tris[ap.head()].setAtPath(ap.rest(), val);
+            vals[ap.head()] = tris[ap.head()].getMeanValue();
+        } else {
+            throw new RuntimeException("Bad path, no such triangle");   // TODO: proper exception?
         }
-        
-        return (byte) (n/9);
     }
     
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("{AT: { ");
+        sb.append("{IH: { ");
         for (int i = 0; i < vals.length; i++) {
             sb.append(vals[i]);
-            if (tris != null) {
+            if (tris != null && tris[i] != null) {
                 sb.append(": ");
                 sb.append(tris[i].toString());
             }

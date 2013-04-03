@@ -1,4 +1,4 @@
-package org.pennycraal.icosamapper.map;
+package org.penny_craal.icosamapper.map;
 
 import java.util.Arrays;
 
