@@ -17,38 +17,49 @@ public class ArrayTriangle implements Triangle {
     }
     
     @Override
-    public byte access(AccessPath ap) {
+    public byte access(AccessPath ap) throws BadPathException {
         if (ap.length() == 1) {
             return vals[ap.head()];
         } else if (tris == null) {
-            throw new RuntimeException("Bad path, no such triangle");   // TODO: proper exception?
+            throw new BadPathException(ap);
         } else {
             return tris[ap.head()].access(ap.rest());
         }
     }
 
     @Override
-    public void subdivide(AccessPath ap) {
+    public void subdivide(AccessPath ap) throws BadPathException {
         if (ap.length() == 1) {
             if (tris == null) {
                 tris = new Triangle[9];
                 for (int i = 0; i < tris.length; i++) {
                     tris[i] = null;
                 }
+                tris[ap.head()] = new ArrayTriangle(vals[ap.head()]);
+            } else if (tris[ap.head()] != null) {
+                for (int i = 0; i < tris.length; i++) {
+                    byte[] path = { (byte)i };
+                    tris[ap.head()].subdivide(new AccessPath(path));
+                }
+            } else {
+                tris[ap.head()] = new ArrayTriangle(vals[ap.head()]);
             }
-            tris[ap.head()] = new ArrayTriangle(vals[ap.head()]);
-        } else {
+        } else if (tris != null){
             tris[ap.head()].subdivide(ap.rest());
+        } else {
+            throw new BadPathException(ap);
         }
     }
 
     @Override
-    public void setAtPath(AccessPath ap, byte val) {
+    public void setAtPath(AccessPath ap, byte val) throws BadPathException {
         if (ap.length() == 1) {
             vals[ap.head()] = val;
-        } else {
+        } else if (tris != null){
             tris[ap.head()].setAtPath(ap.rest(), val);
             vals[ap.head()] = tris[ap.head()].getMeanValue();
+        } else {
+            throw new BadPathException(ap);
         }
     }
     

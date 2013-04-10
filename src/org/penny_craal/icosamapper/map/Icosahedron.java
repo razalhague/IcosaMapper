@@ -17,17 +17,17 @@ public class Icosahedron {
         }
     }
 
-    public byte access(AccessPath ap) {
+    public byte access(AccessPath ap) throws BadPathException {
         if (ap.length() == 1) {
             return vals[ap.head()];
         } else if (tris != null) {
             return tris[ap.head()].access(ap.rest());
         } else {
-            throw new RuntimeException("Bad path, no such triangle");   // TODO: proper exception?
+            throw new BadPathException(ap);
         }
     }
     
-    public void subdivide(AccessPath ap) {
+    public void subdivide(AccessPath ap) throws BadPathException {
         if (ap.length() == 1) {
             if (tris == null) {
                 tris = new Triangle[20];
@@ -39,18 +39,18 @@ public class Icosahedron {
         } else if (tris != null) {
             tris[ap.head()].subdivide(ap.rest());
         } else {
-            throw new RuntimeException("Bad path, no such triangle");   // TODO: proper exception?
+            throw new BadPathException(ap);
         }
     }
     
-    public void setAtPath(AccessPath ap, byte val) {
+    public void setAtPath(AccessPath ap, byte val) throws BadPathException {
         if (ap.length() == 1) {
             vals[ap.head()] = val;
         } else if (tris != null) {
             tris[ap.head()].setAtPath(ap.rest(), val);
             vals[ap.head()] = tris[ap.head()].getMeanValue();
         } else {
-            throw new RuntimeException("Bad path, no such triangle");   // TODO: proper exception?
+            throw new BadPathException(ap);
         }
     }
     

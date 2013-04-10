@@ -45,7 +45,7 @@ public class IcosahedronTest {
      * Test of access method, of class Icosahedron.
      */
     @Test
-    public void testAccess() {
+    public void testAccess() throws BadPathException {
         System.out.println("access");
         byte[] apa = {1};
         AccessPath ap = new AccessPath(apa);
@@ -56,7 +56,8 @@ public class IcosahedronTest {
      * Test of subdivide method, of class Icosahedron.
      */
     @Test
-    public void testSubdivide() {
+    public void testSubdivide() throws BadPathException {
+        // TODO: test subdivide all
         System.out.println("subdivide");
         byte[] apa1 = {1};
         byte[] apa2 = {1, 7};
@@ -70,7 +71,7 @@ public class IcosahedronTest {
      * Test of setAtPath method, of class Icosahedron.
      */
     @Test
-    public void testSetAtPath() {
+    public void testSetAtPath() throws BadPathException {
         System.out.println("setAtPath");
         byte[] apa1 = {1};
         byte[] apa2 = {1, 7};
