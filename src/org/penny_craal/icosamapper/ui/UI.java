@@ -1,16 +1,18 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.penny_craal.icosamapper.ui;
 
 /**
  *
  * @author Ville Jokela & James Pearce
  */
+import java.awt.BorderLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
 public class UI extends JFrame {
@@ -20,50 +22,65 @@ public class UI extends JFrame {
     }
 
     public final void initUI() {
-        setLayout(null);
+        JPanel panel = new JPanel();
+        
+        JMenuBar menubar = new JMenuBar();
+        JMenu menu = new JMenu("Menu");
+        menubar.add(menu);
+        setJMenuBar(menubar);
+        JToolBar toolbar = new JToolBar();
+        toolbar.setOrientation(JToolBar.VERTICAL);
 
+        
+        JMenuItem eMenuItem = new JMenuItem("Ville");
+        eMenuItem.setToolTipText("Exit application");
+        
+        menu.add(eMenuItem);
+
+        menubar.add(menu);
+
+        add(toolbar, BorderLayout.WEST);
+
+        setTitle("Simple toolbar");
+        setLocationRelativeTo(null);
+
+        
         JButton neww = new JButton(new ImageIcon("gfx/new.png"));
-        neww.setBounds(25, 0, 32, 32);
         neww.setToolTipText("Adds a new thing");
 
-        JButton close = new JButton("Close");
-        close.setBounds(25, 32, 32, 32);
+        JButton delete = new JButton(new ImageIcon("gfx/delete.png"));
+        delete.setToolTipText("Deletes a thing");
 
-        JButton test = new JButton("Test");
-        test.setBounds(25, 64, 32, 32);
+        JButton draw = new JButton(new ImageIcon("gfx/draw.png"));
 
-        JButton place1 = new JButton("Test");
-        place1.setBounds(25, 100, 32, 32);
+        JButton duplicate = new JButton(new ImageIcon("gfx/duplicate.png"));
 
-        JButton place2 = new JButton("Test");
-        place2.setBounds(25, 125, 32, 32);
+        JButton fill = new JButton(new ImageIcon("gfx/fill.png"));
 
-        JButton place3 = new JButton("Test");
-        place3.setBounds(25, 150, 32, 32);
+        JButton properties = new JButton(new ImageIcon("gfx/properties.png"));
 
-        JButton place4 = new JButton("Test");
-        place4.setBounds(25, 175, 32, 32);
+        JButton rename = new JButton(new ImageIcon("gfx/rename.png"));
 
-        JButton place5 = new JButton("Test");
-        place5.setBounds(25, 25, 32, 32);
-
-        add(neww);
-        add(close);
-        add(test);
-        add(place1);
-        add(place2);
-        add(place3);
-        add(place4);
-        add(place5);
-
-        setTitle("Absolute positioning");
-        setSize(300, 250);
+        JButton subdivide = new JButton(new ImageIcon("gfx/subdivide.png"));
+   
+        toolbar.add(neww);
+        toolbar.add(delete);
+        toolbar.add(draw);
+        toolbar.add(duplicate);
+        toolbar.add(fill);
+        toolbar.add(properties);
+        toolbar.add(rename);
+        toolbar.add(subdivide);
+         
+        setTitle("Icosa Mapper");
+        setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 UI ex = new UI();
                 ex.setVisible(true);
