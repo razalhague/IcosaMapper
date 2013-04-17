@@ -1,0 +1,18 @@
+package org.penny_craal.icosamapper.map;
+
+/**
+ *
+ * @author Ville Jokela
+ */
+public abstract class LayerRenderer {
+    /**
+     * Renders a byte value into a colour.
+     * @param value the byte value to be rendered.
+     * @return an RGB value encoded as an integer. Bits: 0-7: blue, 8-15: green, 16-23: red.
+     */
+    abstract public int renderByte(byte value);
+    
+    protected static int encodeAsInt(int r, int g, int b) {
+        return b | g << 8 | r << 16;
+    }
+}
