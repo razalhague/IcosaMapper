@@ -26,24 +26,23 @@ public class UI extends JFrame {
         
         JMenuBar menubar = new JMenuBar();
         JMenu menu = new JMenu("Menu");
-        menubar.add(menu);
         setJMenuBar(menubar);
+        
+        
+        JMenuItem ville = new JMenuItem("Ville");
+        
+        
+        JMenuItem exit = new JMenuItem("Exit");
+        exit.setToolTipText("Exit application");
+        
+        menubar.add(menu);
+        
+        menu.add(ville);
+        menu.add(exit);
+
         JToolBar toolbar = new JToolBar();
         toolbar.setOrientation(JToolBar.VERTICAL);
-
-        
-        JMenuItem eMenuItem = new JMenuItem("Ville");
-        eMenuItem.setToolTipText("Exit application");
-        
-        menu.add(eMenuItem);
-
-        menubar.add(menu);
-
         add(toolbar, BorderLayout.WEST);
-
-        setTitle("Simple toolbar");
-        setLocationRelativeTo(null);
-
         
         JButton neww = new JButton(new ImageIcon("gfx/new.png"));
         neww.setToolTipText("Adds a new thing");
@@ -52,16 +51,34 @@ public class UI extends JFrame {
         delete.setToolTipText("Deletes a thing");
 
         JButton draw = new JButton(new ImageIcon("gfx/draw.png"));
-
+        draw.setToolTipText("Draws a thing");
+        
         JButton duplicate = new JButton(new ImageIcon("gfx/duplicate.png"));
-
+        duplicate.setToolTipText("Dublicates a thing");
+        
         JButton fill = new JButton(new ImageIcon("gfx/fill.png"));
+        fill.setToolTipText("Fills a thing");
 
         JButton properties = new JButton(new ImageIcon("gfx/properties.png"));
+        properties.setToolTipText("Shows the properties of a thing");
 
         JButton rename = new JButton(new ImageIcon("gfx/rename.png"));
+        rename.setToolTipText("Renames a thing");
 
         JButton subdivide = new JButton(new ImageIcon("gfx/subdivide.png"));
+        subdivide.setToolTipText("Subdivides a thing");
+        
+        JButton underlay = new JButton(new ImageIcon("gfx/underlay.png"));
+        underlay.setToolTipText("to be added");//TODO
+        
+        JButton unite = new JButton(new ImageIcon("gfx/unite.png"));
+        unite.setToolTipText("Unites a thing");
+        
+        JButton zoomin = new JButton(new ImageIcon("gfx/zoom-in.png"));
+        zoomin.setToolTipText("Zooms in");
+        
+        JButton zoomout = new JButton(new ImageIcon("gfx/zoom-out.png"));
+        zoomout.setToolTipText("zooms out");
    
         toolbar.add(neww);
         toolbar.add(delete);
@@ -71,6 +88,10 @@ public class UI extends JFrame {
         toolbar.add(properties);
         toolbar.add(rename);
         toolbar.add(subdivide);
+        toolbar.add(underlay);
+        toolbar.add(unite);
+        toolbar.add(zoomin);
+        toolbar.add(zoomout);
          
         setTitle("Icosa Mapper");
         setSize(800, 600);
