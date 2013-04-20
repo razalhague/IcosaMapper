@@ -1,10 +1,12 @@
 package org.penny_craal.icosamapper.map;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Ville Jokela
  */
-abstract public class ArrayTriangleContainer implements TriangleContainer {
+abstract public class ArrayTriangleContainer implements TriangleContainer, Serializable {
     private byte[] vals;        // values
     private TriangleContainer[] tris;    // triangles
     private final int size;
