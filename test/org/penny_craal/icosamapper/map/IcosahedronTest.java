@@ -4,8 +4,6 @@
  */
 package org.penny_craal.icosamapper.map;
 
-import org.penny_craal.icosamapper.map.AccessPath;
-import org.penny_craal.icosamapper.map.Icosahedron;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -40,6 +38,18 @@ public class IcosahedronTest {
     public void tearDown() {
         ih = null;
     }
+    
+    /**
+     * Test of isValidPath method, of class Icosahedron.
+     */
+    @Test
+    public void testIsValidPath() {
+        System.out.println("isValidPath");
+        byte[] apa1 = {1};
+        byte[] apa2 = {1, 1, 1, 1, 1};
+        assertEquals(true, ih.isValidPath(new AccessPath(apa1)));
+        assertEquals(false, ih.isValidPath(new AccessPath(apa2)));
+    }
 
     /**
      * Test of access method, of class Icosahedron.
@@ -48,8 +58,7 @@ public class IcosahedronTest {
     public void testAccess() throws BadPathException {
         System.out.println("access");
         byte[] apa = {1};
-        AccessPath ap = new AccessPath(apa);
-        assertEquals(0, ih.access(ap));
+        assertEquals(0, ih.access(new AccessPath(apa)));
     }
 
     /**
@@ -61,10 +70,8 @@ public class IcosahedronTest {
         System.out.println("subdivide");
         byte[] apa1 = {1};
         byte[] apa2 = {1, 7};
-        AccessPath ap1 = new AccessPath(apa1);
-        AccessPath ap2 = new AccessPath(apa2);
-        ih.subdivide(ap1);
-        assertEquals(0, ih.access(ap2));
+        ih.subdivide(new AccessPath(apa1));
+        assertEquals(0, ih.access(new AccessPath(apa2)));
     }
 
     /**

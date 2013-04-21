@@ -7,8 +7,8 @@ import java.io.Serializable;
  * @author Ville Jokela
  */
 abstract public class ArrayTriangleContainer implements TriangleContainer, Serializable {
-    private byte[] vals;        // values
-    private TriangleContainer[] tris;    // triangles
+    private byte[] vals;                // values
+    private TriangleContainer[] tris;   // triangles
     private final int size;
     private final String name;
     
@@ -25,13 +25,24 @@ abstract public class ArrayTriangleContainer implements TriangleContainer, Seria
     }
 
     @Override
+    public boolean isValidPath(AccessPath ap) {
+        if (ap.length() == 1) {
+            return true;
+        } else if (tris != null && tris[ap.head()] != null) {
+            return tris[ap.head()].isValidPath(ap.rest());
+        } else {
+            return false;
+        }
+    }
+    
+    @Override
     public byte access(AccessPath ap) throws BadPathException {
         if (ap.length() == 1) {
             return vals[ap.head()];
-        } else if (tris == null) {
-            throw new BadPathException(ap);
-        } else {
+        } else if (tris != null || tris[ap.head()] != null) {
             return tris[ap.head()].access(ap.rest());
+        } else {
+            throw new BadPathException(ap);
         }
     }
     
@@ -63,7 +74,7 @@ abstract public class ArrayTriangleContainer implements TriangleContainer, Seria
     public void setAtPath(AccessPath ap, byte val) throws BadPathException {
         if (ap.length() == 1) {
             vals[ap.head()] = val;
-        } else if (tris != null){
+        } else if (tris != null && tris[ap.head()] != null) {
             tris[ap.head()].setAtPath(ap.rest(), val);
             vals[ap.head()] = tris[ap.head()].getMeanValue();
         } else {

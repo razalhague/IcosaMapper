@@ -23,6 +23,11 @@ public class Layer implements Serializable, TriangleContainer {
     void setName(String name) {
         this.name = name;
     }
+    
+    @Override
+    public boolean isValidPath(AccessPath ap) {
+        return ih.isValidPath(ap);
+    }
 
     @Override
     public byte access(AccessPath ap) throws BadPathException {
