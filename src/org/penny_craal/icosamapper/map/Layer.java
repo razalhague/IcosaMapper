@@ -11,9 +11,10 @@ public class Layer implements Serializable, TriangleContainer {
     private LayerRenderer lr;
     private Icosahedron ih;
     
-    public Layer(String name, LayerRenderer lr) {
+    public Layer(String name, LayerRenderer lr, byte init) {
         this.name = name;
         this.lr = lr;
+        ih = new Icosahedron(init);
     }
     
     public String getName() {
@@ -47,5 +48,39 @@ public class Layer implements Serializable, TriangleContainer {
     @Override
     public byte getMeanValue() {
         return ih.getMeanValue();
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{L: { name: ");
+        sb.append(name);
+        sb.append(", LR: ");
+        sb.append(lr.getType());
+        sb.append(", ");
+        sb.append(ih.toString());
+        sb.append(" }}");
+        return sb.toString();
+    }
+    
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof Layer) {
+            Layer that = (Layer) other;
+            return this.name.equals(that.name) && this.lr.equals(that.lr) && this.ih.equals(that.ih);
+        } else {
+            return false;
+        }
+    }
+    
+    @Override
+    public int hashCode() {
+        int result = 89;
+        
+        result = 37 * result + name.hashCode();
+        result = 37 * result + lr.hashCode();
+        result = 37 * result + ih.hashCode();
+        
+        return result;
     }
 }

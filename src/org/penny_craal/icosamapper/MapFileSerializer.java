@@ -1,5 +1,6 @@
 package org.penny_craal.icosamapper;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -11,17 +12,17 @@ import org.penny_craal.icosamapper.map.Map;
  *
  * @author Ville Jokela
  */
-public class MapSerializer implements MapDAO {
-    String path;
+public class MapFileSerializer implements MapDAO {
+    private File file;
     
-    public MapSerializer(String path) {
-        this.path = path;
+    public MapFileSerializer(File file) {
+        this.file = file;
     }
 
     @Override
     public void save(Map map) throws DAException {
         try {
-            FileOutputStream fos = new FileOutputStream(path);
+            FileOutputStream fos = new FileOutputStream(file);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(map);
         } catch (IOException ex) {
@@ -32,7 +33,7 @@ public class MapSerializer implements MapDAO {
     @Override
     public Map load() throws DAException {
         try {
-            FileInputStream fis = new FileInputStream(path);
+            FileInputStream fis = new FileInputStream(file);
             ObjectInputStream ois = new ObjectInputStream(fis);
             return (Map) ois.readObject();
         } catch (IOException | ClassNotFoundException ex) {

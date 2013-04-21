@@ -102,13 +102,65 @@ abstract public class ArrayTriangleContainer implements TriangleContainer, Seria
         for (int i = 0; i < vals.length; i++) {
             sb.append(vals[i]);
             if (tris != null) {
-                sb.append(": ");
-                sb.append(tris[i].toString());
+                if (tris[i] != null) {
+                    sb.append(": ");
+                    sb.append(tris[i].toString());
+                }
             }
             sb.append(", ");
         }
         sb.delete(sb.length() - 2, sb.length());
         sb.append(" }}");
         return sb.toString();
+    }
+    
+    /* TODO: equality test for when the other object is a TC, but not an ATC */
+    @Override
+    public boolean equals(final Object other) {
+        if (!(other instanceof ArrayTriangleContainer)) {
+            return false;
+        }
+        final ArrayTriangleContainer that = (ArrayTriangleContainer) other;
+        if (this.size != that.size || !this.name.equals(that.name)) {
+            return false;
+        }
+        if ((this.tris == null) != (that.tris == null)) {             // either both must be null, or both must be non-null
+            return false;
+        }
+        for (int i = 0; i < this.size; i++) {
+            if (this.vals[i] != that.vals[i]) {
+                return false;
+            }
+            if (this.tris != null) {    // it is established higher up that if this.tris is not null, neither is that.tris
+                if (this.tris[i] != null && !this.tris[i].equals(that.tris[i])) {
+                    return false;
+                } else if (this.tris[i] == null && that.tris[i] != null) {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
+    
+    @Override
+    public int hashCode() {
+        int result = 89;
+        for (byte v: vals) {
+            result = 37 * result + (int) v;
+        }
+        if (tris != null) {
+            for (TriangleContainer tc: tris) {
+                if (tc != null) {
+                    result = 37 * result + tc.hashCode();
+                } else {
+                    result = 37 * result;
+                }
+            }
+        }
+        result = 37 * result + size;
+        result = 37 * result + name.hashCode();
+        
+        return result;
     }
 }

@@ -18,6 +18,10 @@ public class Map implements Serializable {
         layers.put(layer.getName(), layer);
     }
     
+    public Layer getLayer(String name) {
+        return layers.get(name);
+    }
+    
     public void removeLayer(String name) {
         layers.remove(name);
     }
@@ -43,5 +47,20 @@ public class Map implements Serializable {
 
     public byte getMeanValue(String name) {
         return layers.get(name).getMeanValue();
+    }
+    
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof Map) {
+            Map that = (Map) other;
+            return this.layers.equals(that.layers);
+        } else {
+            return false;
+        }
+    }
+    
+    @Override
+    public int hashCode() {
+        return layers.hashCode();
     }
 }
