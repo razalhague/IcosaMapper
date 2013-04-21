@@ -51,6 +51,7 @@ public class MapFileSerializerTest {
     public void testSave() throws Exception {
         System.out.println("save");
         File f = File.createTempFile("MapSerializerTest.save", ".imm");
+        f.deleteOnExit();
         MapFileSerializer ms = new MapFileSerializer(f);
         ms.save(map);
     }
@@ -62,6 +63,7 @@ public class MapFileSerializerTest {
     public void testLoad() throws Exception {
         System.out.println("load");
         File f = File.createTempFile("MapSerializerTest.load", ".imm");
+        f.deleteOnExit();
         MapFileSerializer ms = new MapFileSerializer(f);
         ms.save(map);
         Map map2 = ms.load();
