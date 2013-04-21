@@ -1,10 +1,12 @@
 package org.penny_craal.icosamapper.map;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Ville Jokela
  */
-public abstract class LayerRenderer {
+public abstract class LayerRenderer implements Serializable {
     /**
      * Renders a byte value into a colour.
      * @param value the byte value to be rendered.
