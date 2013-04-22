@@ -10,4 +10,5 @@ public interface TriangleContainer {
     public abstract void subdivide(AccessPath ap) throws BadPathException;
     public abstract void setAtPath(AccessPath ap, byte val) throws BadPathException;
     public abstract byte getMeanValue();
+    public abstract byte[] renderAtDepth(int depth);
 }

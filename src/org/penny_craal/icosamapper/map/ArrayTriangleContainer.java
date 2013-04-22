@@ -94,6 +94,21 @@ abstract public class ArrayTriangleContainer implements TriangleContainer, Seria
     }
     
     @Override
+    public byte[] renderAtDepth(int depth) {
+        byte[] values = new byte[getSizeAtDepth(depth)];
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+    
+    private int getSizeAtDepth(int depth) {
+        // TODO: recursive calculation?
+        if (size == 20) {
+            return (int) (20 * Math.pow(size, depth));
+        } else {
+            return (int) Math.pow(size, depth);
+        }
+    }
+    
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("{");

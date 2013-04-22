@@ -49,6 +49,10 @@ public class Map implements Serializable {
         return layers.get(name).getMeanValue();
     }
     
+    public int[] renderAtDepth(String layer, int depth) {
+        return layers.get(layer).renderAtDepth(depth);
+    }
+    
     @Override
     public boolean equals(Object other) {
         if (other instanceof Map) {

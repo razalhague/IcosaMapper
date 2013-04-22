@@ -15,6 +15,16 @@ public abstract class LayerRenderer implements Serializable {
     abstract public int renderByte(byte value);
     abstract public String getType();
     
+    public int[] renderArray(byte[] values) {
+        int[] rValues = new int[values.length];
+        
+        for (int i = 0; i < rValues.length; i++) {
+            rValues[i] = renderByte(values[i]);
+        }
+        
+        return rValues;
+    }
+    
     protected static int encodeAsInt(int r, int g, int b) {
         return b | g << 8 | r << 16;
     }

@@ -6,7 +6,7 @@ import java.io.Serializable;
  *
  * @author Ville Jokela
  */
-public class Layer implements Serializable, TriangleContainer {
+public class Layer implements Serializable {
     private String name;
     private LayerRenderer lr;
     private Icosahedron ih;
@@ -25,29 +25,28 @@ public class Layer implements Serializable, TriangleContainer {
         this.name = name;
     }
     
-    @Override
     public boolean isValidPath(AccessPath ap) {
         return ih.isValidPath(ap);
     }
 
-    @Override
     public byte access(AccessPath ap) throws BadPathException {
         return ih.access(ap);
     }
 
-    @Override
     public void subdivide(AccessPath ap) throws BadPathException {
         ih.subdivide(ap);
     }
 
-    @Override
     public void setAtPath(AccessPath ap, byte val) throws BadPathException {
         ih.setAtPath(ap, val);
     }
 
-    @Override
     public byte getMeanValue() {
         return ih.getMeanValue();
+    }
+    
+    public int[] renderAtDepth(int depth) {
+        return lr.renderArray(ih.renderAtDepth(depth));
     }
     
     @Override
