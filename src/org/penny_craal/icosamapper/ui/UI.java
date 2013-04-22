@@ -75,7 +75,7 @@ public class UI extends JFrame {
         statusLabel.setHorizontalAlignment(SwingConstants.LEFT);
         statusbar.add(statusLabel);
         
-        JPanel map = new JPanel();
+        MapPanel map = new MapPanel();
         add(map, BorderLayout.EAST);
         
         JPanel tools = new JPanel();
@@ -164,7 +164,7 @@ public class UI extends JFrame {
         JSpinner sizeSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));//(initial value, minimum value, maximum value, step)
         opSize.add(sizeSpinner);
         
-        JColorChooser colour = new JColorChooser();
+        ColourPicker colour = new ColourPicker();
         paint.add(colour, BorderLayout.WEST);
     }
 
