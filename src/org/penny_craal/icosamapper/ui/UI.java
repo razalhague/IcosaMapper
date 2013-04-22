@@ -8,8 +8,10 @@ import java.awt.BorderLayout;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -28,40 +30,72 @@ public class UI extends JFrame {
     }
 
     public final void initUI() {
-//creating menubar and menus
+        //creating the main window
+        setTitle("IcosaMapper");
+        setSize(900, 800);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        
+         //creating menubar and menus
         JMenuBar menubar = new JMenuBar();
         JMenu file = new JMenu("File");
         JMenu layer = new JMenu("Layers");
         JMenu view = new JMenu("View");
-//adding the menubar
+        //adding the menubar
         setJMenuBar(menubar);
-
-//creating components for the menus
+        
+        //creating components for the menus
         JMenuItem newF = new JMenuItem("New");
-        
+
         JMenuItem open = new JMenuItem("Open");
-        
+
         JMenuItem save = new JMenuItem("Save");
-        
+
         JMenuItem saveas = new JMenuItem("Save As");
-        
+
         JMenuItem quit = new JMenuItem("Exit");
         quit.setToolTipText("Exit application");
-//adding menus into menubar
+        //adding menus into menubar
         menubar.add(file);
         menubar.add(layer);
         menubar.add(view);
-//adding to the file menu components
+        //adding to the file menu components
         file.add(newF);
         file.add(open);
         file.add(save);
         file.add(saveas);
         file.add(quit);
-//creating the toolbar
-        JToolBar toolbar = new JToolBar();
-        toolbar.setOrientation(JToolBar.VERTICAL);
-        add(toolbar, BorderLayout.WEST);
-//giving every button meaning
+        
+        //Status Bar
+        JPanel statusbar = new JPanel();
+        statusbar.setBorder(new BevelBorder(BevelBorder.LOWERED));
+        add(statusbar, BorderLayout.SOUTH);
+        statusbar.setLayout(new BoxLayout(statusbar, BoxLayout.X_AXIS));
+        JLabel statusLabel = new JLabel("status");
+        statusLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        statusbar.add(statusLabel);
+        
+        JPanel map = new JPanel();
+        add(map, BorderLayout.EAST);
+        
+        JPanel tools = new JPanel();
+        tools.setLayout(new BorderLayout());
+        add(tools, BorderLayout.WEST);
+        
+        JPanel paint = new JPanel();
+        paint.setLayout(new BorderLayout());
+        tools.add(paint, BorderLayout.NORTH);
+        
+        JPanel layers = new JPanel();
+        layers.setLayout(new BorderLayout());
+        tools.add(layers, BorderLayout.SOUTH);
+
+        //creating the toolbars
+        JToolBar paintbar = new JToolBar();
+        paintbar.setOrientation(JToolBar.VERTICAL);
+        paint.add(paintbar, BorderLayout.EAST);
+        
+        //giving every button meaning
         JButton neww = new JButton(new ImageIcon("gfx/new.png"));
         neww.setToolTipText("Adds a new thing");
 
@@ -97,46 +131,47 @@ public class UI extends JFrame {
 
         JButton zoomout = new JButton(new ImageIcon("gfx/zoom-out.png"));
         zoomout.setToolTipText("zooms out");
-//adding all the buttons to the toolbar
-        toolbar.add(draw);
-        toolbar.add(fill);
-        toolbar.add(subdivide);
-        toolbar.add(unite);
-        toolbar.add(zoomin);
-        toolbar.add(zoomout);
-        
-        toolbar.add(neww);
-        toolbar.add(duplicate);
-        toolbar.add(rename);
-        toolbar.add(properties);
-        toolbar.add(delete);
-        toolbar.add(underlay);
-        
-        JSpinner sizeS = new JSpinner(new SpinnerNumberModel(1, 1, 5, 1));//(initial value, minimum value, maximum value, step)
-        add(sizeS);
-        setLocationRelativeTo(toolbar);
-        
-//creating the main window
-        setTitle("Icosa Mapper");
-        setSize(800, 700);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+        //adding all the buttons to the toolbar
+        paintbar.add(draw);
+        paintbar.add(fill);
+        paintbar.add(subdivide);
+        paintbar.add(unite);
+        paintbar.add(zoomin);
+        paintbar.add(zoomout);
 
+        JToolBar layerbar = new JToolBar();
+        layerbar.setOrientation(JToolBar.VERTICAL);
+        layers.add(layerbar, BorderLayout.EAST);
         
-//Status Bar
-        JPanel statusbar = new JPanel();
-        statusbar.setBorder(new BevelBorder(BevelBorder.LOWERED));
-        add(statusbar, BorderLayout.SOUTH);
-        statusbar.setLayout(new BoxLayout(statusbar, BoxLayout.X_AXIS));
-        JLabel statusLabel = new JLabel("status");
-        statusLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        statusbar.add(statusLabel);
+        JLabel layerLabel = new JLabel("Layers");
+        layers.add(layerLabel, BorderLayout.NORTH);
+        
+        JList layerList = new JList();
+        layers.add(layerList, BorderLayout.WEST);
+        
+        layerbar.add(neww);
+        layerbar.add(duplicate);
+        layerbar.add(rename);
+        layerbar.add(properties);
+        layerbar.add(delete);
+        layerbar.add(underlay);
 
-}
-public static void main(String[] args) {
+        JPanel opSize = new JPanel();
+        paint.add(opSize, BorderLayout.SOUTH);
+        
+        JLabel sizeLabel = new JLabel("Operating size");
+        opSize.add(sizeLabel);
+        JSpinner sizeSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));//(initial value, minimum value, maximum value, step)
+        opSize.add(sizeSpinner);
+        
+        JColorChooser colour = new JColorChooser();
+        paint.add(colour, BorderLayout.WEST);
+    }
+
+    public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
-        public void run() {
+            public void run() {
                 UI ex = new UI();
                 ex.setVisible(true);
             }
