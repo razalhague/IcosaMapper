@@ -20,6 +20,7 @@ import javax.swing.JToolBar;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
+import org.penny_craal.icosamapper.map.GreyscaleLR;
 
 public class UI extends JFrame {
 
@@ -86,12 +87,13 @@ public class UI extends JFrame {
         
         JPanel layers = new JPanel();
         layers.setLayout(new BorderLayout());
-        tools.add(layers, BorderLayout.SOUTH);
+        tools.add(layers, BorderLayout.CENTER);
 
         //creating the toolbars
         JToolBar paintbar = new JToolBar();
         paintbar.setOrientation(JToolBar.VERTICAL);
         paint.add(paintbar, BorderLayout.EAST);
+        paintbar.setFloatable(false);
         
         //giving every button meaning
         JButton neww = new JButton(new ImageIcon("gfx/new.png"));
@@ -140,6 +142,7 @@ public class UI extends JFrame {
         JToolBar layerbar = new JToolBar();
         layerbar.setOrientation(JToolBar.VERTICAL);
         layers.add(layerbar, BorderLayout.EAST);
+        layerbar.setFloatable(false);
         
         JLabel layerLabel = new JLabel("Layers");
         layers.add(layerLabel, BorderLayout.NORTH);
@@ -163,7 +166,7 @@ public class UI extends JFrame {
         JSpinner sizeSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));//(initial value, minimum value, maximum value, step)
         opSize.add(sizeSpinner);
         
-        ColourPicker colour = new ColourPicker();
-        paint.add(colour, BorderLayout.WEST);
+        ColourPicker colour = new ColourPicker(new GreyscaleLR());
+        paint.add(colour, BorderLayout.CENTER);
     }   
 }
