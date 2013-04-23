@@ -8,7 +8,6 @@ import java.awt.BorderLayout;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -20,7 +19,6 @@ import javax.swing.JSpinner;
 import javax.swing.JToolBar;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 
 public class UI extends JFrame {
@@ -166,15 +164,5 @@ public class UI extends JFrame {
         
         ColourPicker colour = new ColourPicker();
         paint.add(colour, BorderLayout.WEST);
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                UI ex = new UI();
-                ex.setVisible(true);
-            }
-        });
-    }
+    }   
 }
