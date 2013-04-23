@@ -96,7 +96,21 @@ abstract public class ArrayTriangleContainer implements TriangleContainer, Seria
     @Override
     public byte[] renderAtDepth(int depth) {
         byte[] values = new byte[getSizeAtDepth(depth)];
-        throw new UnsupportedOperationException("Not yet implemented");
+        byte[] subVals = null;
+        for (int i = 0; i < size; i++) {
+            if (tris != null && tris[i] != null) {
+                subVals = tris[i].renderAtDepth(depth - 1);
+            }
+            for (int j = 0; j < values.length/size; j++) {
+                if (tris == null || tris[i] == null) {
+                    values[i*values.length/size + j] = vals[i];
+                } else /* tris[i] != null */ {
+                    values[i*values.length/size + j] = subVals[j];
+                }
+            }
+        }
+        
+        return values;
     }
     
     private int getSizeAtDepth(int depth) {

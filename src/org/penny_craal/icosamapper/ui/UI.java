@@ -74,7 +74,7 @@ public class UI extends JFrame {
         statusbar.add(statusLabel);
         
         MapPanel map = new MapPanel();
-        add(map, BorderLayout.EAST);
+        add(map, BorderLayout.CENTER);
         
         JPanel tools = new JPanel();
         tools.setLayout(new BorderLayout());
@@ -145,7 +145,8 @@ public class UI extends JFrame {
         layers.add(layerLabel, BorderLayout.NORTH);
         
         JList layerList = new JList();
-        layers.add(layerList, BorderLayout.WEST);
+        layerList.setBorder(new BevelBorder(BevelBorder.LOWERED));
+        layers.add(layerList, BorderLayout.CENTER);
         
         layerbar.add(neww);
         layerbar.add(duplicate);
