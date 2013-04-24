@@ -13,6 +13,9 @@ abstract public class ArrayTriangleContainer implements TriangleContainer, Seria
     private final String name;
     
     public ArrayTriangleContainer(int size, String name, byte init) {
+        if (size != 9 && size != 20) {
+            throw new RuntimeException("Container size should be either 9 or 20");
+        }
         this.size = size;
         this.name = name;
         
@@ -95,6 +98,9 @@ abstract public class ArrayTriangleContainer implements TriangleContainer, Seria
     
     @Override
     public byte[] renderAtDepth(int depth) {
+        if (depth == 1) {
+            return vals;
+        }
         byte[] values = new byte[getSizeAtDepth(depth)];
         byte[] subVals = null;
         for (int i = 0; i < size; i++) {
@@ -103,9 +109,9 @@ abstract public class ArrayTriangleContainer implements TriangleContainer, Seria
             }
             for (int j = 0; j < values.length/size; j++) {
                 if (tris == null || tris[i] == null) {
-                    values[i*values.length/size + j] = vals[i];
+                    values[values.length/size*i + j] = vals[i];
                 } else /* tris[i] != null */ {
-                    values[i*values.length/size + j] = subVals[j];
+                    values[values.length/size*i + j] = subVals[j];
                 }
             }
         }
@@ -116,9 +122,9 @@ abstract public class ArrayTriangleContainer implements TriangleContainer, Seria
     private int getSizeAtDepth(int depth) {
         // TODO: recursive calculation?
         if (size == 20) {
-            return (int) (20 * Math.pow(size, depth));
+            return (int) (20 * Math.pow(9, depth-1));
         } else {
-            return (int) Math.pow(size, depth);
+            return (int) Math.pow(9, depth);
         }
     }
     
@@ -129,7 +135,7 @@ abstract public class ArrayTriangleContainer implements TriangleContainer, Seria
         sb.append(name);
         sb.append(": { ");
         for (int i = 0; i < vals.length; i++) {
-            sb.append(vals[i]);
+            sb.append(vals[i] & 0xFF);
             if (tris != null) {
                 if (tris[i] != null) {
                     sb.append(": ");

@@ -5,6 +5,8 @@ package org.penny_craal.icosamapper.ui;
  * @author Ville Jokela & James Pearce
  */
 import java.awt.BorderLayout;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -20,7 +22,10 @@ import javax.swing.JToolBar;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
+import org.penny_craal.icosamapper.map.AccessPath;
+import org.penny_craal.icosamapper.map.BadPathException;
 import org.penny_craal.icosamapper.map.GreyscaleLR;
+import org.penny_craal.icosamapper.map.Layer;
 
 public class UI extends JFrame {
 
@@ -70,11 +75,23 @@ public class UI extends JFrame {
         statusbar.setBorder(new BevelBorder(BevelBorder.LOWERED));
         add(statusbar, BorderLayout.SOUTH);
         statusbar.setLayout(new BoxLayout(statusbar, BoxLayout.X_AXIS));
-        JLabel statusLabel = new JLabel("status");
+        JLabel statusLabel = new JLabel();
         statusLabel.setHorizontalAlignment(SwingConstants.LEFT);
         statusbar.add(statusLabel);
         
-        MapPanel map = new MapPanel();
+        Layer l = new Layer("test-layer", new GreyscaleLR(), (byte) 0);
+        byte[] ap1 = {1};
+        byte[] ap2 = {1,2};
+        try {
+            l.setAtPath(new AccessPath(ap1), (byte) 128);
+            l.subdivide(new AccessPath(ap1));
+            l.setAtPath(new AccessPath(ap2), (byte) 250);
+        } catch (BadPathException ex) {
+            throw new RuntimeException("OH NOES");
+        }
+        int renderDepth = 1;
+        MapPanel map = new MapPanel(l, renderDepth);
+        statusLabel.setText("Render depth: " + renderDepth);
         add(map, BorderLayout.CENTER);
         
         JPanel tools = new JPanel();

@@ -1,7 +1,6 @@
 package org.penny_craal.icosamapper.ui;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
@@ -18,10 +17,9 @@ public class MapPanel extends JPanel {
     private AccessPath zoom;
     private int drawDepth;
     
-    public MapPanel() {
-        layer = null;
-        //Dimension d = new Dimension(400,10000);
-        //setPreferredSize(d);
+    public MapPanel(Layer layer, int drawDepth) {
+        this.layer = layer;
+        this.drawDepth = drawDepth;
     }
     
     public void setLayer(Layer layer) {
@@ -43,39 +41,61 @@ public class MapPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
-        System.out.println("" + getWidth() + ", " + getHeight());
+        Graphics2D g2d = (Graphics2D) g;
+        if (layer == null) {
+            return;
+        }
         int width = (int) (getWidth()/5.5);
         int height = getHeight()/3;
+        int[] values = layer.renderAtDepth(drawDepth);
+        int rangeStart = 0;
+        int rangeInc = values.length/20;
         
         // triangles with point up
         for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 5; j++) {
-                Polygon p = new Polygon();
-                p.addPoint(width*j + width/2*i + width/2, height*i);        // point
-                p.addPoint(width*j + width/2*i, height*i + height);         // left side
-                p.addPoint(width*j + width/2*i + width, height*i + height); // right side
-                g2.setColor(Color.BLACK);
-                g2.draw(p);
-                g2.fillPolygon(p);
+            for (int j = 0; j < 5; j++, rangeStart += rangeInc) {
+                paintTriangle(g2d, values, rangeStart, rangeStart + rangeInc, drawDepth-1, width*j + width/2*i, height*i, width, height, true);
             }
         }
         
         // triangles with point down
         for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 5; j++) {
-                Polygon p = new Polygon();
-                p.addPoint(width*j + width/2*i + width/2, height*i + 2*height);        // point
-                p.addPoint(width*j + width/2*i, height*i + height);         // left side
-                p.addPoint(width*j + width/2*i + width, height*i + height); // right side
-                g2.setColor(Color.RED);
-                g2.draw(p);
-                g2.fillPolygon(p);
+            for (int j = 0; j < 5; j++, rangeStart += rangeInc) {
+                paintTriangle(g2d, values, rangeStart, rangeStart + rangeInc, drawDepth-1, width*j + width/2*i, height*(i+1), width, height, false);
             }
         }
     }
-    
-    private void paintIcosahedron(int heigth, int width, int depth) {
-        
+
+    private void paintTriangle(Graphics2D g2d, int[] values, int rangeStart, int rangeEnd, int depth, int x, int y, int width, int height, boolean isPointUp) {
+        if (depth == 0) {
+            Polygon p = new Polygon();
+            p.addPoint(x, y + (isPointUp ? height : 0));            // left side
+            p.addPoint(x + width, y + (isPointUp ? height : 0));    // right side
+            p.addPoint(x + width/2, y + (isPointUp ? 0 : height));  // point
+            g2d.setColor(new Color(values[rangeStart]));
+            g2d.draw(p);
+            g2d.fillPolygon(p);
+        } else {
+            int rangeInc = (rangeEnd - rangeStart)/9;
+            if (isPointUp) {
+                paintTriangle(g2d, values, rangeStart, rangeStart+rangeInc, depth-1, x + width/3, y, width/3, height/3, true);
+                rangeStart += rangeInc;
+                for (int i = 0; i < 3; i++, rangeStart += rangeInc) {
+                    paintTriangle(g2d, values, rangeStart, rangeStart+rangeInc, depth-1, x + (width/6)*(i+1), y + height/3, width/3, height/3, i%2 == 0);
+                }
+                for (int i = 0; i < 5; i++, rangeStart += rangeInc) {
+                    paintTriangle(g2d, values, rangeStart, rangeStart+rangeInc, depth-1, x + (width/6)*i, y + height/3*2, width/3, height/3, i%2 == 0);
+                }
+            } else /* !isPointUp */ {
+                for (int i = 0; i < 5; i++, rangeStart += rangeInc) {
+                    paintTriangle(g2d, values, rangeStart, rangeStart+rangeInc, depth-1, x + (width/6)*i, y, width/3, height/3, i%2 != 0);
+                }
+                for (int i = 0; i < 3; i++, rangeStart += rangeInc) {
+                    paintTriangle(g2d, values, rangeStart, rangeStart+rangeInc, depth-1, x + (width/6)*(i+1), y + height/3, width/3, height/3, i%2 != 0);
+                }
+                paintTriangle(g2d, values, rangeStart, rangeStart+rangeInc, depth-1, x + width/3, y + height/3*2, width/3, height/3, false);
+                rangeStart += rangeInc;
+            }
+        }
     }
 }
