@@ -79,18 +79,8 @@ public class UI extends JFrame {
         statusLabel.setHorizontalAlignment(SwingConstants.LEFT);
         statusbar.add(statusLabel);
         
-        Layer l = new Layer("test-layer", new GreyscaleLR(), (byte) 0);
-        byte[] ap1 = {1};
-        byte[] ap2 = {1,2};
-        try {
-            l.setAtPath(new AccessPath(ap1), (byte) 128);
-            l.subdivide(new AccessPath(ap1));
-            l.setAtPath(new AccessPath(ap2), (byte) 250);
-        } catch (BadPathException ex) {
-            throw new RuntimeException("OH NOES");
-        }
-        int renderDepth = 1;
-        MapPanel map = new MapPanel(l, renderDepth);
+        int renderDepth = 2;
+        MapPanel map = new MapPanel(createTestLayer(), renderDepth);
         statusLabel.setText("Render depth: " + renderDepth);
         add(map, BorderLayout.CENTER);
         
@@ -185,5 +175,24 @@ public class UI extends JFrame {
         
         ColourPicker colour = new ColourPicker(new GreyscaleLR());
         paint.add(colour, BorderLayout.CENTER);
-    }   
+    }
+    
+    private Layer createTestLayer() {
+        Layer layer = new Layer("test-layer", new GreyscaleLR(), (byte) 0);
+        
+        try {
+            for (int i = 0; i < 20; i++) {
+                byte[] api = {(byte) i};
+                layer.subdivide(new AccessPath(api));
+                for (int j = 0; j < 9; j++) {
+                    byte[] apj = {(byte) i, (byte) j};
+                    layer.setAtPath(new AccessPath(apj), (byte) (256/20*i + 256/20/9*j));
+                }
+            }
+        } catch (BadPathException ex) {
+            Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return layer;
+    }
 }
