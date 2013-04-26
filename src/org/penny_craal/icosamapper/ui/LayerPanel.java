@@ -24,6 +24,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import javax.swing.JPanel;
+import org.penny_craal.icosamapper.map.GreyscaleLR;
+import org.penny_craal.icosamapper.map.InvalidPathException;
 import org.penny_craal.icosamapper.map.Layer;
 import org.penny_craal.icosamapper.map.Path;
 
@@ -233,5 +235,24 @@ public class LayerPanel extends JPanel {
                 rangeStart += rangeInc;
             }
         }
+    }
+    
+    protected static Layer createTestLayer() {
+        Layer layer = new Layer("test-layer", new GreyscaleLR(), (byte) 0);
+        
+        try {
+            for (int i = 0; i < 20; i++) {
+                byte[] api = {(byte) i};
+                layer.divide(new Path(api));
+                for (int j = 0; j < 9; j++) {
+                    byte[] apj = {(byte) i, (byte) j};
+                    layer.setElement(new Path(apj), (byte) (256/20*i + 256/20/9*j));
+                }
+            }
+        } catch (InvalidPathException ex) {
+            throw new RuntimeException(ex);
+        }
+        
+        return layer;
     }
 }

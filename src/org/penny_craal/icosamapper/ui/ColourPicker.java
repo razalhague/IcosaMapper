@@ -39,18 +39,16 @@ public class ColourPicker extends JPanel {
     public ColourPicker(LayerRenderer lr) {
         this.lr = lr;
         setLayout(new BorderLayout());
-        JLabel label = new JLabel("Colour");
-        add(label, BorderLayout.NORTH);
         
         JSpinner color = new JSpinner(new SpinnerNumberModel(0, 0, 255, 1));//(initial value, minimum value, maximum value, step)
-        add(color, BorderLayout.SOUTH);
+        add(color, BorderLayout.PAGE_END);
         
         JSlider slider = new JSlider();
         slider.setOrientation(javax.swing.JSlider.VERTICAL);
-        add(slider, BorderLayout.EAST);
+        add(slider, BorderLayout.LINE_END);
         
         JPanel current = new JPanel();
         add(current, BorderLayout.CENTER);
-        current.setBackground(new Color(lr.renderByte((byte)0)));
+        current.setBackground(new Color(lr.renderByte((byte) 0)));
     }
 }

@@ -25,8 +25,7 @@ package org.penny_craal.icosamapper.ui;
  * @author James Pearce
  */
 import java.awt.BorderLayout;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -40,16 +39,15 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JToolBar;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.EtchedBorder;
 import org.penny_craal.icosamapper.map.GreyscaleLR;
-import org.penny_craal.icosamapper.map.InvalidPathException;
-import org.penny_craal.icosamapper.map.Layer;
-import org.penny_craal.icosamapper.map.Path;
 
 public class UI extends JFrame {
+    private int renderDepth;
 
     public UI() {
+        renderDepth = 1;
         initUI();
     }
 
@@ -57,165 +55,111 @@ public class UI extends JFrame {
      * Builds the UI.
      */
     public final void initUI() {
-        //creating the main window
         setTitle("IcosaMapper");
         setSize(900, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(null);    // centered on screen
+        setLayout(new BorderLayout());
         
-         //creating menubar and menus
-        JMenuBar menubar = new JMenuBar();
-        JMenu file = new JMenu("File");
-        JMenu layer = new JMenu("Layers");
-        JMenu view = new JMenu("View");
-        //adding the menubar
-        setJMenuBar(menubar);
-        
-        //creating components for the menus
-        JMenuItem newF = new JMenuItem("New");
+        setJMenuBar(createMenuBar());
+        add(createStatusBar(), BorderLayout.PAGE_END);
+        add(new LayerPanel(LayerPanel.createTestLayer(), renderDepth), BorderLayout.CENTER);
+        add(createToolsArea(), BorderLayout.LINE_START);
+    }
 
-        JMenuItem open = new JMenuItem("Open");
-
-        JMenuItem save = new JMenuItem("Save");
-
-        JMenuItem saveas = new JMenuItem("Save As");
-
-        JMenuItem quit = new JMenuItem("Exit");
-        quit.setToolTipText("Exit application");
-        //adding menus into menubar
-        menubar.add(file);
-        menubar.add(layer);
-        menubar.add(view);
-        //adding to the file menu components
-        file.add(newF);
-        file.add(open);
-        file.add(save);
-        file.add(saveas);
-        file.add(quit);
+    private JMenuBar createMenuBar() {
+       JMenuBar menuBar = new JMenuBar();
+       
+       JMenu file = new JMenu("File");
+       JMenuItem newM = new JMenuItem("New Map");
+       JMenuItem open = new JMenuItem("Open Map...");
+       JMenuItem save = new JMenuItem("Save Map");
+       JMenuItem saveAs = new JMenuItem("Save Map As...");
+       JMenuItem exit = new JMenuItem("Exit");
+       exit.setToolTipText("Exit IcosaMapper");
+       file.add(newM);
+       file.add(open);
+       file.add(save);
+       file.add(saveAs);
+       file.add(exit);
+       
+       JMenu help = new JMenu("Help");
+       JMenuItem about = new JMenuItem("About");
+       help.add(about);
+       
+       menuBar.add(file);
+       menuBar.add(help);
+       
+       return menuBar;
+    }
+    
+    private JPanel createStatusBar() {
+        JPanel statusBar = new JPanel();
         
-        //Status Bar
-        JPanel statusbar = new JPanel();
-        statusbar.setBorder(new BevelBorder(BevelBorder.LOWERED));
-        add(statusbar, BorderLayout.SOUTH);
-        statusbar.setLayout(new BoxLayout(statusbar, BoxLayout.X_AXIS));
-        JLabel statusLabel = new JLabel();
-        statusLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        statusbar.add(statusLabel);
+        statusBar.setLayout(new BoxLayout(statusBar, BoxLayout.LINE_AXIS));
+        statusBar.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+        JLabel statusLabel = new JLabel("Render depth: " + renderDepth);
+        statusBar.add(statusLabel);
         
-        int renderDepth = 2;
-        LayerPanel lPanel = new LayerPanel(createTestLayer(), renderDepth);
-        statusLabel.setText("Render depth: " + renderDepth);
-        add(lPanel, BorderLayout.CENTER);
-        
+        return statusBar;
+    }
+
+    private JPanel createToolsArea() {
         JPanel tools = new JPanel();
         tools.setLayout(new BorderLayout());
-        add(tools, BorderLayout.WEST);
         
+        String[][] paintButtons = {
+            { "draw",       "draw on the map" },
+            { "fill",       "fill an area" },
+            { "subdivide",  "divide a triangle" },
+            { "unite",      "unite a triangle" },
+            { "zoom-in",    "zoom in to a triangle" },
+            { "zoom-out",   "zoom out" },
+        };
+        String[][] layerButtons = {
+            {"new",         "create new layer" },
+            {"duplicate",   "duplicate layer" },
+            {"rename",      "rename layer" },
+            {"properties",  "edit layer's properties" },
+            {"underlay",    "create an underlay" },
+            {"delete",  "delete layer" },
+        };
+
         JPanel paint = new JPanel();
+        paint.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED), "Paint"));
         paint.setLayout(new BorderLayout());
-        tools.add(paint, BorderLayout.NORTH);
+        paint.add(createButtonBar(paintButtons), BorderLayout.LINE_END);
+        paint.add(new ColourPicker(new GreyscaleLR()), BorderLayout.CENTER);
+        JPanel opSize = new JPanel();
+        opSize.add(new JLabel("Operating size"));
+        opSize.add(new JSpinner(new SpinnerNumberModel(1, 1, 10, 1)));
+        paint.add(opSize, BorderLayout.PAGE_END);
         
         JPanel layers = new JPanel();
+        layers.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED), "Layers"));
         layers.setLayout(new BorderLayout());
-        tools.add(layers, BorderLayout.CENTER);
-
-        //creating the toolbars
-        JToolBar paintbar = new JToolBar();
-        paintbar.setOrientation(JToolBar.VERTICAL);
-        paint.add(paintbar, BorderLayout.EAST);
-        paintbar.setFloatable(false);
-        
-        //giving every button meaning
-        JButton neww = new JButton(new ImageIcon("gfx/new.png"));
-        neww.setToolTipText("Adds a new thing");
-
-        JButton delete = new JButton(new ImageIcon("gfx/delete.png"));
-        delete.setToolTipText("Deletes a thing");
-
-        JButton draw = new JButton(new ImageIcon("gfx/draw.png"));
-        draw.setToolTipText("Draws a thing");
-
-        JButton duplicate = new JButton(new ImageIcon("gfx/duplicate.png"));
-        duplicate.setToolTipText("Dublicates a thing");
-
-        JButton fill = new JButton(new ImageIcon("gfx/fill.png"));
-        fill.setToolTipText("Fills a thing");
-
-        JButton properties = new JButton(new ImageIcon("gfx/properties.png"));
-        properties.setToolTipText("Shows the properties of a thing");
-
-        JButton rename = new JButton(new ImageIcon("gfx/rename.png"));
-        rename.setToolTipText("Renames a thing");
-
-        JButton subdivide = new JButton(new ImageIcon("gfx/subdivide.png"));
-        subdivide.setToolTipText("Subdivides a thing");
-
-        JButton underlay = new JButton(new ImageIcon("gfx/underlay.png"));
-        underlay.setToolTipText("to be added");//TODO
-
-        JButton unite = new JButton(new ImageIcon("gfx/unite.png"));
-        unite.setToolTipText("Unites a thing");
-
-        JButton zoomin = new JButton(new ImageIcon("gfx/zoom-in.png"));
-        zoomin.setToolTipText("Zooms in");
-
-        JButton zoomout = new JButton(new ImageIcon("gfx/zoom-out.png"));
-        zoomout.setToolTipText("zooms out");
-        //adding all the buttons to the toolbar
-        paintbar.add(draw);
-        paintbar.add(fill);
-        paintbar.add(subdivide);
-        paintbar.add(unite);
-        paintbar.add(zoomin);
-        paintbar.add(zoomout);
-
-        JToolBar layerbar = new JToolBar();
-        layerbar.setOrientation(JToolBar.VERTICAL);
-        layers.add(layerbar, BorderLayout.EAST);
-        layerbar.setFloatable(false);
-        
-        JLabel layerLabel = new JLabel("Layers");
-        layers.add(layerLabel, BorderLayout.NORTH);
-        
+        layers.add(createButtonBar(layerButtons), BorderLayout.LINE_END);
         JList layerList = new JList();
         layerList.setBorder(new BevelBorder(BevelBorder.LOWERED));
         layers.add(layerList, BorderLayout.CENTER);
         
-        layerbar.add(neww);
-        layerbar.add(duplicate);
-        layerbar.add(rename);
-        layerbar.add(properties);
-        layerbar.add(delete);
-        layerbar.add(underlay);
-
-        JPanel opSize = new JPanel();
-        paint.add(opSize, BorderLayout.SOUTH);
+        tools.add(paint, BorderLayout.PAGE_START);
+        tools.add(layers, BorderLayout.CENTER);
         
-        JLabel sizeLabel = new JLabel("Operating size");
-        opSize.add(sizeLabel);
-        JSpinner sizeSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));//(initial value, minimum value, maximum value, step)
-        opSize.add(sizeSpinner);
-        
-        ColourPicker colour = new ColourPicker(new GreyscaleLR());
-        paint.add(colour, BorderLayout.CENTER);
+        return tools;
     }
-    
-    private Layer createTestLayer() {
-        Layer layer = new Layer("test-layer", new GreyscaleLR(), (byte) 0);
+
+    private JToolBar createButtonBar(String[][] paintButtons) {
+        JToolBar buttonBar = new JToolBar();
+        buttonBar.setOrientation(JToolBar.VERTICAL);
+        buttonBar.setFloatable(false);
         
-        try {
-            for (int i = 0; i < 20; i++) {
-                byte[] api = {(byte) i};
-                layer.divide(new Path(api));
-                for (int j = 0; j < 9; j++) {
-                    byte[] apj = {(byte) i, (byte) j};
-                    layer.setElement(new Path(apj), (byte) (256/20*i + 256/20/9*j));
-                }
-            }
-        } catch (InvalidPathException ex) {
-            Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
+        for (String[] b: paintButtons) {
+            JButton button = new JButton(new ImageIcon("gfx/" + b[0] + ".png"));
+            button.setToolTipText(b[1]);
+            buttonBar.add(button);
         }
         
-        return layer;
+        return buttonBar;
     }
 }
