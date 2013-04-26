@@ -17,28 +17,27 @@
  * contact me <ville.jokela@penny-craal.org>
  */
 
-package org.penny_craal.icosamapper;
-
-import javax.swing.SwingUtilities;
-import org.penny_craal.icosamapper.ui.UI;
+package org.penny_craal.icosamapper.map;
 
 /**
- * The main class for the program.
+ * An exception that signifies that the Path given was invalid.
  * @author Ville Jokela
- * @author James Pearce
  */
-public class IcosaMapper {
+public class InvalidPathException extends Exception {
     /**
-     * The main method for the program.
-     * @param args ignored
+     * Constructs a InvalidPathException with the default message.
+     * @param p the offending Path
      */
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                UI ui = new UI();
-                ui.setVisible(true);
-            }
-        });
+    protected InvalidPathException(Path p) {
+        super("The given path is invalid: " + p.toString());
+    }
+
+    /**
+     * Constructs a InvalidPathException with an additional message added to the default message.
+     * @param p the offending Path
+     * @param msg the additional message
+     */
+    protected InvalidPathException(Path p, String msg) {
+        super("The given path is invalid for this operation (" + msg + "): " + p.toString());
     }
 }

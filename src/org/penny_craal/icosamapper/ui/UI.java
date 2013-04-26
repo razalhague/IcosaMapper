@@ -1,8 +1,28 @@
+/* IcosaMapper - an rpg map editor based on equilateral triangles that form an icosahedron
+ * Copyright (C) 2013  Ville Jokela, James Pearce
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * contact me <ville.jokela@penny-craal.org>
+ */
+
 package org.penny_craal.icosamapper.ui;
 
 /**
- *
- * @author Ville Jokela & James Pearce
+ * The user interface for IcosaMapper.
+ * @author Ville Jokela
+ * @author James Pearce
  */
 import java.awt.BorderLayout;
 import java.util.logging.Level;
@@ -22,10 +42,10 @@ import javax.swing.JToolBar;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
-import org.penny_craal.icosamapper.map.AccessPath;
-import org.penny_craal.icosamapper.map.BadPathException;
 import org.penny_craal.icosamapper.map.GreyscaleLR;
+import org.penny_craal.icosamapper.map.InvalidPathException;
 import org.penny_craal.icosamapper.map.Layer;
+import org.penny_craal.icosamapper.map.Path;
 
 public class UI extends JFrame {
 
@@ -33,6 +53,9 @@ public class UI extends JFrame {
         initUI();
     }
 
+    /**
+     * Builds the UI.
+     */
     public final void initUI() {
         //creating the main window
         setTitle("IcosaMapper");
@@ -80,9 +103,9 @@ public class UI extends JFrame {
         statusbar.add(statusLabel);
         
         int renderDepth = 2;
-        MapPanel map = new MapPanel(createTestLayer(), renderDepth);
+        LayerPanel lPanel = new LayerPanel(createTestLayer(), renderDepth);
         statusLabel.setText("Render depth: " + renderDepth);
-        add(map, BorderLayout.CENTER);
+        add(lPanel, BorderLayout.CENTER);
         
         JPanel tools = new JPanel();
         tools.setLayout(new BorderLayout());
@@ -183,13 +206,13 @@ public class UI extends JFrame {
         try {
             for (int i = 0; i < 20; i++) {
                 byte[] api = {(byte) i};
-                layer.subdivide(new AccessPath(api));
+                layer.divide(new Path(api));
                 for (int j = 0; j < 9; j++) {
                     byte[] apj = {(byte) i, (byte) j};
-                    layer.setAtPath(new AccessPath(apj), (byte) (256/20*i + 256/20/9*j));
+                    layer.setElement(new Path(apj), (byte) (256/20*i + 256/20/9*j));
                 }
             }
-        } catch (BadPathException ex) {
+        } catch (InvalidPathException ex) {
             Logger.getLogger(UI.class.getName()).log(Level.SEVERE, null, ex);
         }
         

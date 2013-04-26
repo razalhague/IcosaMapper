@@ -17,28 +17,25 @@
  * contact me <ville.jokela@penny-craal.org>
  */
 
-package org.penny_craal.icosamapper;
-
-import javax.swing.SwingUtilities;
-import org.penny_craal.icosamapper.ui.UI;
+package org.penny_craal.icosamapper.map;
 
 /**
- * The main class for the program.
+ * An ArrayTriangleContainer of size 20, that is, an icosahedron.
  * @author Ville Jokela
- * @author James Pearce
  */
-public class IcosaMapper {
+public class ArrayIcosahedron extends ArrayTriangleContainer {
+    static final int size = 20;
+    
     /**
-     * The main method for the program.
-     * @param args ignored
+     * Constructs an ArrayIcosahedron with <code>init</code> as the initial value for all elements.
+     * @param init the initial value for elements
      */
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                UI ui = new UI();
-                ui.setVisible(true);
-            }
-        });
+    public ArrayIcosahedron(byte init) {
+        super(init);
+    }
+    
+    @Override
+    public int getSize() {
+        return size;
     }
 }

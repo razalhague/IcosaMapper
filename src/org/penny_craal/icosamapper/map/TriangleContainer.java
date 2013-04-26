@@ -1,14 +1,82 @@
+/* IcosaMapper - an rpg map editor based on equilateral triangles that form an icosahedron
+ * Copyright (C) 2013  Ville Jokela
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * contact me <ville.jokela@penny-craal.org>
+ */
+
 package org.penny_craal.icosamapper.map;
 
 /**
- *
+ * An object that contains TriangleContainers.
  * @author Ville Jokela
  */
 public interface TriangleContainer {
-    public abstract boolean isValidPath(AccessPath ap);
-    public abstract byte access(AccessPath ap) throws BadPathException;
-    public abstract void subdivide(AccessPath ap) throws BadPathException;
-    public abstract void setAtPath(AccessPath ap, byte val) throws BadPathException;
+    /**
+     * Returns the size of the container. Must remain constant throughout the objects life.
+     * @return the size of the container.
+     */
+    public abstract int getSize();
+    
+    /**
+     * Checks whether the provided Path points to an existing triangle.
+     * @param p the Path to be tested
+     * @return <code>true</code> if the path is valid, <code>false</code> otherwise
+     */
+    public abstract boolean isValidPath(Path p);
+    
+    /**
+     * Gets the element addressed by the Path.
+     * @param p the Path of the element
+     * @return the value of the element
+     * @throws InvalidPathException when the given Path is invalid
+     */
+    public abstract byte getElement(Path p) throws InvalidPathException;
+    
+    /**
+     * Sets the element addressed by the Path.
+     * @param p the Path of the element
+     * @param value the value to be set
+     * @throws InvalidPathException when the given Path is invalid
+     */
+    public abstract void setElement(Path p, byte value) throws InvalidPathException;
+    
+    /**
+     * Divides the element addressed by the Path.
+     * @param p the Path of the element
+     * @throws InvalidPathException when the given Path is invalid
+     */
+    public abstract void divide(Path p) throws InvalidPathException;
+    
+    /**
+     * Unites the element addressed by the Path (removes the children).
+     * @param p the Path to the element
+     * @throws InvalidPathException when the given Path is invalid
+     */
+    public abstract void unite(Path p) throws InvalidPathException;
+    
+    /**
+     * Calculates the mean value of all the children of this element.
+     * @return the mean
+     */
     public abstract byte getMeanValue();
-    public abstract byte[] renderAtDepth(int depth);
+    
+    /**
+     * Renders the values of the container at the given depth. Elements that do not exist have the value of their parent.
+     * @param depth the depth of the render
+     * @return the values of the children at the specified depth.
+     */
+    public abstract byte[] render(int depth);
 }

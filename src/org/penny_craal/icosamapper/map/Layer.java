@@ -1,20 +1,39 @@
+/* IcosaMapper - an rpg map editor based on equilateral triangles that form an icosahedron
+ * Copyright (C) 2013  Ville Jokela
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * contact me <ville.jokela@penny-craal.org>
+ */
+
 package org.penny_craal.icosamapper.map;
 
 import java.io.Serializable;
 
 /**
- *
+ * A layer in the map. 
  * @author Ville Jokela
  */
-public class Layer implements Serializable {
+public class Layer implements TriangleContainer, Serializable {
     private String name;
     private LayerRenderer lr;
-    private Icosahedron ih;
+    private ArrayIcosahedron ih;
     
     public Layer(String name, LayerRenderer lr, byte init) {
         this.name = name;
         this.lr = lr;
-        ih = new Icosahedron(init);
+        ih = new ArrayIcosahedron(init);
     }
     
     public String getName() {
@@ -25,40 +44,61 @@ public class Layer implements Serializable {
         this.name = name;
     }
     
-    public boolean isValidPath(AccessPath ap) {
-        return ih.isValidPath(ap);
+    @Override
+    public boolean isValidPath(Path p) {
+        return ih.isValidPath(p);
     }
 
-    public byte access(AccessPath ap) throws BadPathException {
-        return ih.access(ap);
+    @Override
+    public byte getElement(Path p) throws InvalidPathException {
+        return ih.getElement(p);
     }
 
-    public void subdivide(AccessPath ap) throws BadPathException {
-        ih.subdivide(ap);
+    @Override
+    public void divide(Path p) throws InvalidPathException {
+        ih.divide(p);
+    }
+    
+    @Override
+    public void unite(Path p) throws InvalidPathException {
+        ih.divide(p);
     }
 
-    public void setAtPath(AccessPath ap, byte val) throws BadPathException {
-        ih.setAtPath(ap, val);
+    @Override
+    public void setElement(Path p, byte val) throws InvalidPathException {
+        ih.setElement(p, val);
     }
 
+    @Override
     public byte getMeanValue() {
         return ih.getMeanValue();
     }
     
-    public int[] renderAtDepth(int depth) {
-        return lr.renderArray(ih.renderAtDepth(depth));
+    @Override
+    public byte[] render(int depth) {
+        return ih.render(depth);
+    }
+    
+    public int[] renderArray(int depth) {
+        return lr.renderArray(render(depth));
     }
     
     @Override
+    public int getSize() {
+        return 1;
+    }
+
+    @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{L: { name: ");
+        StringBuilder sb = new StringBuilder("{ name: ");
+        
         sb.append(name);
         sb.append(", LR: ");
         sb.append(lr.getType());
         sb.append(", ");
         sb.append(ih.toString());
-        sb.append(" }}");
+        sb.append(" }");
+        
         return sb.toString();
     }
     

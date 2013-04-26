@@ -1,56 +1,121 @@
+/* IcosaMapper - an rpg map editor based on equilateral triangles that form an icosahedron
+ * Copyright (C) 2013  Ville Jokela
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * contact me <ville.jokela@penny-craal.org>
+ */
+
 package org.penny_craal.icosamapper.map;
 
 import java.io.Serializable;
 import java.util.HashMap;
 
 /**
- *
+ * A map.
  * @author Ville Jokela
  */
 public class Map implements Serializable {
     java.util.Map<String,Layer> layers;
     
+    /**
+     * Constructs an empty map.
+     */
     public Map() {
         layers = new HashMap();
     }
     
+    /**
+     * Adds the specified layer to the Map.
+     * @param layer the layer to be added
+     */
     public void addLayer(Layer layer) {
         layers.put(layer.getName(), layer);
     }
     
-    public Layer getLayer(String name) {
-        return layers.get(name);
+    /**
+     * Retrieves the specified layer from the Map.
+     * @param layerName the layer to be retrieved
+     * @return the specified layer
+     */
+    public Layer getLayer(String layerName) {
+        return layers.get(layerName);
     }
     
-    public void removeLayer(String name) {
-        layers.remove(name);
+    /**
+     * Removes the specified layer from the Map.
+     * @param layerName the layer to be removed
+     */
+    public void removeLayer(String layerName) {
+        layers.remove(layerName);
     }
     
+    /**
+     * Renames a layer in the Map.
+     * @param oldName old name
+     * @param newName new name
+     */
     public void renameLayer(String oldName, String newName) {
-        Layer l = layers.get(oldName);
-        l.setName(newName);
+        Layer layer = layers.get(oldName);
+        layer.setName(newName);
         layers.remove(oldName);
-        layers.put(newName, l);
+        layers.put(newName, layer);
     }
     
-    public byte access(String name, AccessPath ap) throws BadPathException {
-        return layers.get(name).access(ap);
-    }
-
-    public void subdivide(String name, AccessPath ap) throws BadPathException {
-        layers.get(name).subdivide(ap);
-    }
-
-    public void setAtPath(String name, AccessPath ap, byte val) throws BadPathException {
-        layers.get(name).setAtPath(ap, val);
-    }
-
-    public byte getMeanValue(String name) {
-        return layers.get(name).getMeanValue();
+    /**
+     * Gets an element from the specified location.
+     * @param layerName name of the layer
+     * @param p the path to the element
+     * @return the specified element
+     * @throws InvalidPathException when the given path does not point to an element
+     */
+    public byte getElement(String layerName, Path p) throws InvalidPathException {
+        return layers.get(layerName).getElement(p);
     }
     
-    public int[] renderAtDepth(String layer, int depth) {
-        return layers.get(layer).renderAtDepth(depth);
+    public void setElement(String layerName, Path p, byte val) throws InvalidPathException {
+        layers.get(layerName).setElement(p, val);
+    }
+    
+    /**
+     * Divides the specified element.
+     * @param layerName name of the layer
+     * @param p path to the element
+     * @throws InvalidPathException when the given path does not point to an element 
+     */
+    public void divide(String layerName, Path p) throws InvalidPathException {
+        layers.get(layerName).divide(p);
+    }
+    
+    /**
+     * Unites the specified element (removes children).
+     * @param layerName name of the layer
+     * @param p path to the element
+     * @throws InvalidPathException when the given path does not point to an element
+     */
+    public void unite(String layerName, Path p) throws InvalidPathException {
+        layers.get(layerName).unite(p);
+    }
+    
+    /**
+     * Renders the values of one layer at the given depth as colours. Elements that do not exist have the colour of their parent. 
+     * @param layerName the layer to be rendered
+     * @param depth 
+     * @return 
+     */
+    public int[] renderArray(String layerName, int depth) {
+        return layers.get(layerName).renderArray(depth);
     }
     
     @Override
