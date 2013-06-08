@@ -24,7 +24,7 @@ package org.penny_craal.icosamapper.map;
  * @author Ville Jokela
  */
 public class Path {
-    private final byte [] path;
+    private final byte[] path;
     private final int index;
     
     /**

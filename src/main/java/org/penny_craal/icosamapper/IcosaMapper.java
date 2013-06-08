@@ -20,6 +20,7 @@
 package org.penny_craal.icosamapper;
 
 import javax.swing.SwingUtilities;
+
 import org.penny_craal.icosamapper.ui.UI;
 
 /**

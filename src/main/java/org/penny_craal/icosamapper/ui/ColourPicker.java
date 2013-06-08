@@ -21,11 +21,12 @@ package org.penny_craal.icosamapper.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import javax.swing.JLabel;
+
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
+
 import org.penny_craal.icosamapper.map.LayerRenderer;
 
 /**
@@ -35,20 +36,24 @@ import org.penny_craal.icosamapper.map.LayerRenderer;
  */
 public class ColourPicker extends JPanel {
     private LayerRenderer lr;
+    private JSpinner spinner;
+    private JSlider slider;
+    private JPanel colour;
     
     public ColourPicker(LayerRenderer lr) {
         this.lr = lr;
+        
+        spinner = new JSpinner(new SpinnerNumberModel(0, 0, 255, 1));//(initial value, minimum value, maximum value, step)
+        slider = new JSlider();
+        slider.setOrientation(JSlider.VERTICAL);
+        colour = new JPanel();
+        colour.setBackground(new Color(lr.renderByte((byte) 0)));
+        
         setLayout(new BorderLayout());
         
-        JSpinner color = new JSpinner(new SpinnerNumberModel(0, 0, 255, 1));//(initial value, minimum value, maximum value, step)
-        add(color, BorderLayout.PAGE_END);
-        
-        JSlider slider = new JSlider();
-        slider.setOrientation(javax.swing.JSlider.VERTICAL);
+        add(spinner, BorderLayout.PAGE_END);
         add(slider, BorderLayout.LINE_END);
+        add(colour, BorderLayout.CENTER);
         
-        JPanel current = new JPanel();
-        add(current, BorderLayout.CENTER);
-        current.setBackground(new Color(lr.renderByte((byte) 0)));
     }
 }

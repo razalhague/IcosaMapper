@@ -23,7 +23,9 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+
 import javax.swing.JPanel;
+
 import org.penny_craal.icosamapper.map.GreyscaleLR;
 import org.penny_craal.icosamapper.map.InvalidPathException;
 import org.penny_craal.icosamapper.map.Layer;
