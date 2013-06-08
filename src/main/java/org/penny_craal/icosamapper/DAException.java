@@ -23,6 +23,7 @@ package org.penny_craal.icosamapper;
  * Data access Exception
  * @author Ville Jokela
  */
+@SuppressWarnings("serial")
 public class DAException extends Exception {
     /**
      * Constructs the DAE.

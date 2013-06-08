@@ -24,6 +24,7 @@ package org.penny_craal.icosamapper.map;
  * @author Ville Jokela
  */
 public class ArrayTriangle extends ArrayTriangleContainer {
+    private static final long serialVersionUID = 1L;
     static final int size = 9;
     
     /**

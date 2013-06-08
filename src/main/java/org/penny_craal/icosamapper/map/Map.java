@@ -27,13 +27,14 @@ import java.util.HashMap;
  * @author Ville Jokela
  */
 public class Map implements Serializable {
+    private static final long serialVersionUID = 1L;
     java.util.Map<String,Layer> layers;
     
     /**
      * Constructs an empty map.
      */
     public Map() {
-        layers = new HashMap();
+        layers = new HashMap<>();
     }
     
     /**

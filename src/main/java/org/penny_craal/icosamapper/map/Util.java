@@ -1,5 +1,5 @@
 /* IcosaMapper - an rpg map editor based on equilateral triangles that form an icosahedron
- * Copyright (C) 2013  Ville Jokela
+ * Copyright (C) 2013  Ville Jokela, James Pearce
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,25 +20,27 @@
 package org.penny_craal.icosamapper.map;
 
 /**
- * An exception that signifies that the Path given was invalid.
+ *
  * @author Ville Jokela
  */
-@SuppressWarnings("serial")
-public class InvalidPathException extends Exception {
+public class Util {
     /**
-     * Constructs a InvalidPathException with the default message.
-     * @param p the offending Path
+     * A helper method for encoding three values as one int.
+     * @param r red component
+     * @param g green component
+     * @param b blue component
+     * @return an RGB value encoded as an integer. Bits: 0-7: blue, 8-15: green, 16-23: red.
      */
-    protected InvalidPathException(Path p) {
-        super("The given path is invalid: " + p.toString());
+    public static int encodeAsInt(int r, int g, int b) {
+        return b | g << 8 | r << 16;
     }
-
+    
     /**
-     * Constructs a InvalidPathException with an additional message added to the default message.
-     * @param p the offending Path
-     * @param msg the additional message
+     * Interpret the byte value as unsigned.
+     * @param value the byte value
+     * @return the value of the byte as an int, as if the byte was unsigned
      */
-    protected InvalidPathException(Path p, String msg) {
-        super("The given path is invalid for this operation (" + msg + "): " + p.toString());
+    public static int toInt(byte value) {
+        return value & 0xFF;
     }
 }

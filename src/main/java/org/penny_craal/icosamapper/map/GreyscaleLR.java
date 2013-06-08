@@ -24,6 +24,7 @@ package org.penny_craal.icosamapper.map;
  * @author Ville Jokela
  */
 public class GreyscaleLR extends LayerRendererHelper {
+    private static final long serialVersionUID = 1L;
     /**
      * Constructs this object.
      */
@@ -32,7 +33,7 @@ public class GreyscaleLR extends LayerRendererHelper {
 
     @Override
     public int renderByte(byte value) {
-        return encodeAsInt(toInt(value), toInt(value), toInt(value));
+        return Util.encodeAsInt(Util.toInt(value), Util.toInt(value), Util.toInt(value));
     }
 
     @Override

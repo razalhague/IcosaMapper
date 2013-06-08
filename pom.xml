@@ -25,6 +25,7 @@
                     <target>1.7</target>
                     <showDeprecation>true</showDeprecation>
                     <showWarnings>true</showWarnings>
+                    <compilerArgument>-Xlint</compilerArgument>
                 </configuration>
             </plugin>
         </plugins>

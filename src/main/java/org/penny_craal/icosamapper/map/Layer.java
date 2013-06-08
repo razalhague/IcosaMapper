@@ -26,6 +26,7 @@ import java.io.Serializable;
  * @author Ville Jokela
  */
 public class Layer implements TriangleContainer, Serializable {
+    private static final long serialVersionUID = 1L;
     private String name;
     private LayerRenderer lr;
     private ArrayIcosahedron ih;

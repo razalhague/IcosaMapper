@@ -28,6 +28,7 @@ import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
 
+@SuppressWarnings("serial")
 public class UI extends JFrame {
     private int renderDepth;
     private StatusBar statusBar;

@@ -1,5 +1,5 @@
 /* IcosaMapper - an rpg map editor based on equilateral triangles that form an icosahedron
- * Copyright (C) 2013  Ville Jokela
+ * Copyright (C) 2013  Ville Jokela, James Pearce
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,25 +20,10 @@
 package org.penny_craal.icosamapper.map;
 
 /**
- * An exception that signifies that the Path given was invalid.
+ *
  * @author Ville Jokela
  */
-@SuppressWarnings("serial")
-public class InvalidPathException extends Exception {
-    /**
-     * Constructs a InvalidPathException with the default message.
-     * @param p the offending Path
-     */
-    protected InvalidPathException(Path p) {
-        super("The given path is invalid: " + p.toString());
-    }
-
-    /**
-     * Constructs a InvalidPathException with an additional message added to the default message.
-     * @param p the offending Path
-     * @param msg the additional message
-     */
-    protected InvalidPathException(Path p, String msg) {
-        super("The given path is invalid for this operation (" + msg + "): " + p.toString());
-    }
+abstract public class Constants {
+    public static final int MIN_VALUE      = 0;
+    public static final int MAX_VALUE      = 255;
 }

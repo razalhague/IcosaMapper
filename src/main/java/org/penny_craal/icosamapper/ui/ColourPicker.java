@@ -34,6 +34,7 @@ import org.penny_craal.icosamapper.map.LayerRenderer;
  * @author Ville Jokela
  * @author James Pearce
  */
+@SuppressWarnings("serial")
 public class ColourPicker extends JPanel {
     private LayerRenderer lr;
     private JSpinner spinner;

@@ -35,6 +35,7 @@ import org.penny_craal.icosamapper.map.Path;
  * A widget that displays a Layer.
  * @author Ville Jokela
  */
+@SuppressWarnings("serial")
 public class LayerPanel extends JPanel {
     private Layer layer;
     private Path zoom;

@@ -36,24 +36,4 @@ public abstract class LayerRendererHelper implements LayerRenderer, Serializable
         
         return rValues;
     }
-    
-    /**
-     * A helper method for encoding three values as one int.
-     * @param r red component
-     * @param g green component
-     * @param b blue component
-     * @return an RGB value encoded as an integer. Bits: 0-7: blue, 8-15: green, 16-23: red.
-     */
-    protected static int encodeAsInt(int r, int g, int b) {
-        return b | g << 8 | r << 16;
-    }
-    
-    /**
-     * Interpret the byte value as unsigned.
-     * @param value the byte value
-     * @return the value of the byte as an int, as if the byte was unsigned
-     */
-    protected static int toInt(byte value) {
-        return value & 0xFF;
-    }
 }
