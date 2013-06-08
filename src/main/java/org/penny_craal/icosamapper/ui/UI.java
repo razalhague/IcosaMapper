@@ -25,6 +25,8 @@ package org.penny_craal.icosamapper.ui;
  * @author James Pearce
  */
 import java.awt.BorderLayout;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -108,22 +110,23 @@ public class UI extends JFrame {
         JPanel tools = new JPanel();
         tools.setLayout(new BorderLayout());
         
-        String[][] paintButtons = {
-            { "draw",       "draw on the map" },
-            { "fill",       "fill an area" },
-            { "subdivide",  "divide a triangle" },
-            { "unite",      "unite a triangle" },
-            { "zoom-in",    "zoom in to a triangle" },
-            { "zoom-out",   "zoom out" },
-        };
-        String[][] layerButtons = {
-            {"new",         "create new layer" },
-            {"duplicate",   "duplicate layer" },
-            {"rename",      "rename layer" },
-            {"properties",  "edit layer's properties" },
-            {"underlay",    "create an underlay" },
-            {"delete",  "delete layer" },
-        };
+        Map<String, String> paintButtons = new HashMap<String, String>() {{
+            put("draw",       "draw on the map");
+            put("fill",       "fill an area");
+            put("subdivide",  "divide a triangle");
+            put("unite",      "unite a triangle");
+            put("zoom-in",    "zoom in to a triangle");
+            put("zoom-out",   "zoom out");
+        }};
+        
+        Map<String, String> layerButtons = new HashMap<String, String>() {{
+            put("new",         "create new layer");
+            put("duplicate",   "duplicate layer");
+            put("rename",      "rename layer");
+            put("properties",  "edit layer's properties");
+            put("underlay",    "create an underlay");
+            put("delete",      "delete layer");
+        }};
 
         JPanel paint = new JPanel();
         paint.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED), "Paint"));
@@ -149,14 +152,14 @@ public class UI extends JFrame {
         return tools;
     }
 
-    private JToolBar createButtonBar(String[][] paintButtons) {
+    private JToolBar createButtonBar(Map<String, String> buttons) {
         JToolBar buttonBar = new JToolBar();
         buttonBar.setOrientation(JToolBar.VERTICAL);
         buttonBar.setFloatable(false);
         
-        for (String[] b: paintButtons) {
-            JButton button = new JButton(new ImageIcon("gfx/" + b[0] + ".png"));
-            button.setToolTipText(b[1]);
+        for (Map.Entry<String, String> e: buttons.entrySet()) {
+            JButton button = new JButton(new ImageIcon(getClass().getResource("/gfx/" + e.getKey() + ".png")));
+            button.setToolTipText(e.getValue());
             buttonBar.add(button);
         }
         

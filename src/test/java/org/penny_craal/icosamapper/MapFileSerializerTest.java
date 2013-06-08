@@ -6,7 +6,9 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
+
 import org.penny_craal.icosamapper.map.Path;
 import org.penny_craal.icosamapper.map.InvalidPathException;
 import org.penny_craal.icosamapper.map.GreyscaleLR;
