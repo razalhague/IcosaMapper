@@ -1,5 +1,5 @@
 /* IcosaMapper - an rpg map editor based on equilateral triangles that form an icosahedron
- * Copyright (C) 2013  Ville Jokela, James Pearce
+ * Copyright (C) 2013  Ville Jokela
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
