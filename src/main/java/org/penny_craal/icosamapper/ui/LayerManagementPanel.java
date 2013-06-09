@@ -20,42 +20,50 @@
 package org.penny_craal.icosamapper.ui;
 
 import java.awt.BorderLayout;
-import java.util.HashMap;
-import java.util.Map;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.border.BevelBorder;
+import javax.swing.JScrollPane;
 import javax.swing.border.EtchedBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
  *
  * @author Ville Jokela
  */
 @SuppressWarnings("serial")
-public class LayerList extends JPanel {
+public class LayerManagementPanel extends JPanel {
     private JList<String> layerList;
-    private ButtonBar buttonBar;
+    private LayerManagementBar buttonBar;
     
-    private final static Map<String, String> layerButtons = new HashMap<String, String>() {{
-        put("new",         "create new layer");
-        put("duplicate",   "duplicate layer");
-        put("rename",      "rename layer");
-        put("properties",  "edit layer's properties");
-        put("underlay",    "create an underlay");
-        put("delete",      "delete layer");
-    }};
-    
-    public LayerList () {
+    public LayerManagementPanel () {
+        Listener listener = new Listener();
         layerList = new JList<>();
-        layerList.setBorder(new BevelBorder(BevelBorder.LOWERED));
-        buttonBar = new ButtonBar(layerButtons);
+        JScrollPane scrollPane = new JScrollPane(layerList);
+        layerList.addListSelectionListener(listener);
+        buttonBar = new LayerManagementBar();
+        buttonBar.addActionListener(listener);
         
         setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED), "Layers"));
         setLayout(new BorderLayout());
         
         add(buttonBar, BorderLayout.LINE_END);
-        add(layerList, BorderLayout.CENTER);
+        add(scrollPane, BorderLayout.CENTER);
+    }
+    
+    private class Listener implements ActionListener, ListSelectionListener {
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+            System.out.println(ae.getActionCommand() + ", id: " + ae.getID());
+        }
+
+        @Override
+        public void valueChanged(ListSelectionEvent lse) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
     }
 }

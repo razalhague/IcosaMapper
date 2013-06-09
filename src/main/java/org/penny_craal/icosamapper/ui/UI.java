@@ -27,6 +27,7 @@ package org.penny_craal.icosamapper.ui;
 import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
+import javax.swing.JSplitPane;
 
 @SuppressWarnings("serial")
 public class UI extends JFrame {
@@ -42,6 +43,7 @@ public class UI extends JFrame {
         statusBar = new StatusBar(renderDepth);
         layerPanel = new LayerPanel(LayerPanel.createTestLayer(), renderDepth);
         toolsPanel = new ToolsPanel();
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, toolsPanel, layerPanel);
         
         setTitle("IcosaMapper");
         setSize(900, 800);
@@ -50,8 +52,7 @@ public class UI extends JFrame {
         setLayout(new BorderLayout());
         
         setJMenuBar(menuBar);
+        add(splitPane, BorderLayout.CENTER);
         add(statusBar, BorderLayout.PAGE_END);
-        add(layerPanel, BorderLayout.CENTER);
-        add(toolsPanel, BorderLayout.LINE_START);
     }
 }

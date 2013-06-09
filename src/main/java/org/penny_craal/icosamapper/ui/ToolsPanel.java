@@ -30,11 +30,11 @@ import javax.swing.JPanel;
 @SuppressWarnings("serial")
 public class ToolsPanel extends JPanel {
     private PaintPanel paintPanel;
-    private LayerList layerList;
+    private LayerManagementPanel layerList;
     
     public ToolsPanel() {
         paintPanel = new PaintPanel();
-        layerList = new LayerList();
+        layerList = new LayerManagementPanel();
         
         setLayout(new BorderLayout());
         
