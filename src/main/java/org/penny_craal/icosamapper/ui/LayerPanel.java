@@ -20,8 +20,10 @@
 package org.penny_craal.icosamapper.ui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.Polygon;
 
 import javax.swing.JPanel;
@@ -40,16 +42,60 @@ public class LayerPanel extends JPanel {
     private Layer layer;
     private Path zoom;
     private int drawDepth;
+    private Insets insets;
+    private static final int MIN_DRAWAREA_SIZE = 100;
+    private static final Insets DEFAULT_INSETS = new Insets(8, 8, 8, 8);
 
     /**
      * Constructs the LayerPanel.
      * @param layer 
      * @param drawDepth 
      */
+    public LayerPanel(Layer layer, int drawDepth, Insets insets) {
+        this.layer = layer;
+        this.drawDepth = drawDepth;
+        this.insets = insets;
+        zoom = null;
+        
+        setMinimumSize(new Dimension(
+                insets.left + MIN_DRAWAREA_SIZE + insets.right,
+                insets.top + MIN_DRAWAREA_SIZE + insets.bottom
+        ));
+        
+        setPreferredSize(new Dimension( // hog as much space as possible
+                Integer.MAX_VALUE/2,    // doesn't work with Integer.MAX_VALUE for some reason
+                Integer.MAX_VALUE/2
+        ));
+    }
+    
     public LayerPanel(Layer layer, int drawDepth) {
         this.layer = layer;
         this.drawDepth = drawDepth;
+        this.insets = DEFAULT_INSETS;
         zoom = null;
+        
+        updateMinimumSize();
+        
+        setPreferredSize(new Dimension( // hog as much space as possible
+                Integer.MAX_VALUE/2,    // doesn't work with Integer.MAX_VALUE for some reason
+                Integer.MAX_VALUE/2
+        ));
+    }
+    
+    private void updateMinimumSize() {
+        setMinimumSize(new Dimension(
+                insets.left + MIN_DRAWAREA_SIZE + insets.right,
+                insets.top + MIN_DRAWAREA_SIZE + insets.bottom
+        ));
+    }
+    
+    public void setMargin(Insets insets) {
+        this.insets = insets;
+        updateMinimumSize();
+    }
+    
+    public Insets getMargin() {
+        return this.insets;
     }
     
     /**
@@ -58,6 +104,8 @@ public class LayerPanel extends JPanel {
      */
     public void setLayer(Layer layer) {
         this.layer = layer;
+        if (zoom != null && !layer.isValidPath(zoom))
+            zoom = null;
     }
     
     /**
@@ -98,56 +146,81 @@ public class LayerPanel extends JPanel {
                     values,
                     0,
                     values.length,
-                    drawDepth-1,
-                    0,
-                    0,
-                    getWidth()/5.5,
-                    getHeight()/3.0,
-                    true);
+                    drawDepth,
+                    insets.left,
+                    insets.top,
+                    (getWidth() - (insets.left + insets.right))/5.5,
+                    (getHeight() - (insets.top + insets.bottom))/3.0,
+                    true
+            );
         } else /* zoom != null */ {
             // TODO
         }
     }
     
-    private void paintIcosahedron(Graphics2D g2d, int[] values, int rangeStart, int rangeEnd, int depth, double x, double y, double width, double height, boolean topIsSkewedLeft) {
-        int rangeInc = values.length/20;
+    private void paintIcosahedron(
+            Graphics2D g2d,
+            int[] values,
+            int rangeStart,
+            int rangeEnd,
+            int depth,
+            double x,
+            double y,
+            double width,
+            double height,
+            boolean topIsSkewedLeft
+    ) {
+        int rangeInc = rangeEnd/20;
         
         // triangles with point up
         for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 5; j++, rangeStart += rangeInc) {
+            for (int j = 0; j < 5; j++, rangeStart += rangeInc) {   // note increment to rageStart
                 paintTriangle(
                         g2d,
                         values,
                         rangeStart,
                         rangeStart + rangeInc,
-                        drawDepth-1,
-                        width*j + width/2*(topIsSkewedLeft ? i : 1-i),
-                        height*i,
+                        depth-1,
+                        x + width*j + width/2*(topIsSkewedLeft ? i : 1-i),
+                        y + height*i,
                         width,
                         height,
-                        true);
+                        true
+                );
             }
         }
         
         // triangles with point down
         for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 5; j++, rangeStart += rangeInc) {
+            for (int j = 0; j < 5; j++, rangeStart += rangeInc) {   // note increment to rageStart
                 paintTriangle(
                         g2d,
                         values,
                         rangeStart,
                         rangeStart + rangeInc,
-                        drawDepth-1,
-                        width*j + width/2*(topIsSkewedLeft ? i : 1-i),
-                        height*(i+1),
+                        depth-1,
+                        x + width*j + width/2*(topIsSkewedLeft ? i : 1-i),
+                        y + height*(i+1),
                         width,
                         height,
-                        false);
+                        false
+                );
             }
         }
     }
 
-    private void paintTriangle(Graphics2D g2d, int[] values, int rangeStart, int rangeEnd, int depth, double x, double y, double width, double height, boolean isPointUp) {
+    private void paintTriangle(
+            Graphics2D g2d,
+            int[] values,
+            int rangeStart,
+            int rangeEnd,
+            int depth,
+            double x,
+            double y,
+            double width,
+            double height,
+            boolean isPointUp
+    ) {
         if (depth == 0) {
             Polygon p = new Polygon();
             p.addPoint((int) x,                 (int) (y + (isPointUp ? height : 0)));  // left side
@@ -169,7 +242,8 @@ public class LayerPanel extends JPanel {
                         y,
                         width/3,
                         height/3,
-                        true);
+                        true
+                );
                 rangeStart += rangeInc;
                 for (int i = 0; i < 3; i++, rangeStart += rangeInc) {
                     paintTriangle(
@@ -182,7 +256,8 @@ public class LayerPanel extends JPanel {
                             y + height/3,
                             width/3,
                             height/3,
-                            i%2 == 0);
+                            i%2 == 0
+                    );
                 }
                 for (int i = 0; i < 5; i++, rangeStart += rangeInc) {
                     paintTriangle(
@@ -195,7 +270,8 @@ public class LayerPanel extends JPanel {
                             y + height/3*2,
                             width/3,
                             height/3,
-                            i%2 == 0);
+                            i%2 == 0
+                    );
                 }
             } else /* !isPointUp */ {
                 for (int i = 0; i < 5; i++, rangeStart += rangeInc) {
@@ -209,7 +285,8 @@ public class LayerPanel extends JPanel {
                             y,
                             width/3,
                             height/3,
-                            i%2 != 0);
+                            i%2 != 0
+                    );
                 }
                 for (int i = 0; i < 3; i++, rangeStart += rangeInc) {
                     paintTriangle(
@@ -222,7 +299,8 @@ public class LayerPanel extends JPanel {
                             y + height/3,
                             width/3,
                             height/3,
-                            i%2 != 0);
+                            i%2 != 0
+                    );
                 }
                 paintTriangle(
                         g2d,
@@ -234,7 +312,8 @@ public class LayerPanel extends JPanel {
                         y + height/3*2,
                         width/3,
                         height/3,
-                        false);
+                        false
+                );
                 rangeStart += rangeInc;
             }
         }
