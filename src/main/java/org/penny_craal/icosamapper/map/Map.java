@@ -20,7 +20,9 @@
 package org.penny_craal.icosamapper.map;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * A map.
@@ -28,13 +30,13 @@ import java.util.HashMap;
  */
 public class Map implements Serializable {
     private static final long serialVersionUID = 1L;
-    java.util.Map<String,Layer> layers;
+    LinkedHashMap<String, Layer> layers;
     
     /**
      * Constructs an empty map.
      */
     public Map() {
-        layers = new HashMap<>();
+        layers = new LinkedHashMap<>(1);
     }
     
     /**
@@ -72,6 +74,10 @@ public class Map implements Serializable {
         layer.setName(newName);
         layers.remove(oldName);
         layers.put(newName, layer);
+    }
+    
+    public List<String> getLayerNames() {
+        return new ArrayList<>(layers.keySet());
     }
     
     /**
