@@ -17,28 +17,13 @@
  * contact me <ville.jokela@penny-craal.org>
  */
 
-package org.penny_craal.icosamapper.ui;
-
-import java.awt.BorderLayout;
-
-import javax.swing.JPanel;
+package org.penny_craal.icosamapper.ui.events;
 
 /**
  *
  * @author Ville Jokela
  */
-@SuppressWarnings("serial")
-public class ToolsPanel extends JPanel {
-    private PaintPanel paintPanel;
-    private LayerManagementPanel layerList;
-    
-    public ToolsPanel() {
-        paintPanel = new PaintPanel();
-        layerList = new LayerManagementPanel();
-        
-        setLayout(new BorderLayout());
-        
-        add(paintPanel, BorderLayout.PAGE_START);
-        add(layerList, BorderLayout.CENTER);
-    }
+public interface IMEventSource {
+    public void addIMEventListener(IMEventListener imel);
+    public void removeIMEventListener(IMEventListener imel);
 }

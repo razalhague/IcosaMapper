@@ -22,6 +22,8 @@ package org.penny_craal.icosamapper;
 import javax.swing.SwingUtilities;
 
 import org.penny_craal.icosamapper.ui.UI;
+import org.penny_craal.icosamapper.ui.events.IMEvent;
+import org.penny_craal.icosamapper.ui.events.IMEventListener;
 
 /**
  * The main class for the program.
@@ -38,8 +40,17 @@ public class IcosaMapper {
             @Override
             public void run() {
                 UI ui = new UI();
+                ui.setExtendedState(UI.MAXIMIZED_BOTH);
                 ui.setVisible(true);
+                Listener listener = new Listener();
+                ui.addIMEventListener(listener);
             }
         });
+    }
+    
+    private static class Listener implements IMEventListener {
+        @Override
+        public void actionPerformed(IMEvent ime) {
+        }
     }
 }

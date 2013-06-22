@@ -20,50 +20,67 @@
 package org.penny_craal.icosamapper.ui;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EtchedBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+
+import org.penny_craal.icosamapper.ui.events.IMEvent;
+import org.penny_craal.icosamapper.ui.events.IMEventHelper;
+import org.penny_craal.icosamapper.ui.events.IMEventListener;
+import org.penny_craal.icosamapper.ui.events.IMEventSource;
 
 /**
  *
  * @author Ville Jokela
  */
 @SuppressWarnings("serial")
-public class LayerManagementPanel extends JPanel {
-    private JList<String> layerList;
-    private LayerManagementBar buttonBar;
+public class LayerManagementPanel extends JPanel implements IMEventSource {
+    private LayerList layerList;
+    private LayerManagementBar layerManagementBar;
     
-    public LayerManagementPanel () {
+    public LayerManagementPanel() {
         Listener listener = new Listener();
-        layerList = new JList<>();
+        layerList = new LayerList(new LayerListModel());
+        layerList.addIMEventListener(listener);
         JScrollPane scrollPane = new JScrollPane(layerList);
-        layerList.addListSelectionListener(listener);
-        buttonBar = new LayerManagementBar();
-        buttonBar.addActionListener(listener);
+        layerManagementBar = new LayerManagementBar();
+        layerManagementBar.addIMEventListener(listener);
         
         setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED), "Layers"));
         setLayout(new BorderLayout());
         
-        add(buttonBar, BorderLayout.LINE_END);
-        add(scrollPane, BorderLayout.CENTER);
+        add(layerManagementBar, BorderLayout.LINE_END);
+        add(scrollPane,         BorderLayout.CENTER);
     }
     
-    private class Listener implements ActionListener, ListSelectionListener {
+    public LayerListModel getLayerListModel() {
+        return (LayerListModel) layerList.getModel();
+    }
+    
+      ///////////////////
+     // Listener crap //
+    ///////////////////
+    
+    @Override
+    public void addIMEventListener(IMEventListener imel) {
+        IMEventHelper.addListener(listenerList, imel);
+    }
+    
+    @Override
+    public void removeIMEventListener(IMEventListener imel) {
+        IMEventHelper.removeListener(listenerList, imel);
+    }
+    
+    protected void fireEvent(IMEvent ime) {
+        IMEventHelper.fireEvent(listenerList, ime);
+    }
+    
+    private class Listener implements IMEventListener {
         @Override
-        public void actionPerformed(ActionEvent ae) {
-            System.out.println(ae.getActionCommand() + ", id: " + ae.getID());
-        }
-
-        @Override
-        public void valueChanged(ListSelectionEvent lse) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        public void actionPerformed(IMEvent ime) {
+            fireEvent(new IMEvent(this, ime));
         }
     }
 }

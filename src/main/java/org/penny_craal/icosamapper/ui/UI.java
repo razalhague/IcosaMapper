@@ -19,40 +19,110 @@
 
 package org.penny_craal.icosamapper.ui;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.event.EventListenerList;
+
+import org.penny_craal.icosamapper.map.Map;
+import org.penny_craal.icosamapper.ui.events.IMEvent;
+import org.penny_craal.icosamapper.ui.events.IMEventHelper;
+import org.penny_craal.icosamapper.ui.events.IMEventListener;
+import org.penny_craal.icosamapper.ui.events.IMEventSource;
+
 /**
  * The user interface for IcosaMapper.
  * @author Ville Jokela
  * @author James Pearce
  */
-import java.awt.BorderLayout;
-
-import javax.swing.JFrame;
-import javax.swing.JSplitPane;
-
 @SuppressWarnings("serial")
-public class UI extends JFrame {
+public class UI extends JFrame implements IMEventSource {
+    private EventListenerList listenerList;
+    private Map map;
     private int renderDepth;
+    
     private StatusBar statusBar;
     private MenuBar menuBar;
+    // these two go into the splitPane
     private LayerPanel layerPanel;
-    private ToolsPanel toolsPanel;
+    private JPanel toolsPanel;
+    // these two go into toolsPanel
+    private PaintPanel paintPanel;
+    private LayerManagementPanel layerManagementPanel;
 
     public UI() {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (
+                ClassNotFoundException |
+                InstantiationException |
+                IllegalAccessException |
+                UnsupportedLookAndFeelException ex
+        ) {
+            // falls back to java default LAF (Metal)
+        }
+        Listener listener = new Listener();
+        listenerList = new EventListenerList();
+        map = new Map();
+        map.addLayer(LayerPanel.createTestLayer());
         renderDepth = 1;
         menuBar = new MenuBar();
         statusBar = new StatusBar(renderDepth);
-        layerPanel = new LayerPanel(LayerPanel.createTestLayer(), renderDepth);
-        toolsPanel = new ToolsPanel();
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, toolsPanel, layerPanel);
+        layerPanel = new LayerPanel(map.getLayer("test-layer"), renderDepth);
+        toolsPanel = new JPanel();
+        toolsPanel.setLayout(new BorderLayout());
+        paintPanel = new PaintPanel();
+        paintPanel.addIMEventListener(listener);
+        layerManagementPanel = new LayerManagementPanel();
+        layerManagementPanel.addIMEventListener(listener);
+        layerManagementPanel.getLayerListModel().addAll(map.getLayerNames());
+        
+        toolsPanel.add(paintPanel,             BorderLayout.PAGE_START);
+        toolsPanel.add(layerManagementPanel,   BorderLayout.CENTER);
+        toolsPanel.setPreferredSize(toolsPanel.getMinimumSize());   // leave as much space as possible for layerPanel
         
         setTitle("IcosaMapper");
-        setSize(900, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);    // centered on screen
         setLayout(new BorderLayout());
         
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, toolsPanel, layerPanel);
         setJMenuBar(menuBar);
-        add(splitPane, BorderLayout.CENTER);
-        add(statusBar, BorderLayout.PAGE_END);
+        add(splitPane,  BorderLayout.CENTER);
+        add(statusBar,  BorderLayout.PAGE_END);
+        
+        pack();
+        // JFrame doesn't seem to automatically adopt the contentPane's minimum size, so we'll call it explicitly
+        // HACK: for some reason the minimum height is still about 18 pixels short
+        setMinimumSize(new Dimension(getMinimumSize().width, getMinimumSize().height + 18));
+    }
+    
+      ///////////////////
+     // Listener crap //
+    ///////////////////
+    
+    @Override
+    public void addIMEventListener(IMEventListener imel) {
+        IMEventHelper.addListener(listenerList, imel);
+    }
+    
+    @Override
+    public void removeIMEventListener(IMEventListener imel) {
+        IMEventHelper.removeListener(listenerList, imel);
+    }
+    
+    protected void fireEvent(IMEvent ime) {
+        IMEventHelper.fireEvent(listenerList, ime);
+    }
+    
+    private class Listener implements IMEventListener {
+        @Override
+        public void actionPerformed(IMEvent ime) {
+            fireEvent(new IMEvent(this, ime));
+        }
     }
 }

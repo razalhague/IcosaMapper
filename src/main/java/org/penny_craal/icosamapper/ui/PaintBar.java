@@ -19,6 +19,8 @@
 
 package org.penny_craal.icosamapper.ui;
 
+import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -26,8 +28,8 @@ import java.util.List;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
+import javax.swing.JPanel;
 import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -36,14 +38,14 @@ import javax.swing.event.ChangeListener;
  * @author Ville Jokela
  */
 @SuppressWarnings("serial")
-public class PaintBar extends JToolBar {
+public class PaintBar extends JPanel {
     private ButtonGroup bg;
     private Tool tool;
             
     private final static List<Button> paintButtons = new ArrayList<Button>() {{
         add(new Button(Tool.DRAW,       "draw",         "draw on the map"));
         add(new Button(Tool.FILL,       "fill",         "fill an area"));
-        add(new Button(Tool.DIVIDE,     "divide",    "divide a triangle"));
+        add(new Button(Tool.DIVIDE,     "divide",       "divide a triangle"));
         add(new Button(Tool.UNITE,      "unite",        "unite a triangle"));
         add(new Button(Tool.ZOOM_IN,    "zoom-in",      "zoom in to a triangle"));
         add(new Button(Tool.ZOOM_OUT,   "zoom-out",     "zoom out"));
@@ -53,8 +55,7 @@ public class PaintBar extends JToolBar {
         bg = new ButtonGroup();
         tool = null;
         
-        setOrientation(JToolBar.VERTICAL);
-        setFloatable(false);
+        setLayout(new GridLayout(0,2));
         
         Listener listener = new Listener();
         for (Button b: paintButtons) {
@@ -62,6 +63,7 @@ public class PaintBar extends JToolBar {
             button.setToolTipText(b.tooltip);
             button.addActionListener(listener);
             button.setActionCommand(b.name);
+            button.setMargin(new Insets(2, 2, 2, 2));
             bg.add(button);
             add(button);
         }
@@ -70,6 +72,31 @@ public class PaintBar extends JToolBar {
     public Tool getTool() {
         return tool;
     }
+    
+    public enum Tool {
+        DRAW,
+        FILL,
+        DIVIDE,
+        UNITE,
+        ZOOM_IN,
+        ZOOM_OUT,
+    }
+    
+    private static final class Button {
+        public final Tool tool;
+        public final String name;
+        public final String tooltip;
+
+        public Button(Tool tool, String name, String tooltip) {
+            this.tool = tool;
+            this.name = name;
+            this.tooltip = tooltip;
+        }
+    }
+    
+      ///////////////////
+     // Listener crap //
+    ///////////////////
     
     public void addChangeListener(ChangeListener cl) {
         listenerList.add(ChangeListener.class, cl);
@@ -85,15 +112,6 @@ public class PaintBar extends JToolBar {
             cl.stateChanged(ce);
     }
     
-    public enum Tool {
-        DRAW,
-        FILL,
-        DIVIDE,
-        UNITE,
-        ZOOM_IN,
-        ZOOM_OUT,
-    }
-    
     private class Listener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent ae) {
@@ -101,18 +119,6 @@ public class PaintBar extends JToolBar {
                 if (b.name.equals(ae.getActionCommand()))
                     tool = b.tool;
             fireStateChanged();
-        }
-    }
-    
-    private static final class Button {
-        public final Tool tool;
-        public final String name;
-        public final String tooltip;
-
-        public Button(Tool tool, String name, String tooltip) {
-            this.tool = tool;
-            this.name = name;
-            this.tooltip = tooltip;
         }
     }
 }

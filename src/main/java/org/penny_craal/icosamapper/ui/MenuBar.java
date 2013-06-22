@@ -23,12 +23,17 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
+import org.penny_craal.icosamapper.ui.events.IMEvent;
+import org.penny_craal.icosamapper.ui.events.IMEventHelper;
+import org.penny_craal.icosamapper.ui.events.IMEventListener;
+import org.penny_craal.icosamapper.ui.events.IMEventSource;
+
 /**
  *
  * @author Ville Jokela
  */
 @SuppressWarnings("serial")
-public class MenuBar extends JMenuBar {
+public class MenuBar extends JMenuBar implements IMEventSource {
     private JMenu file;
     private JMenuItem newM;
     private JMenuItem open;
@@ -61,5 +66,23 @@ public class MenuBar extends JMenuBar {
 
         add(file);
         add(help);
+    }
+    
+      ///////////////////
+     // Listener crap //
+    ///////////////////
+    
+    @Override
+    public void addIMEventListener(IMEventListener imel) {
+        IMEventHelper.addListener(listenerList, imel);
+    }
+    
+    @Override
+    public void removeIMEventListener(IMEventListener imel) {
+        IMEventHelper.removeListener(listenerList, imel);
+    }
+    
+    protected void fireEvent(IMEvent ime) {
+        IMEventHelper.fireEvent(listenerList, ime);
     }
 }

@@ -31,6 +31,10 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.penny_craal.icosamapper.map.GreyscaleLR;
+import org.penny_craal.icosamapper.ui.events.IMEvent;
+import org.penny_craal.icosamapper.ui.events.IMEventHelper;
+import org.penny_craal.icosamapper.ui.events.IMEventListener;
+import org.penny_craal.icosamapper.ui.events.IMEventSource;
 
 import static org.penny_craal.icosamapper.map.Constants.*;
 /**
@@ -38,7 +42,7 @@ import static org.penny_craal.icosamapper.map.Constants.*;
  * @author Ville Jokela
  */
 @SuppressWarnings("serial")
-public class PaintPanel extends JPanel {
+public class PaintPanel extends JPanel implements IMEventSource {
     private JPanel opSize;
     private JSpinner opSizeSpinner;
     private PaintBar paintBar;
@@ -59,9 +63,9 @@ public class PaintPanel extends JPanel {
         setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED), "Paint"));
         setLayout(new BorderLayout());
         
-        add(colourPicker, BorderLayout.CENTER);
-        add(paintBar, BorderLayout.LINE_END);
-        add(opSize, BorderLayout.PAGE_END);
+        add(colourPicker,   BorderLayout.CENTER);
+        add(paintBar,       BorderLayout.LINE_END);
+        add(opSize,         BorderLayout.PAGE_END);
     }
     
     public byte getValue() {
@@ -72,24 +76,36 @@ public class PaintPanel extends JPanel {
         return paintBar.getTool();
     }
     
-    public void addChangeListener(ChangeListener cl) {
-        listenerList.add(ChangeListener.class, cl);
+      ///////////////////
+     // Listener crap //
+    ///////////////////
+    
+    @Override
+    public void addIMEventListener(IMEventListener imel) {
+        IMEventHelper.addListener(listenerList, imel);
     }
     
-    public void removeChangeListener(ChangeListener cl) {
-        listenerList.remove(ChangeListener.class, cl);
+    @Override
+    public void removeIMEventListener(IMEventListener imel) {
+        IMEventHelper.removeListener(listenerList, imel);
     }
     
-    protected void fireStateChanged() {
-        ChangeEvent ce = new ChangeEvent(this);
-        for (ChangeListener cl: listenerList.getListeners(ChangeListener.class))
-            cl.stateChanged(ce);
+    protected void fireEvent(IMEvent ime) {
+        IMEventHelper.fireEvent(listenerList, ime);
     }
     
     private class Listener implements ChangeListener {
         @Override
         public void stateChanged(ChangeEvent ce) {
-            fireStateChanged();
+            if (ce.getSource() == opSizeSpinner) {
+                fireEvent(new IMEvent(this, IMEvent.Type.OPSIZE_SELECTED));
+            } else if (ce.getSource() == paintBar) {
+                fireEvent(new IMEvent(this, IMEvent.Type.TOOL_SELECTED));
+            } else if (ce.getSource() == colourPicker) {
+                fireEvent(new IMEvent(this, IMEvent.Type.COLOUR_SELECTED));
+            } else {
+                throw new RuntimeException("Unrecognized event source");
+            }
         }
     }
 }

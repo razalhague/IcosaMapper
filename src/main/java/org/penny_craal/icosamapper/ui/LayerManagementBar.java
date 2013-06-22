@@ -19,21 +19,29 @@
 
 package org.penny_craal.icosamapper.ui;
 
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JToolBar;
+import javax.swing.JPanel;
+
+import org.penny_craal.icosamapper.ui.events.IMEvent;
+import org.penny_craal.icosamapper.ui.events.IMEventHelper;
+import org.penny_craal.icosamapper.ui.events.IMEventListener;
+import org.penny_craal.icosamapper.ui.events.IMEventSource;
 
 /**
  *
  * @author Ville Jokela
  */
 @SuppressWarnings("serial")
-public class LayerManagementBar extends JToolBar {
+public class LayerManagementBar extends JPanel implements IMEventSource {
     private final static List<Button> layerButtons = new ArrayList<Button>() {{
         add(new Button(Tool.NEW,        "new",         "create new layer"));
         add(new Button(Tool.DUPLICATE,  "duplicate",   "duplicate layer"));
@@ -43,31 +51,17 @@ public class LayerManagementBar extends JToolBar {
         add(new Button(Tool.DELETE,     "delete",      "delete layer"));
     }};
     public LayerManagementBar() {
-        setOrientation(JToolBar.VERTICAL);
-        setFloatable(false);
-        
+        setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         Listener listener = new Listener();
         for (Button b: layerButtons) {
             JButton button = new JButton(new ImageIcon(getClass().getResource("/gfx/" + b.name + ".png")));
             button.setToolTipText(b.tooltip);
             button.addActionListener(listener);
             button.setActionCommand(b.name);
+            button.setMargin(new Insets(2, 2, 2, 2));
             add(button);
         }
-    }
-    
-    public void addActionListener(ActionListener al) {
-        listenerList.add(ActionListener.class, al);
-    }
-    
-    public void removeChangeListener(ActionListener al) {
-        listenerList.remove(ActionListener.class, al);
-    }
-    
-    protected void fireStateChanged(Button b) {
-        ActionEvent ae = new ActionEvent(this, b.tool.id, b.name);
-        for (ActionListener al: listenerList.getListeners(ActionListener.class))
-            al.actionPerformed(ae);
+        add(Box.createVerticalGlue());
     }
     
     private Button getButtonByName(String name) {
@@ -92,13 +86,6 @@ public class LayerManagementBar extends JToolBar {
         private Tool(int id) { this.id = id; }
     }
     
-    private class Listener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent ae) {
-            fireStateChanged(getButtonByName(ae.getActionCommand()));
-        }
-    }
-    
     protected static final class Button {
         public final Tool tool;
         public final String name;
@@ -108,6 +95,31 @@ public class LayerManagementBar extends JToolBar {
             this.tool = tool;
             this.name = name;
             this.tooltip = tooltip;
+        }
+    }
+    
+      ///////////////////
+     // Listener crap //
+    ///////////////////
+    
+    @Override
+    public void addIMEventListener(IMEventListener imel) {
+        IMEventHelper.addListener(listenerList, imel);
+    }
+    
+    @Override
+    public void removeIMEventListener(IMEventListener imel) {
+        IMEventHelper.removeListener(listenerList, imel);
+    }
+    
+    protected void fireEvent(IMEvent ime) {
+        IMEventHelper.fireEvent(listenerList, ime);
+    }
+    
+    private class Listener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+            fireEvent(new IMEvent(this, IMEvent.Type.fromString(ae.getActionCommand())));
         }
     }
 }

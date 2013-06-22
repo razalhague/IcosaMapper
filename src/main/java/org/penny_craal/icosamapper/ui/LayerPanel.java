@@ -25,20 +25,26 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Polygon;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JPanel;
+import javax.swing.event.MouseInputAdapter;
 
 import org.penny_craal.icosamapper.map.GreyscaleLR;
 import org.penny_craal.icosamapper.map.InvalidPathException;
 import org.penny_craal.icosamapper.map.Layer;
 import org.penny_craal.icosamapper.map.Path;
+import org.penny_craal.icosamapper.ui.events.IMEvent;
+import org.penny_craal.icosamapper.ui.events.IMEventHelper;
+import org.penny_craal.icosamapper.ui.events.IMEventListener;
+import org.penny_craal.icosamapper.ui.events.IMEventSource;
 
 /**
  * A widget that displays a Layer.
  * @author Ville Jokela
  */
 @SuppressWarnings("serial")
-public class LayerPanel extends JPanel {
+public class LayerPanel extends JPanel implements IMEventSource {
     private Layer layer;
     private Path zoom;
     private int drawDepth;
@@ -62,24 +68,11 @@ public class LayerPanel extends JPanel {
                 insets.top + MIN_DRAWAREA_SIZE + insets.bottom
         ));
         
-        setPreferredSize(new Dimension( // hog as much space as possible
-                Integer.MAX_VALUE/2,    // doesn't work with Integer.MAX_VALUE for some reason
-                Integer.MAX_VALUE/2
-        ));
+        setPreferredSize(new Dimension(1100, 600));
     }
     
     public LayerPanel(Layer layer, int drawDepth) {
-        this.layer = layer;
-        this.drawDepth = drawDepth;
-        this.insets = DEFAULT_INSETS;
-        zoom = null;
-        
-        updateMinimumSize();
-        
-        setPreferredSize(new Dimension( // hog as much space as possible
-                Integer.MAX_VALUE/2,    // doesn't work with Integer.MAX_VALUE for some reason
-                Integer.MAX_VALUE/2
-        ));
+        this(layer, drawDepth, DEFAULT_INSETS);
     }
     
     private void updateMinimumSize() {
@@ -336,5 +329,50 @@ public class LayerPanel extends JPanel {
         }
         
         return layer;
+    }
+    
+      ///////////////////
+     // Listener crap //
+    ///////////////////
+    
+    @Override
+    public void addIMEventListener(IMEventListener imel) {
+        IMEventHelper.addListener(listenerList, imel);
+    }
+    
+    @Override
+    public void removeIMEventListener(IMEventListener imel) {
+        IMEventHelper.removeListener(listenerList, imel);
+    }
+    
+    protected void fireEvent(IMEvent ime) {
+        IMEventHelper.fireEvent(listenerList, ime);
+    }
+    
+    private class Listener extends MouseInputAdapter {
+        @Override
+        public void mouseClicked(MouseEvent me) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent me) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void mouseExited(MouseEvent me) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void mouseDragged(MouseEvent me) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void mouseMoved(MouseEvent me) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
     }
 }
