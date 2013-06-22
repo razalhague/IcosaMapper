@@ -43,4 +43,6 @@ public class Util {
     public static int toInt(byte value) {
         return value & 0xFF;
     }
+
+    private Util() {}
 }

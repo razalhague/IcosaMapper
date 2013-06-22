@@ -26,4 +26,6 @@ package org.penny_craal.icosamapper.map;
 abstract public class Constants {
     public static final int MIN_VALUE      = 0;
     public static final int MAX_VALUE      = 255;
+
+    private Constants() {}
 }
