@@ -19,6 +19,9 @@
 
 package org.penny_craal.icosamapper;
 
+import java.awt.Frame;
+
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.penny_craal.icosamapper.ui.UI;
@@ -39,6 +42,7 @@ public class IcosaMapper {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
+                Thread.setDefaultUncaughtExceptionHandler(new Handler());
                 UI ui = new UI();
                 ui.setExtendedState(UI.MAXIMIZED_BOTH);
                 ui.setVisible(true);
@@ -51,6 +55,22 @@ public class IcosaMapper {
     private static class Listener implements IMEventListener {
         @Override
         public void actionPerformed(IMEvent ime) {
+        }
+    }
+    
+    private static class Handler implements Thread.UncaughtExceptionHandler {
+        @Override
+        public void uncaughtException(Thread thread, Throwable thrwbl) {
+            Frame[] frames = Frame.getFrames();
+            thrwbl.printStackTrace();
+            JOptionPane.showMessageDialog(frames[0],
+                    thrwbl.getStackTrace(),
+                    "Throwable caught in " + thread.getName() + ": " + thrwbl.getMessage(),
+                    JOptionPane.ERROR_MESSAGE
+            );
+            for (Frame frame: frames) {
+                frame.dispose();
+            }
         }
     }
 }
