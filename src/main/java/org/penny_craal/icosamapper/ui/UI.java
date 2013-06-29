@@ -70,7 +70,7 @@ public class UI extends JFrame implements IMEventSource {
         listenerList = new EventListenerList();
         map = new Map();
         map.addLayer(LayerPanel.createTestLayer());
-        renderDepth = 1;
+        renderDepth = 2;
         menuBar = new MenuBar();
         statusBar = new StatusBar(renderDepth);
         layerPanel = new LayerPanel(map.getLayer("test-layer"), renderDepth);

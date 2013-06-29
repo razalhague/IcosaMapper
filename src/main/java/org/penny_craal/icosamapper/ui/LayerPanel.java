@@ -24,8 +24,11 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.event.MouseEvent;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.event.MouseInputAdapter;
@@ -41,6 +44,29 @@ import org.penny_craal.icosamapper.ui.events.IMEventSource;
 
 /**
  * A widget that displays a Layer.
+ * 
+ * How the 1D arrays in Layer are interpreted:
+ * - Icosahedron:
+ *   /\    /\    /\    /\    /\
+ *  /0 \  /1 \  /2 \  /3 \  /4 \
+ * /____\/____\/____\/____\/____\
+ * \    /\    /\    /\    /\    /\
+ *  \10/5 \11/6 \12/7 \13/8 \14/9 \
+ *   \/____\/____\/____\/____\/____\
+ *    \    /\    /\    /\    /\    /
+ *     \15/  \16/  \17/  \18/  \19/
+ *      \/    \/    \/    \/    \/
+ * - Triangle:
+ *         /\
+ *        /0 \
+ *       /____\
+ *      /\    /\
+ *     /1 \2 /3 \
+ *    /____\/____\
+ *   /\    /\    /\
+ *  /4 \5 /6 \7 /8 \
+ * /____\/____\/____\
+ * 
  * @author Ville Jokela
  */
 @SuppressWarnings("serial")
@@ -51,24 +77,26 @@ public class LayerPanel extends JPanel implements IMEventSource {
     private Insets insets;
     private static final int MIN_DRAWAREA_SIZE = 100;
     private static final Insets DEFAULT_INSETS = new Insets(8, 8, 8, 8);
+    // camelCase because this might later be made non-static and configurable
+    private static final boolean topIsSkewedLeft = true;
 
     /**
      * Constructs the LayerPanel.
-     * @param layer 
-     * @param drawDepth 
+     * @param layer
+     * @param drawDepth
+     * @param insets 
      */
     public LayerPanel(Layer layer, int drawDepth, Insets insets) {
         this.layer = layer;
         this.drawDepth = drawDepth;
         this.insets = insets;
         zoom = null;
+        Listener listener = new Listener();
+        addMouseListener(listener);
         
-        setMinimumSize(new Dimension(
-                insets.left + MIN_DRAWAREA_SIZE + insets.right,
-                insets.top + MIN_DRAWAREA_SIZE + insets.bottom
-        ));
+        updateMinimumSize();
         
-        setPreferredSize(new Dimension(1100, 600));
+        setPreferredSize(new Dimension(insets.left + 1100 + insets.right, insets.top + 600 + insets.bottom));
     }
     
     public LayerPanel(Layer layer, int drawDepth) {
@@ -144,7 +172,7 @@ public class LayerPanel extends JPanel implements IMEventSource {
                     insets.top,
                     (getWidth() - (insets.left + insets.right))/5.5,
                     (getHeight() - (insets.top + insets.bottom))/3.0,
-                    true
+                    topIsSkewedLeft
             );
         } else /* zoom != null */ {
             // TODO
@@ -167,7 +195,7 @@ public class LayerPanel extends JPanel implements IMEventSource {
         
         // triangles with point up
         for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 5; j++, rangeStart += rangeInc) {   // note increment to rageStart
+            for (int j = 0; j < 5; j++, rangeStart += rangeInc) {   // note increment to rangeStart
                 paintTriangle(
                         g2d,
                         values,
@@ -185,7 +213,7 @@ public class LayerPanel extends JPanel implements IMEventSource {
         
         // triangles with point down
         for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 5; j++, rangeStart += rangeInc) {   // note increment to rageStart
+            for (int j = 0; j < 5; j++, rangeStart += rangeInc) {   // note increment to rangeStart
                 paintTriangle(
                         g2d,
                         values,
@@ -331,6 +359,149 @@ public class LayerPanel extends JPanel implements IMEventSource {
         return layer;
     }
     
+    private boolean withinInsets(Dimension panelSize, Point relPanel) {
+        if (relPanel.x < insets.left)
+            return true;
+        if (relPanel.x > (panelSize.width - insets.right))
+            return true;
+        if (relPanel.y < insets.top)
+            return true;
+        if (relPanel.y > (panelSize.width - insets.bottom))
+            return true;
+
+        return false;
+    }
+    
+    // [skew:0=right,1=left][row][position:0=upper,1=lower][column]; -1 = no triangle
+    private static final int[][][][] childFromIcosahedronSPRC = new int[][][][] {
+        {
+            {{  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1  },
+            {   -1, 0,  0,  1,  1,  2,  2,  3,  3,  4,  4   }},
+            {{  -1, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14  },
+            {   5,  5,  6,  6,  7,  7,  8,  8,  9,  9,  -1  }},
+            {{  15, 15, 16, 16, 17, 17, 18, 18, 19, 19, -1  },
+            {   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1  }},
+        },
+        {
+            {{  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1  },
+            {   0,  0,  1,  1,  2,  2,  3,  3,  4,  4,  -1  }},
+            {{  10, 10, 11, 11, 12, 12, 13, 13, 14, 14, -1  },
+            {   -1, 5,  5,  6,  6,  7,  7,  8,  8,  9,  9   }},
+            {{  -1, 15, 15, 16, 16, 17, 17, 18, 18, 19, 19  },
+            {   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1  }},
+        },
+    };
+
+    private Path getPathFromPointInIcosahedron(Dimension size, Point point, boolean topIsSkewedLeft, int depth) {
+        // first we divide the area into 33 rectangles (11x3)
+        double rectangleWidth = size.width / 11.0;
+        double rectangleHeight = size.height / 3.0;
+        // then we find out which of these rectangles the point is in
+        int nRectangleFromLeft = (int) (point.x / rectangleWidth);
+        int nRectangleFromTop = (int) (point.y / rectangleHeight);
+        // then we find out which way that rectangle is bisected, SW to NE or NW to SE
+        // this is a checkerboard pattern, with the value of the upper left corner as !topIsSkewedLeft
+        // more compactly presented: rIBSWNE = tISL XNOR ((nRFL + nRFT) mod 2)
+        boolean rectangleIsBisectedSWNE = topIsSkewedLeft == ((nRectangleFromLeft + nRectangleFromTop) % 2 == 0);
+        // then we calculate the point relative to the rectangle and normalize the coordinates within the rectangle
+        double relRectangleX = ((double)point.x) % rectangleWidth;
+        double relRectangleY = ((double)point.y) % rectangleHeight;
+        double normalizedRelRectangleX = relRectangleX / rectangleWidth;
+        double normalizedRelRectangleY = relRectangleY / rectangleHeight;
+
+        // then we find out whether it's in the upper or lower triangle
+        boolean isLower;
+        if (rectangleIsBisectedSWNE) {
+            isLower = normalizedRelRectangleX + normalizedRelRectangleY >= 1.0;
+        } else {
+            isLower = normalizedRelRectangleX < normalizedRelRectangleY;
+        }
+        // and finally, we use the precalculated table which contains the answer
+        int child = childFromIcosahedronSPRC[topIsSkewedLeft?1:0][nRectangleFromTop][isLower?1:0][nRectangleFromLeft];
+        if (child == -1) {
+            return null;
+        } else if (depth == 1) {
+            return new Path(new byte[] {(byte)child});
+        } else {
+            List<Byte> pathSoFar = new LinkedList<>();
+            pathSoFar.add((byte)child);
+            return getPathFromRelPointInTriangle(
+                    // (rIBSWNE == iL) checks whether the rectangle contains the left or right half of the triangle
+                    normalizedRelRectangleX/2 + (rectangleIsBisectedSWNE == isLower? 0: 0.5),
+                    normalizedRelRectangleY,
+                    isLower,
+                    pathSoFar,
+                    depth-1
+            );
+        }
+    }
+    
+    // [point:0=down,1=up][row][position:0=upper,1=lower][column]; -1 = no triangle
+    private static final int[][][][] childFromTrianglePPRC = new int[][][][] {
+        {
+            {{  4,  4,  6,  6,  8,  8   },
+            {   -1, 5,  5,  7,  7,  -1  }},
+            {{  -1, 1,  1,  3,  3,  -1  },
+            {   -1, -1, 2,  2,  -1, -1  }},
+            {{  -1, -1, 0,  0,  -1, -1  },
+            {   -1, -1, -1, -1, -1, -1  }},
+        },
+        {
+            {{  -1, -1, -1, -1, -1, -1  },
+            {   -1, -1, 0,  0,  -1, -1  }},
+            {{  -1, -1, 2,  2,  -1, -1  },
+            {   -1, 1,  1,  3,  3,  -1  }},
+            {{  -1, 5,  5,  7,  7,  -1  },
+            {   4,  4,  6,  6,  8,  8   }},
+        },
+    };
+
+    private Path getPathFromRelPointInTriangle(double x, double y, boolean isPointUp, List<Byte> pathSoFar, int depth) {
+        // first we divide the area into 18 rectangles (6*3)
+        double rectangleWidth = 1.0 / 6.0;
+        double rectangleHeight = 1.0 / 3.0;
+        
+        // then we find out which of these rectangles the point is in
+        int nRectangleFromLeft = (int) (x / rectangleWidth);
+        int nRectangleFromTop = (int) (y / rectangleHeight);
+        
+        // then we find out which way that rectangle is bisected, SW to NE or NW to SE
+        // this is a checkerboard pattern, with the value of the upper left corner as !topIsSkewedLeft
+        // more compactly presented: rIBSWNE = tISL XNOR ((nRFL + nRFT) mod 2)
+        boolean rectangleIsBisectedSWNE = isPointUp == ((nRectangleFromLeft + nRectangleFromTop) % 2 == 0);
+        
+        // then we calculate the point relative to the rectangle and normalize the coordinates within the rectangle
+        double relRectangleX = x % rectangleWidth;
+        double relRectangleY = y % rectangleHeight;
+        double normalizedRelRectangleX = relRectangleX / rectangleWidth;
+        double normalizedRelRectangleY = relRectangleY / rectangleHeight;
+        
+        // then we find out whether it's in the upper or lower triangle
+        boolean isLower;
+        if (rectangleIsBisectedSWNE) {
+            isLower = normalizedRelRectangleX + normalizedRelRectangleY >= 1.0;
+        } else {
+            isLower = normalizedRelRectangleX < normalizedRelRectangleY;
+        }
+        int child = childFromTrianglePPRC[isPointUp?1:0][nRectangleFromTop][isLower?1:0][nRectangleFromLeft];
+        if (child == -1) {
+            return null;
+        } else if (depth == 1) {
+            pathSoFar.add((byte) child);
+            return new Path(pathSoFar);
+        } else {
+            pathSoFar.add((byte) child);
+            return getPathFromRelPointInTriangle(
+                    // (rIBSWNE == iL) checks whether the rectangle contains the left or right half of the triangle
+                    normalizedRelRectangleX/2 + (rectangleIsBisectedSWNE == isLower? 0: 0.5),
+                    normalizedRelRectangleY,
+                    isLower,
+                    pathSoFar,
+                    depth-1
+            );
+        }
+    }
+    
       ///////////////////
      // Listener crap //
     ///////////////////
@@ -352,27 +523,38 @@ public class LayerPanel extends JPanel implements IMEventSource {
     private class Listener extends MouseInputAdapter {
         @Override
         public void mouseClicked(MouseEvent me) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            if (zoom != null)   // won't handle zoom yet
+                throw new UnsupportedOperationException("Not supported yet.");
+            Dimension panelSize = getSize();
+            Point relPanel = me.getPoint();
+            if (withinInsets(panelSize, relPanel))
+                return;
+            Dimension mapSize = new Dimension(panelSize.width - (insets.left + insets.right), panelSize.height - (insets.top + insets.bottom));
+            Point relMap = new Point(relPanel.x - insets.left, relPanel.y - insets.top);
+            Path path = getPathFromPointInIcosahedron(mapSize, relMap, topIsSkewedLeft, drawDepth);
+            if (path == null)
+                return; // outside of icosahedron
+            fireEvent(new IMEvent(LayerPanel.this, IMEvent.Type.DRAW));
         }
 
         @Override
         public void mouseEntered(MouseEvent me) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
         public void mouseExited(MouseEvent me) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
         public void mouseDragged(MouseEvent me) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
         public void mouseMoved(MouseEvent me) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     }
 }

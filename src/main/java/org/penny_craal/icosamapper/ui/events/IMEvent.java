@@ -54,6 +54,9 @@ public class IMEvent extends EventObject {
         PROPERTIES      ("properties"),
         UNDERLAY        ("underlay"),
         DELETE          ("delete"),
+        
+        // LayerPanel
+        DRAW            ("draw"),
         ;
         public final String command;
         

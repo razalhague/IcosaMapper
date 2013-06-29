@@ -19,6 +19,8 @@
 
 package org.penny_craal.icosamapper.map;
 
+import java.util.List;
+
 /**
  * A path to a specific triangle. A Path object is immutable.
  * @author Ville Jokela
@@ -34,6 +36,20 @@ public class Path {
     public Path(byte[] path) {
         this.path = path.clone();
         index = 0;
+    }
+    
+    /**
+     * Constructs a Path
+     * @param path
+     * @param index 
+     */
+    public Path(List<Byte> path) {
+        byte[] bytePath = new byte[path.size()];
+        for (int i = 0; i < path.size(); i++) {
+            bytePath[i] = path.get(i);
+        }
+        this.path =  bytePath;
+        this.index = 0;
     }
     
     /**
