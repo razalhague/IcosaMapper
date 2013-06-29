@@ -372,8 +372,8 @@ public class LayerPanel extends JPanel implements IMEventSource {
         return false;
     }
     
-    // [skew:0=right,1=left][row][position:0=upper,1=lower][column]; -1 = no triangle
-    private static final int[][][][] childFromIcosahedronSPRC = new int[][][][] {
+    // [skew:0=right,1=left][row][position:0=upper,1=lower][column]; -1 = no child
+    private static final int[][][][] childFromIcosahedronSRPC = new int[][][][] {
         {
             {{  -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1  },
             {   -1, 0,  0,  1,  1,  2,  2,  3,  3,  4,  4   }},
@@ -391,59 +391,15 @@ public class LayerPanel extends JPanel implements IMEventSource {
             {   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1  }},
         },
     };
-
-    private Path getPathFromPointInIcosahedron(Dimension size, Point point, boolean topIsSkewedLeft, int depth) {
-        // first we divide the area into 33 rectangles (11x3)
-        double rectangleWidth = size.width / 11.0;
-        double rectangleHeight = size.height / 3.0;
-        // then we find out which of these rectangles the point is in
-        int nRectangleFromLeft = (int) (point.x / rectangleWidth);
-        int nRectangleFromTop = (int) (point.y / rectangleHeight);
-        // then we find out which way that rectangle is bisected, SW to NE or NW to SE
-        // this is a checkerboard pattern, with the value of the upper left corner as !topIsSkewedLeft
-        // more compactly presented: rIBSWNE = tISL XNOR ((nRFL + nRFT) mod 2)
-        boolean rectangleIsBisectedSWNE = topIsSkewedLeft == ((nRectangleFromLeft + nRectangleFromTop) % 2 == 0);
-        // then we calculate the point relative to the rectangle and normalize the coordinates within the rectangle
-        double relRectangleX = ((double)point.x) % rectangleWidth;
-        double relRectangleY = ((double)point.y) % rectangleHeight;
-        double normalizedRelRectangleX = relRectangleX / rectangleWidth;
-        double normalizedRelRectangleY = relRectangleY / rectangleHeight;
-
-        // then we find out whether it's in the upper or lower triangle
-        boolean isLower;
-        if (rectangleIsBisectedSWNE) {
-            isLower = normalizedRelRectangleX + normalizedRelRectangleY >= 1.0;
-        } else {
-            isLower = normalizedRelRectangleX < normalizedRelRectangleY;
-        }
-        // and finally, we use the precalculated table which contains the answer
-        int child = childFromIcosahedronSPRC[topIsSkewedLeft?1:0][nRectangleFromTop][isLower?1:0][nRectangleFromLeft];
-        if (child == -1) {
-            return null;
-        } else if (depth == 1) {
-            return new Path(new byte[] {(byte)child});
-        } else {
-            List<Byte> pathSoFar = new LinkedList<>();
-            pathSoFar.add((byte)child);
-            return getPathFromRelPointInTriangle(
-                    // (rIBSWNE == iL) checks whether the rectangle contains the left or right half of the triangle
-                    normalizedRelRectangleX/2 + (rectangleIsBisectedSWNE == isLower? 0: 0.5),
-                    normalizedRelRectangleY,
-                    isLower,
-                    pathSoFar,
-                    depth-1
-            );
-        }
-    }
     
-    // [point:0=down,1=up][row][position:0=upper,1=lower][column]; -1 = no triangle
-    private static final int[][][][] childFromTrianglePPRC = new int[][][][] {
+    // [point:0=down,1=up][row][position:0=upper,1=lower][column]; -1 = no child
+    private static final int[][][][] childFromTrianglePRPC = new int[][][][] {
         {
-            {{  4,  4,  6,  6,  8,  8   },
-            {   -1, 5,  5,  7,  7,  -1  }},
-            {{  -1, 1,  1,  3,  3,  -1  },
-            {   -1, -1, 2,  2,  -1, -1  }},
-            {{  -1, -1, 0,  0,  -1, -1  },
+            {{  0,  0,  2,  2,  4,  4   },
+            {   -1, 1,  1,  3,  3,  -1  }},
+            {{  -1, 5,  5,  7,  7,  -1  },
+            {   -1, -1, 6,  6,  -1, -1  }},
+            {{  -1, -1, 8,  8,  -1, -1  },
             {   -1, -1, -1, -1, -1, -1  }},
         },
         {
@@ -455,35 +411,52 @@ public class LayerPanel extends JPanel implements IMEventSource {
             {   4,  4,  6,  6,  8,  8   }},
         },
     };
-
-    private Path getPathFromRelPointInTriangle(double x, double y, boolean isPointUp, List<Byte> pathSoFar, int depth) {
-        // first we divide the area into 18 rectangles (6*3)
-        double rectangleWidth = 1.0 / 6.0;
-        double rectangleHeight = 1.0 / 3.0;
+    
+    /**
+     * Resolves a Path based on coordinates and an array.
+     * @param x                     x coordinate, from 0 to 1
+     * @param y                     y coordinate, from 0 to 1
+     * @param topLeftCornerIsSWNE   is the topLeftCorner of the array SWNE or NWSE
+     * @param array                 the array describing the children
+     * @param pathSoFar             accumulator for the elements of the path that have already been resolved above 
+     * @param depth                 how deeply the Path
+     * @return                      Path that corresponds to the point
+     */
+    private Path resolvePathFromRelCoordsInArray(
+            double x,
+            double y,
+            boolean topLeftCornerIsSWNE,
+            int[][][][] array,
+            List<Byte> pathSoFar,
+            int depth
+    ) {
+        // first we divide the area into rectangles based on the dimensions of the array
+        double rectWidth = 1.0 / array[0][0][0].length;
+        double rectHeight = 1.0 / array[0].length;
         
         // then we find out which of these rectangles the point is in
-        int nRectangleFromLeft = (int) (x / rectangleWidth);
-        int nRectangleFromTop = (int) (y / rectangleHeight);
+        int nRectFromLeft = (int) (x / rectWidth);
+        int nRectFromTop = (int) (y / rectHeight);
         
-        // then we find out which way that rectangle is bisected, SW to NE or NW to SE
+        // then we find out which way that rectangle is bisected, SW-to-NE or NW-to-SE
         // this is a checkerboard pattern, with the value of the upper left corner as !topIsSkewedLeft
-        // more compactly presented: rIBSWNE = tISL XNOR ((nRFL + nRFT) mod 2)
-        boolean rectangleIsBisectedSWNE = isPointUp == ((nRectangleFromLeft + nRectangleFromTop) % 2 == 0);
+        // the first == is being used as XNOR
+        boolean rectangleIsBisectedSWNE = topLeftCornerIsSWNE == ((nRectFromLeft + nRectFromTop) % 2 == 0);
         
         // then we calculate the point relative to the rectangle and normalize the coordinates within the rectangle
-        double relRectangleX = x % rectangleWidth;
-        double relRectangleY = y % rectangleHeight;
-        double normalizedRelRectangleX = relRectangleX / rectangleWidth;
-        double normalizedRelRectangleY = relRectangleY / rectangleHeight;
+        double relRectangleX = x % rectWidth;
+        double relRectangleY = y % rectHeight;
+        double normalizedRelRectangleX = relRectangleX / rectWidth;
+        double normalizedRelRectangleY = relRectangleY / rectHeight;
         
-        // then we find out whether it's in the upper or lower triangle
         boolean isLower;
         if (rectangleIsBisectedSWNE) {
             isLower = normalizedRelRectangleX + normalizedRelRectangleY >= 1.0;
         } else {
             isLower = normalizedRelRectangleX < normalizedRelRectangleY;
         }
-        int child = childFromTrianglePPRC[isPointUp?1:0][nRectangleFromTop][isLower?1:0][nRectangleFromLeft];
+        
+        int child = array[topLeftCornerIsSWNE?1:0][nRectFromTop][isLower?1:0][nRectFromLeft];
         if (child == -1) {
             return null;
         } else if (depth == 1) {
@@ -491,11 +464,12 @@ public class LayerPanel extends JPanel implements IMEventSource {
             return new Path(pathSoFar);
         } else {
             pathSoFar.add((byte) child);
-            return getPathFromRelPointInTriangle(
+            return resolvePathFromRelCoordsInArray(
                     // (rIBSWNE == iL) checks whether the rectangle contains the left or right half of the triangle
                     normalizedRelRectangleX/2 + (rectangleIsBisectedSWNE == isLower? 0: 0.5),
                     normalizedRelRectangleY,
                     isLower,
+                    childFromTrianglePRPC,  // NOTE: explicitly pass the triangle-array, since 
                     pathSoFar,
                     depth-1
             );
@@ -531,7 +505,15 @@ public class LayerPanel extends JPanel implements IMEventSource {
                 return;
             Dimension mapSize = new Dimension(panelSize.width - (insets.left + insets.right), panelSize.height - (insets.top + insets.bottom));
             Point relMap = new Point(relPanel.x - insets.left, relPanel.y - insets.top);
-            Path path = getPathFromPointInIcosahedron(mapSize, relMap, topIsSkewedLeft, drawDepth);
+            List<Byte> pathSoFar = new LinkedList<>();
+            Path path = resolvePathFromRelCoordsInArray(
+                    relMap.getX() / mapSize.getWidth(),
+                    relMap.getY() / mapSize.getHeight(),
+                    topIsSkewedLeft,
+                    childFromIcosahedronSRPC,
+                    pathSoFar,
+                    drawDepth
+            );
             if (path == null)
                 return; // outside of icosahedron
             fireEvent(new IMEvent(LayerPanel.this, IMEvent.Type.DRAW));
