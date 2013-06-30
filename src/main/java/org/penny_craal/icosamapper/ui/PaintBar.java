@@ -43,12 +43,12 @@ public class PaintBar extends JPanel {
     private Tool tool;
             
     private final static List<Button> paintButtons = new ArrayList<Button>() {{
-        add(new Button(Tool.DRAW,       "draw",         "draw on the map"));
-        add(new Button(Tool.FILL,       "fill",         "fill an area"));
-        add(new Button(Tool.DIVIDE,     "divide",       "divide a triangle"));
-        add(new Button(Tool.UNITE,      "unite",        "unite a triangle"));
-        add(new Button(Tool.ZOOM_IN,    "zoom-in",      "zoom in to a triangle"));
-        add(new Button(Tool.ZOOM_OUT,   "zoom-out",     "zoom out"));
+        add(new Button(Tool.DRAW,       "draw on the map"));
+        add(new Button(Tool.FILL,       "fill an area"));
+        add(new Button(Tool.DIVIDE,     "divide a triangle"));
+        add(new Button(Tool.UNITE,      "unite a triangle"));
+        add(new Button(Tool.ZOOM_IN,    "zoom in to a triangle"));
+        add(new Button(Tool.ZOOM_OUT,   "zoom out"));
     }};
     
     public PaintBar() {
@@ -59,10 +59,10 @@ public class PaintBar extends JPanel {
         
         Listener listener = new Listener();
         for (Button b: paintButtons) {
-            JToggleButton button = new JToggleButton(new ImageIcon(getClass().getResource("/gfx/" + b.name + ".png")));
+            JToggleButton button = new JToggleButton(new ImageIcon(getClass().getResource("/gfx/" + b.tool.toolName + ".png")));
             button.setToolTipText(b.tooltip);
             button.addActionListener(listener);
-            button.setActionCommand(b.name);
+            button.setActionCommand(b.tool.toolName);
             button.setMargin(new Insets(2, 2, 2, 2));
             bg.add(button);
             add(button);
@@ -74,22 +74,25 @@ public class PaintBar extends JPanel {
     }
     
     public enum Tool {
-        DRAW,
-        FILL,
-        DIVIDE,
-        UNITE,
-        ZOOM_IN,
-        ZOOM_OUT,
+        DRAW        ("draw"),
+        FILL        ("fill"),
+        DIVIDE      ("divide"),
+        UNITE       ("unite"),
+        ZOOM_IN     ("zoom-in"),
+        ZOOM_OUT    ("zoom-out"),
+        ;
+        public final String toolName;
+        private Tool(String toolName) {
+            this.toolName = toolName;
+        }
     }
     
     private static final class Button {
         public final Tool tool;
-        public final String name;
         public final String tooltip;
 
-        public Button(Tool tool, String name, String tooltip) {
+        public Button(Tool tool, String tooltip) {
             this.tool = tool;
-            this.name = name;
             this.tooltip = tooltip;
         }
     }
@@ -116,7 +119,7 @@ public class PaintBar extends JPanel {
         @Override
         public void actionPerformed(ActionEvent ae) {
             for (Button b: paintButtons)
-                if (b.name.equals(ae.getActionCommand()))
+                if (b.tool.toolName.equals(ae.getActionCommand()))
                     tool = b.tool;
             fireStateChanged();
         }

@@ -1,5 +1,5 @@
 /* IcosaMapper - an rpg map editor based on equilateral triangles that form an icosahedron
- * Copyright (C) 2013  Ville Jokela, James Pearce
+ * Copyright (C) 2013  Ville Jokela
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,15 +19,25 @@
 
 package org.penny_craal.icosamapper.ui.events;
 
-import java.util.EventObject;
+import org.penny_craal.icosamapper.map.LayerRenderer;
 
 /**
  *
- * @author Ville Jokela
+ * @author Ville
  */
-@SuppressWarnings("serial")
-public class IMEvent extends EventObject {
-    protected IMEvent(Object source) {
+public class LayerProperties extends IMEvent {
+    private static final long serialVersionUID = 1L;
+    public final String layerName;
+    public final LayerRenderer lr;
+
+    public LayerProperties(Object source, String layerName, LayerRenderer lr) {
         super(source);
+        this.layerName = layerName;
+        this.lr = lr;
+    }
+
+    @Override
+    public String toString() {
+        return "LayerProperties: " + lr;
     }
 }

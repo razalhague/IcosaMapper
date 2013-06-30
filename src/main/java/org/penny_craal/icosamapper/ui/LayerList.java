@@ -11,6 +11,7 @@ import org.penny_craal.icosamapper.ui.events.IMEvent;
 import org.penny_craal.icosamapper.ui.events.IMEventHelper;
 import org.penny_craal.icosamapper.ui.events.IMEventListener;
 import org.penny_craal.icosamapper.ui.events.IMEventSource;
+import org.penny_craal.icosamapper.ui.events.LayerSelected;
 
 /**
  *
@@ -50,7 +51,7 @@ public class LayerList extends JList<String> implements IMEventSource {
             if (!r.contains(me.getPoint()))
                 return;
             
-            fireEvent(new IMEvent(this, IMEvent.Type.LAYER_SELECTED));
+            fireEvent(new LayerSelected(LayerList.this, LayerList.this.getSelectedValue()));
         }
     }
 }

@@ -31,12 +31,16 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.penny_craal.icosamapper.map.GreyscaleLR;
+import org.penny_craal.icosamapper.ui.events.ColourSelected;
 import org.penny_craal.icosamapper.ui.events.IMEvent;
 import org.penny_craal.icosamapper.ui.events.IMEventHelper;
 import org.penny_craal.icosamapper.ui.events.IMEventListener;
 import org.penny_craal.icosamapper.ui.events.IMEventSource;
+import org.penny_craal.icosamapper.ui.events.OpSizeSelected;
+import org.penny_craal.icosamapper.ui.events.ToolSelected;
 
 import static org.penny_craal.icosamapper.map.Constants.*;
+
 /**
  *
  * @author Ville Jokela
@@ -98,11 +102,11 @@ public class PaintPanel extends JPanel implements IMEventSource {
         @Override
         public void stateChanged(ChangeEvent ce) {
             if (ce.getSource() == opSizeSpinner) {
-                fireEvent(new IMEvent(this, IMEvent.Type.OPSIZE_SELECTED));
+                fireEvent(new OpSizeSelected(this, (int) opSizeSpinner.getValue()));
             } else if (ce.getSource() == paintBar) {
-                fireEvent(new IMEvent(this, IMEvent.Type.TOOL_SELECTED));
+                fireEvent(new ToolSelected(this, paintBar.getTool()));
             } else if (ce.getSource() == colourPicker) {
-                fireEvent(new IMEvent(this, IMEvent.Type.COLOUR_SELECTED));
+                fireEvent(new ColourSelected(this, colourPicker.getValue()));
             } else {
                 throw new RuntimeException("Unrecognized event source");
             }

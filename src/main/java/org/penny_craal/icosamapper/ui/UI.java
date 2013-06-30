@@ -122,7 +122,7 @@ public class UI extends JFrame implements IMEventSource {
     private class Listener implements IMEventListener {
         @Override
         public void actionPerformed(IMEvent ime) {
-            fireEvent(new IMEvent(this, ime));
+            fireEvent(ime); // just pass on the event
         }
     }
 }

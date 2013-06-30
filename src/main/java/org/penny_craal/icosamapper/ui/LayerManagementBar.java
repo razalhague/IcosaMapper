@@ -29,12 +29,19 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.penny_craal.icosamapper.map.GreyscaleLR;
+import org.penny_craal.icosamapper.ui.events.DeleteLayer;
+import org.penny_craal.icosamapper.ui.events.DuplicateLayer;
 import org.penny_craal.icosamapper.ui.events.IMEvent;
 import org.penny_craal.icosamapper.ui.events.IMEventHelper;
 import org.penny_craal.icosamapper.ui.events.IMEventListener;
 import org.penny_craal.icosamapper.ui.events.IMEventSource;
+import org.penny_craal.icosamapper.ui.events.LayerProperties;
+import org.penny_craal.icosamapper.ui.events.NewLayer;
+import org.penny_craal.icosamapper.ui.events.RenameLayer;
 
 /**
  *
@@ -42,58 +49,53 @@ import org.penny_craal.icosamapper.ui.events.IMEventSource;
  */
 @SuppressWarnings("serial")
 public class LayerManagementBar extends JPanel implements IMEventSource {
+    private final LayerList ll;
+    
     private final static List<Button> layerButtons = new ArrayList<Button>() {{
-        add(new Button(Tool.NEW,        "new",         "create new layer"));
-        add(new Button(Tool.DUPLICATE,  "duplicate",   "duplicate layer"));
-        add(new Button(Tool.RENAME,     "rename",      "rename layer"));
-        add(new Button(Tool.PROPERTIES, "properties",  "edit layer's properties"));
-        add(new Button(Tool.UNDERLAY,   "underlay",    "create an underlay"));
-        add(new Button(Tool.DELETE,     "delete",      "delete layer"));
+        add(new Button(Tool.NEW,        "create new layer"));
+        add(new Button(Tool.DUPLICATE,  "duplicate layer"));
+        add(new Button(Tool.RENAME,     "rename layer"));
+        add(new Button(Tool.PROPERTIES, "edit layer's properties"));
+        add(new Button(Tool.UNDERLAY,   "create an underlay"));
+        add(new Button(Tool.DELETE,     "delete layer"));
     }};
-    public LayerManagementBar() {
+    
+    public LayerManagementBar(LayerList ll) {
+        this.ll = ll;
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         Listener listener = new Listener();
         for (Button b: layerButtons) {
-            JButton button = new JButton(new ImageIcon(getClass().getResource("/gfx/" + b.name + ".png")));
+            JButton button = new JButton(new ImageIcon(getClass().getResource("/gfx/" + b.tool.toolName + ".png")));
             button.setToolTipText(b.tooltip);
             button.addActionListener(listener);
-            button.setActionCommand(b.name);
+            button.setActionCommand(b.tool.toolName);
             button.setMargin(new Insets(2, 2, 2, 2));
             add(button);
         }
         add(Box.createVerticalGlue());
     }
     
-    private Button getButtonByName(String name) {
-        for (Button b: layerButtons)
-            if (b.name.equals(name))
-                return b;
-        
-        return null;
-    }
-    
     public enum Tool {
-        NEW         (0),
-        DUPLICATE   (1),
-        RENAME      (2),
-        PROPERTIES  (3),
-        UNDERLAY    (4),
-        DELETE      (5),
+        NEW         ("new"),
+        DUPLICATE   ("duplicate"),
+        RENAME      ("rename"),
+        PROPERTIES  ("properties"),
+        UNDERLAY    ("underlay"),
+        DELETE      ("delete"),
         ;
-        public static final int min_id = 0;
-        public static final int max_id = 5;
-        public final int id;
-        private Tool(int id) { this.id = id; }
+        public final String toolName;
+        
+        private Tool(String name) {
+            this.toolName = name;
+        }
     }
     
     protected static final class Button {
         public final Tool tool;
-        public final String name;
         public final String tooltip;
 
-        public Button(Tool tool, String name, String tooltip) {
+        public Button(Tool tool, String tooltip) {
             this.tool = tool;
-            this.name = name;
             this.tooltip = tooltip;
         }
     }
@@ -119,7 +121,65 @@ public class LayerManagementBar extends JPanel implements IMEventSource {
     private class Listener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent ae) {
-            fireEvent(new IMEvent(this, IMEvent.Type.fromString(ae.getActionCommand())));
+            String cmd = ae.getActionCommand();
+            if (cmd.equals(Tool.NEW.toolName)) {
+                String name = JOptionPane.showInputDialog("Enter name for the new layer");
+                if (name == null)
+                    return;
+                name = name.trim();
+                if (name.isEmpty()) {
+                    JOptionPane.showMessageDialog(LayerManagementBar.this, "Name must not be empty");
+                } else {
+                    fireEvent(new NewLayer(LayerManagementBar.this, name));
+                }
+            } else if (cmd.equals(Tool.DUPLICATE.toolName)) {
+                String selected = ll.getSelectedValue();
+                if (selected == null) {
+                    JOptionPane.showMessageDialog(LayerManagementBar.this, "Select a layer to duplicate");
+                    return;
+                }
+                String name = JOptionPane.showInputDialog("Enter name for the new layer");
+                if (name == null)
+                    return;
+                name = name.trim();
+                if (name.isEmpty()) {
+                    JOptionPane.showMessageDialog(LayerManagementBar.this, "Name must not be empty");
+                } else {
+                    fireEvent(new DuplicateLayer(LayerManagementBar.this, selected, name));
+                }
+            } else if (cmd.equals(Tool.RENAME.toolName)) {
+                String selected = ll.getSelectedValue();
+                if (selected == null) {
+                    JOptionPane.showMessageDialog(LayerManagementBar.this, "Select a layer to rename");
+                    return;
+                }
+                String name = JOptionPane.showInputDialog("Enter new name for the layer");
+                if (name == null)
+                    return;
+                name = name.trim();
+                if (name.isEmpty()) {
+                    JOptionPane.showMessageDialog(LayerManagementBar.this, "Name must not be empty");
+                } else {
+                    fireEvent(new RenameLayer(LayerManagementBar.this, selected, name));
+                }
+            } else if   (cmd.equals(Tool.PROPERTIES.toolName)) {
+                // TODO: LayerRenderer selector
+                String selected = ll.getSelectedValue();
+                if (selected == null) {
+                    JOptionPane.showMessageDialog(LayerManagementBar.this, "Select a layer to edit");
+                    return;
+                }
+                fireEvent(new LayerProperties(LayerManagementBar.this, ll.getSelectedValue(), new GreyscaleLR()));
+            } else if   (cmd.equals(Tool.UNDERLAY.toolName)) {
+                // disabled at the moment
+            } else if   (cmd.equals(Tool.DELETE.toolName)) {
+                String selected = ll.getSelectedValue();
+                if (selected == null) {
+                    JOptionPane.showMessageDialog(LayerManagementBar.this, "Select a layer to delete");
+                    return;
+                }
+                fireEvent(new DeleteLayer(LayerManagementBar.this, ll.getSelectedValue()));
+            }
         }
     }
 }

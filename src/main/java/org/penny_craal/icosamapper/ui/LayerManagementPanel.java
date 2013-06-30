@@ -45,7 +45,7 @@ public class LayerManagementPanel extends JPanel implements IMEventSource {
         layerList = new LayerList(new LayerListModel());
         layerList.addIMEventListener(listener);
         JScrollPane scrollPane = new JScrollPane(layerList);
-        layerManagementBar = new LayerManagementBar();
+        layerManagementBar = new LayerManagementBar(layerList);
         layerManagementBar.addIMEventListener(listener);
         
         setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED), "Layers"));
@@ -80,7 +80,7 @@ public class LayerManagementPanel extends JPanel implements IMEventSource {
     private class Listener implements IMEventListener {
         @Override
         public void actionPerformed(IMEvent ime) {
-            fireEvent(new IMEvent(this, ime));
+            fireEvent(ime); // just pass on the event
         }
     }
 }
