@@ -74,6 +74,7 @@ public class UI extends JFrame implements IMEventSource {
         menuBar = new MenuBar();
         statusBar = new StatusBar(renderDepth);
         layerPanel = new LayerPanel(map.getLayer("test-layer"), renderDepth);
+        layerPanel.addIMEventListener(listener);
         toolsPanel = new JPanel();
         toolsPanel.setLayout(new BorderLayout());
         paintPanel = new PaintPanel();

@@ -173,6 +173,7 @@ public class LayerManagementBar extends JPanel implements IMEventSource {
             } else if   (cmd.equals(Tool.UNDERLAY.toolName)) {
                 // disabled at the moment
             } else if   (cmd.equals(Tool.DELETE.toolName)) {
+                // TODO: confirmation?
                 String selected = ll.getSelectedValue();
                 if (selected == null) {
                     JOptionPane.showMessageDialog(LayerManagementBar.this, "Select a layer to delete");
