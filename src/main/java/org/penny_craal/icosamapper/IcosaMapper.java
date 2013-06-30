@@ -55,6 +55,7 @@ public class IcosaMapper {
     private static class Listener implements IMEventListener {
         @Override
         public void actionPerformed(IMEvent ime) {
+            System.out.println(ime);
         }
     }
     
@@ -65,7 +66,7 @@ public class IcosaMapper {
             thrwbl.printStackTrace();
             JOptionPane.showMessageDialog(frames[0],
                     thrwbl.getStackTrace(),
-                    "Throwable caught in " + thread.getName() + ": " + thrwbl.getMessage(),
+                    thrwbl.getClass().getCanonicalName() + " caught in " + thread.getName() + ": " + thrwbl.getMessage(),
                     JOptionPane.ERROR_MESSAGE
             );
             for (Frame frame: frames) {
