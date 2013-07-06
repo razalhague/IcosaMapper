@@ -94,6 +94,7 @@ public class LayerPanel extends JPanel implements IMEventSource {
         zoom = null;
         Listener listener = new Listener();
         addMouseListener(listener);
+        addMouseMotionListener(listener);
         
         updateMinimumSize();
         
@@ -360,14 +361,21 @@ public class LayerPanel extends JPanel implements IMEventSource {
         return layer;
     }
     
-    private boolean withinInsets(Dimension panelSize, Point relPanel) {
+    /**
+     * Checks if the point is outside the icosahedron's bounding rectangle.
+     * @param panelSize
+     * @param relPanel
+     * @return 
+     */
+    private boolean outsideIcosaRect(Point relPanel) {
+        Dimension panelSize = getSize();
         if (relPanel.x < insets.left)
             return true;
-        if (relPanel.x > (panelSize.width - insets.right))
+        if (relPanel.x >= (panelSize.width - insets.right))
             return true;
         if (relPanel.y < insets.top)
             return true;
-        if (relPanel.y > (panelSize.width - insets.bottom))
+        if (relPanel.y >= (panelSize.height - insets.bottom))
             return true;
 
         return false;
@@ -502,7 +510,7 @@ public class LayerPanel extends JPanel implements IMEventSource {
                 throw new UnsupportedOperationException("Not supported yet.");
             Dimension panelSize = getSize();
             Point relPanel = me.getPoint();
-            if (withinInsets(panelSize, relPanel))
+            if (outsideIcosaRect(relPanel))
                 return;
             Dimension mapSize = new Dimension(panelSize.width - (insets.left + insets.right), panelSize.height - (insets.top + insets.bottom));
             Point relMap = new Point(relPanel.x - insets.left, relPanel.y - insets.top);
