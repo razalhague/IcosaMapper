@@ -539,7 +539,7 @@ public class LayerPanel extends JPanel implements IMEventSource {
 
         @Override
         public void mouseDragged(MouseEvent me) {
-            //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            mouseClicked(me);
         }
 
         @Override
