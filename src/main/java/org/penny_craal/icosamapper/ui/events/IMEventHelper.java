@@ -42,6 +42,6 @@ public abstract class IMEventHelper {
         // those that are interested in this event
         for (int i = listeners.length - 2; i >= 0; i -= 2)
             if (listeners[i] == IMEventListener.class)
-                ((IMEventListener) listeners[i + 1]).actionPerformed(ime);
+                ((IMEventListener) listeners[i + 1]).handleEvent(ime);
     }
 }

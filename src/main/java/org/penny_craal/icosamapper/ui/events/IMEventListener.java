@@ -26,5 +26,5 @@ import java.util.EventListener;
  * @author Ville Jokela
  */
 public interface IMEventListener extends EventListener {
-    public void actionPerformed(IMEvent ime);
+    public void handleEvent(IMEvent ime);
 }

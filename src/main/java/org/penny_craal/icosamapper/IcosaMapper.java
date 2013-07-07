@@ -54,7 +54,7 @@ public class IcosaMapper {
     
     private static class Listener implements IMEventListener {
         @Override
-        public void actionPerformed(IMEvent ime) {
+        public void handleEvent(IMEvent ime) {
             System.out.println(ime);
         }
     }

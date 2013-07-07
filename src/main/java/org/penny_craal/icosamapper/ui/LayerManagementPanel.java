@@ -79,7 +79,7 @@ public class LayerManagementPanel extends JPanel implements IMEventSource {
     
     private class Listener implements IMEventListener {
         @Override
-        public void actionPerformed(IMEvent ime) {
+        public void handleEvent(IMEvent ime) {
             fireEvent(ime); // just pass on the event
         }
     }
