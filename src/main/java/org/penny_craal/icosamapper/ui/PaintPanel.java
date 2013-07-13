@@ -102,11 +102,11 @@ public class PaintPanel extends JPanel implements IMEventSource {
         @Override
         public void stateChanged(ChangeEvent ce) {
             if (ce.getSource() == opSizeSpinner) {
-                fireEvent(new OpSizeSelected(this, (int) opSizeSpinner.getValue()));
+                fireEvent(new OpSizeSelected(PaintPanel.this, (int) opSizeSpinner.getValue()));
             } else if (ce.getSource() == paintBar) {
-                fireEvent(new ToolSelected(this, paintBar.getTool()));
+                fireEvent(new ToolSelected(PaintPanel.this, paintBar.getTool()));
             } else if (ce.getSource() == colourPicker) {
-                fireEvent(new ColourSelected(this, colourPicker.getValue()));
+                fireEvent(new ColourSelected(PaintPanel.this, colourPicker.getValue()));
             } else {
                 throw new RuntimeException("Unrecognized event source");
             }

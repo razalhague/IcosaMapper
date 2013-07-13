@@ -25,15 +25,13 @@ package org.penny_craal.icosamapper.ui.events;
  */
 public class NewLayer extends IMEvent {
     private static final long serialVersionUID = 1L;
-    public final String name;
 
-    public NewLayer(Object source, String name) {
+    public NewLayer(Object source) {
         super(source);
-        this.name = name;
     }
 
     @Override
     public String toString() {
-        return "NewLayer: " + name;
+        return "NewLayer";
     }
 }

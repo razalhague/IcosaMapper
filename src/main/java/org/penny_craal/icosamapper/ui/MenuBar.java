@@ -129,7 +129,7 @@ public class MenuBar extends JMenuBar implements IMEventSource {
         public void actionPerformed(ActionEvent ae) {
             switch (ae.getActionCommand()) {
                 case "new-map":
-                    fireEvent(new NewMap(MenuBar.this, ""));    // TODO: ask for name
+                    fireEvent(new NewMap(MenuBar.this));
                     break;
                 case "open-map":
                     fireEvent(new OpenMap(MenuBar.this));

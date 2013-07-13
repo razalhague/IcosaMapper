@@ -20,16 +20,25 @@
 package org.penny_craal.icosamapper.ui;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EtchedBorder;
 
+import org.penny_craal.icosamapper.ui.events.DeleteLayer;
+import org.penny_craal.icosamapper.ui.events.DuplicateLayer;
 import org.penny_craal.icosamapper.ui.events.IMEvent;
 import org.penny_craal.icosamapper.ui.events.IMEventHelper;
 import org.penny_craal.icosamapper.ui.events.IMEventListener;
 import org.penny_craal.icosamapper.ui.events.IMEventSource;
+import org.penny_craal.icosamapper.ui.events.LayerActionWithoutLayer;
+import org.penny_craal.icosamapper.ui.events.LayerProperties;
+import org.penny_craal.icosamapper.ui.events.NewLayer;
+import org.penny_craal.icosamapper.ui.events.RenameLayer;
+import org.penny_craal.icosamapper.ui.events.UnderlayLayer;
 
 /**
  *
@@ -45,8 +54,8 @@ public class LayerManagementPanel extends JPanel implements IMEventSource {
         layerList = new LayerList(new LayerListModel());
         layerList.addIMEventListener(listener);
         JScrollPane scrollPane = new JScrollPane(layerList);
-        layerManagementBar = new LayerManagementBar(layerList);
-        layerManagementBar.addIMEventListener(listener);
+        layerManagementBar = new LayerManagementBar();
+        layerManagementBar.addActionListener(listener);
         
         setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED), "Layers"));
         setLayout(new BorderLayout());
@@ -77,10 +86,34 @@ public class LayerManagementPanel extends JPanel implements IMEventSource {
         IMEventHelper.fireEvent(listenerList, ime);
     }
     
-    private class Listener implements IMEventListener {
+    private class Listener implements IMEventListener, ActionListener {
+        // for LayerList
         @Override
         public void handleEvent(IMEvent ime) {
             fireEvent(ime); // just pass on the event
+        }
+
+        // for LayerManagementBar
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+            String cmd = ae.getActionCommand();
+            if (cmd.equals(LayerManagementBar.Tool.NEW.toolName)) {
+                fireEvent(new NewLayer(LayerManagementPanel.this));
+            } else {
+                if (layerList.getSelectedValue() == null) {
+                    fireEvent(new LayerActionWithoutLayer(LayerManagementPanel.this));
+                } else if (cmd.equals(LayerManagementBar.Tool.DUPLICATE.toolName)) {
+                    fireEvent(new DuplicateLayer(LayerManagementPanel.this, layerList.getSelectedValue()));
+                } else if (cmd.equals(LayerManagementBar.Tool.RENAME.toolName)) {
+                    fireEvent(new RenameLayer(LayerManagementPanel.this, layerList.getSelectedValue()));
+                } else if   (cmd.equals(LayerManagementBar.Tool.PROPERTIES.toolName)) {
+                    fireEvent(new LayerProperties(LayerManagementPanel.this, layerList.getSelectedValue()));
+                } else if   (cmd.equals(LayerManagementBar.Tool.UNDERLAY.toolName)) {
+                    fireEvent(new UnderlayLayer(LayerManagementPanel.this, layerList.getSelectedValue()));
+                } else if   (cmd.equals(LayerManagementBar.Tool.DELETE.toolName)) {
+                    fireEvent(new DeleteLayer(LayerManagementPanel.this, layerList.getSelectedValue()));
+                }
+            }
         }
     }
 }

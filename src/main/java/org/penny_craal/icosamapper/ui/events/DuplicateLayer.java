@@ -25,17 +25,15 @@ package org.penny_craal.icosamapper.ui.events;
  */
 public class DuplicateLayer extends IMEvent {
     private static final long serialVersionUID = 1L;
-    public final String srcLayer;
-    public final String dstLayer;
+    public final String layerName;
 
-    public DuplicateLayer(Object source, String srcLayer, String dstLayer) {
+    public DuplicateLayer(Object source, String layerName) {
         super(source);
-        this.srcLayer = srcLayer;
-        this.dstLayer = dstLayer;
+        this.layerName = layerName;
     }
 
     @Override
     public String toString() {
-        return "DuplicateLayer: " + srcLayer + ", " + dstLayer;
+        return "DuplicateLayer: " + layerName;
     }
 }

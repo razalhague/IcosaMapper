@@ -29,28 +29,14 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-
-import org.penny_craal.icosamapper.map.GreyscaleLR;
-import org.penny_craal.icosamapper.ui.events.DeleteLayer;
-import org.penny_craal.icosamapper.ui.events.DuplicateLayer;
-import org.penny_craal.icosamapper.ui.events.IMEvent;
-import org.penny_craal.icosamapper.ui.events.IMEventHelper;
-import org.penny_craal.icosamapper.ui.events.IMEventListener;
-import org.penny_craal.icosamapper.ui.events.IMEventSource;
-import org.penny_craal.icosamapper.ui.events.LayerProperties;
-import org.penny_craal.icosamapper.ui.events.NewLayer;
-import org.penny_craal.icosamapper.ui.events.RenameLayer;
 
 /**
  *
  * @author Ville Jokela
  */
 @SuppressWarnings("serial")
-public class LayerManagementBar extends JPanel implements IMEventSource {
-    private final LayerList ll;
-    
+public class LayerManagementBar extends JPanel {
     private final static List<Button> layerButtons = new ArrayList<Button>() {{
         add(new Button(Tool.NEW,        "create new layer"));
         add(new Button(Tool.DUPLICATE,  "duplicate layer"));
@@ -60,8 +46,7 @@ public class LayerManagementBar extends JPanel implements IMEventSource {
         add(new Button(Tool.DELETE,     "delete layer"));
     }};
     
-    public LayerManagementBar(LayerList ll) {
-        this.ll = ll;
+    public LayerManagementBar() {
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         Listener listener = new Listener();
         for (Button b: layerButtons) {
@@ -104,83 +89,27 @@ public class LayerManagementBar extends JPanel implements IMEventSource {
      // Listener crap //
     ///////////////////
     
-    @Override
-    public void addIMEventListener(IMEventListener imel) {
-        IMEventHelper.addListener(listenerList, imel);
+    public void addActionListener(ActionListener al) {
+        listenerList.add(ActionListener.class, al);
     }
     
-    @Override
-    public void removeIMEventListener(IMEventListener imel) {
-        IMEventHelper.removeListener(listenerList, imel);
+    public void removeActionListener(ActionListener al) {
+        listenerList.remove(ActionListener.class, al);
     }
     
-    protected void fireEvent(IMEvent ime) {
-        IMEventHelper.fireEvent(listenerList, ime);
+    public void fireEvent(ActionEvent ae) {
+        Object[] listeners = listenerList.getListenerList();     // Guaranteed to return a non-null array
+        // Process the listeners last to first, notifying
+        // those that are interested in this event
+        for (int i = listeners.length - 2; i >= 0; i -= 2)
+            if (listeners[i] == ActionListener.class)
+                ((ActionListener) listeners[i + 1]).actionPerformed(ae);
     }
     
     private class Listener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent ae) {
-            String cmd = ae.getActionCommand();
-            if (cmd.equals(Tool.NEW.toolName)) {
-                String name = JOptionPane.showInputDialog("Enter name for the new layer");
-                if (name == null)
-                    return;
-                name = name.trim();
-                if (name.isEmpty()) {
-                    JOptionPane.showMessageDialog(LayerManagementBar.this, "Name must not be empty");
-                } else {
-                    fireEvent(new NewLayer(LayerManagementBar.this, name));
-                }
-            } else if (cmd.equals(Tool.DUPLICATE.toolName)) {
-                String selected = ll.getSelectedValue();
-                if (selected == null) {
-                    JOptionPane.showMessageDialog(LayerManagementBar.this, "Select a layer to duplicate");
-                    return;
-                }
-                String name = JOptionPane.showInputDialog("Enter name for the new layer");
-                if (name == null)
-                    return;
-                name = name.trim();
-                if (name.isEmpty()) {
-                    JOptionPane.showMessageDialog(LayerManagementBar.this, "Name must not be empty");
-                } else {
-                    fireEvent(new DuplicateLayer(LayerManagementBar.this, selected, name));
-                }
-            } else if (cmd.equals(Tool.RENAME.toolName)) {
-                String selected = ll.getSelectedValue();
-                if (selected == null) {
-                    JOptionPane.showMessageDialog(LayerManagementBar.this, "Select a layer to rename");
-                    return;
-                }
-                String name = JOptionPane.showInputDialog("Enter new name for the layer");
-                if (name == null)
-                    return;
-                name = name.trim();
-                if (name.isEmpty()) {
-                    JOptionPane.showMessageDialog(LayerManagementBar.this, "Name must not be empty");
-                } else {
-                    fireEvent(new RenameLayer(LayerManagementBar.this, selected, name));
-                }
-            } else if   (cmd.equals(Tool.PROPERTIES.toolName)) {
-                // TODO: LayerRenderer selector
-                String selected = ll.getSelectedValue();
-                if (selected == null) {
-                    JOptionPane.showMessageDialog(LayerManagementBar.this, "Select a layer to edit");
-                    return;
-                }
-                fireEvent(new LayerProperties(LayerManagementBar.this, ll.getSelectedValue(), new GreyscaleLR()));
-            } else if   (cmd.equals(Tool.UNDERLAY.toolName)) {
-                // disabled at the moment
-            } else if   (cmd.equals(Tool.DELETE.toolName)) {
-                // TODO: confirmation?
-                String selected = ll.getSelectedValue();
-                if (selected == null) {
-                    JOptionPane.showMessageDialog(LayerManagementBar.this, "Select a layer to delete");
-                    return;
-                }
-                fireEvent(new DeleteLayer(LayerManagementBar.this, ll.getSelectedValue()));
-            }
+            fireEvent(ae);
         }
     }
 }

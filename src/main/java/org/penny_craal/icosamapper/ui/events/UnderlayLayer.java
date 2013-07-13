@@ -25,13 +25,15 @@ package org.penny_craal.icosamapper.ui.events;
  */
 public class UnderlayLayer extends IMEvent {
     private static final long serialVersionUID = 1L;
+    public final String layerName;
     
-    public UnderlayLayer(Object source) {
+    public UnderlayLayer(Object source, String layerName) {
         super(source);
+        this.layerName = layerName;
     }
 
     @Override
     public String toString() {
-        return "UnderlayLayer";
+        return "UnderlayLayer: " + layerName;
     }
 }

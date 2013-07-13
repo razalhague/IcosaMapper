@@ -25,17 +25,15 @@ package org.penny_craal.icosamapper.ui.events;
  */
 public class RenameLayer extends IMEvent {
     private static final long serialVersionUID = 1L;
-    public final String oldName;
-    public final String newName;
+    public final String layer;
 
-    public RenameLayer(Object source, String oldName, String newName) {
+    public RenameLayer(Object source, String layer) {
         super(source);
-        this.oldName = oldName;
-        this.newName = newName;
+        this.layer = layer;
     }
 
     @Override
     public String toString() {
-        return "RenameLayer: " + oldName + ", " + newName;
+        return "RenameLayer: " + layer;
     }
 }

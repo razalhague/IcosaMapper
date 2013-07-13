@@ -19,8 +19,6 @@
 
 package org.penny_craal.icosamapper.ui.events;
 
-import org.penny_craal.icosamapper.map.LayerRenderer;
-
 /**
  *
  * @author Ville
@@ -28,16 +26,14 @@ import org.penny_craal.icosamapper.map.LayerRenderer;
 public class LayerProperties extends IMEvent {
     private static final long serialVersionUID = 1L;
     public final String layerName;
-    public final LayerRenderer lr;
 
-    public LayerProperties(Object source, String layerName, LayerRenderer lr) {
+    public LayerProperties(Object source, String layerName) {
         super(source);
         this.layerName = layerName;
-        this.lr = lr;
     }
 
     @Override
     public String toString() {
-        return "LayerProperties: " + lr;
+        return "LayerProperties: " + layerName;
     }
 }
