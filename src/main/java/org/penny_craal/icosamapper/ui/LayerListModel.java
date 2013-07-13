@@ -28,7 +28,7 @@ import javax.swing.AbstractListModel;
 
 /**
  *
- * @author Ville
+ * @author Ville Jokela
  */
 @SuppressWarnings("serial")
 public class LayerListModel extends AbstractListModel<String> {

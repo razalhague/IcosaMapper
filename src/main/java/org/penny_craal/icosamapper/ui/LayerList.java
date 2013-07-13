@@ -15,7 +15,7 @@ import org.penny_craal.icosamapper.ui.events.LayerSelected;
 
 /**
  *
- * @author Ville
+ * @author Ville Jokela
  */
 @SuppressWarnings("serial")
 public class LayerList extends JList<String> implements IMEventSource {

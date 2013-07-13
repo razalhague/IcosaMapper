@@ -23,7 +23,7 @@ import org.penny_craal.icosamapper.map.Util;
 
 /**
  *
- * @author Ville
+ * @author Ville Jokela
  */
 public class ColourSelected extends IMEvent {
     private static final long serialVersionUID = 1L;

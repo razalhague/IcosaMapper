@@ -23,7 +23,7 @@ import org.penny_craal.icosamapper.ui.PaintBar;
 
 /**
  *
- * @author Ville
+ * @author Ville Jokela
  */
 public class ToolSelected extends IMEvent {
     private static final long serialVersionUID = 1L;

@@ -2,7 +2,7 @@ package org.penny_craal.icosamapper.ui.events;
 
 /**
  *
- * @author Ville
+ * @author Ville Jokela
  */
 public class NewMap extends IMEvent {
     private static final long serialVersionUID = 1L;

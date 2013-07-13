@@ -23,7 +23,7 @@ import org.penny_craal.icosamapper.map.Path;
 
 /**
  *
- * @author Ville
+ * @author Ville Jokela
  */
 public class Draw extends IMEvent {
     private static final long serialVersionUID = 1L;

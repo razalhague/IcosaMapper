@@ -21,7 +21,7 @@ package org.penny_craal.icosamapper.ui.events;
 
 /**
  *
- * @author Ville
+ * @author Ville Jokela
  */
 public class DuplicateLayer extends IMEvent {
     private static final long serialVersionUID = 1L;
