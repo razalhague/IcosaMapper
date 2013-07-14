@@ -37,7 +37,7 @@ import org.penny_craal.icosamapper.map.GreyscaleLR;
 import org.penny_craal.icosamapper.map.InvalidPathException;
 import org.penny_craal.icosamapper.map.Layer;
 import org.penny_craal.icosamapper.map.Path;
-import org.penny_craal.icosamapper.ui.events.Draw;
+import org.penny_craal.icosamapper.ui.events.Paint;
 import org.penny_craal.icosamapper.ui.events.IMEvent;
 import org.penny_craal.icosamapper.ui.events.IMEventHelper;
 import org.penny_craal.icosamapper.ui.events.IMEventListener;
@@ -524,7 +524,7 @@ public class LayerPanel extends JPanel implements IMEventSource {
             );
             if (path == null)
                 return; // outside of icosahedron
-            fireEvent(new Draw(LayerPanel.this, path));
+            fireEvent(new Paint(LayerPanel.this, path));
         }
 
         @Override

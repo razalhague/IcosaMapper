@@ -26,7 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
 /**
- *
+ * Status bar for the window.
  * @author Ville Jokela
  */
 @SuppressWarnings("serial")

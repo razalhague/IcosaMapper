@@ -41,7 +41,7 @@ import org.penny_craal.icosamapper.ui.events.RenameLayer;
 import org.penny_craal.icosamapper.ui.events.UnderlayLayer;
 
 /**
- *
+ * Panel for managing layers.
  * @author Ville Jokela
  */
 @SuppressWarnings("serial")

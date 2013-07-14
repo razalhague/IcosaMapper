@@ -31,7 +31,7 @@ abstract public class ArrayTriangleContainer implements TriangleContainer, Seria
     
     public ArrayTriangleContainer(byte init) {
         if (getSize() != 9 && getSize() != 20) {
-            throw new RuntimeException("Container size should be either 9 or 20");
+            throw new RuntimeException("ArrayTriangleContainer only works for containers of size 9 and 20");
         }
         
         vals = new byte[getSize()];
@@ -174,24 +174,31 @@ abstract public class ArrayTriangleContainer implements TriangleContainer, Seria
         return sb.toString();
     }
     
-    /* TODO: equality test for when the other object is a TC, but not an ATC */
     @Override
     public boolean equals(final Object other) {
         if (!(other instanceof ArrayTriangleContainer)) {
-            return false;
+            if (other instanceof TriangleContainer) {
+                // TODO: equality test for when the other object is a TC, but not an ATC
+                throw new UnsupportedOperationException(
+                        "Comparing with TriangleContainers other than ArrayTriangleContainers not implemented yet"
+                );
+            } else {
+                return false;
+            }
         }
         final ArrayTriangleContainer that = (ArrayTriangleContainer) other;
         if (this.getSize() != that.getSize()) {
             return false;
         }
-        if ((this.tris == null) != (that.tris == null)) {             // either both must be null, or both must be non-null
+        if ((this.tris == null) != (that.tris == null)) {       // either both must be null, or both must be non-null
             return false;
         }
         for (int i = 0; i < this.getSize(); i++) {
             if (this.vals[i] != that.vals[i]) {
                 return false;
             }
-            if (this.tris != null) {    // it is established higher up that if this.tris is not null, neither is that.tris
+            // it is established higher up that if this.tris is not null, neither is that.tris
+            if (this.tris != null) {
                 if (this.tris[i] != null && !this.tris[i].equals(that.tris[i])) {
                     return false;
                 } else if (this.tris[i] == null && that.tris[i] != null) {

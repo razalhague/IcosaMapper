@@ -32,7 +32,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 /**
- *
+ * Button bar for the layer management panel.
  * @author Ville Jokela
  */
 @SuppressWarnings("serial")

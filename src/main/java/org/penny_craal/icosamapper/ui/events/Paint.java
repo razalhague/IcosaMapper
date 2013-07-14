@@ -25,17 +25,17 @@ import org.penny_craal.icosamapper.map.Path;
  *
  * @author Ville Jokela
  */
-public class Draw extends IMEvent {
+public class Paint extends IMEvent {
     private static final long serialVersionUID = 1L;
     public final Path path;
 
-    public Draw(Object source, Path path) {
+    public Paint(Object source, Path path) {
         super(source);
         this.path = path;
     }
 
     @Override
     public String toString() {
-        return "Draw: " + path;
+        return "Paint: " + path;
     }
 }

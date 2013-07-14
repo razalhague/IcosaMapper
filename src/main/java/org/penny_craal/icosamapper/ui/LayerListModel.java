@@ -27,7 +27,7 @@ import java.util.List;
 import javax.swing.AbstractListModel;
 
 /**
- *
+ * ListModel for the layer list.
  * @author Ville Jokela
  */
 @SuppressWarnings("serial")
@@ -43,8 +43,9 @@ public class LayerListModel extends AbstractListModel<String> {
     }
 
     public void addElement(String element) throws NullPointerException, IllegalArgumentException {
-        if (canAdd(element))
+        if (canAdd(element)) {
             layers.add(element);
+        }
         fireIntervalAdded(this, layers.indexOf(element), layers.indexOf(element));
     }
 
@@ -55,10 +56,11 @@ public class LayerListModel extends AbstractListModel<String> {
     }
 
     public void rename(String oldName, String newName) throws NullPointerException, IllegalArgumentException {
-        if (canAdd(newName) && layers.contains(oldName))
+        if (canAdd(newName) && layers.contains(oldName)) {
             layers.set(layers.indexOf(oldName), newName);
-        else    // TODO: discriminate between bad newName and non-existent oldName
+        } else {    // TODO: discriminate between bad newName and non-existent oldName
             throw new IllegalArgumentException("Cannot rename " + oldName + " to " + newName);
+        }
         fireContentsChanged(this, layers.indexOf(newName), layers.indexOf(newName));
     }
 
@@ -75,12 +77,14 @@ public class LayerListModel extends AbstractListModel<String> {
     }
 
     public boolean canAdd(String element) {
-        if (element == null)
+        if (element == null) {
             return false; //throw new NullPointerException("Cannot add a null element");
-        if (element.trim().isEmpty())
+        }
+        if (element.trim().isEmpty()) {
             return false; //throw new IllegalArgumentException("Cannot add an empty string");
-        else if (layers.contains(element))
+        } else if (layers.contains(element)) {
             return false; //throw new IllegalArgumentException("List already contains " + element);
+        }
 
         return true;
     }

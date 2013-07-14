@@ -45,7 +45,9 @@ public class UI extends JFrame implements IMEventSource {
     private EventListenerList listenerList;
     private Map map;
     private int renderDepth;
-    
+      ////////////////////
+     // sub-components //
+    ////////////////////
     private StatusBar statusBar;
     private MenuBar menuBar;
     // these two go into the splitPane
@@ -71,9 +73,9 @@ public class UI extends JFrame implements IMEventSource {
         map = new Map();
         map.addLayer(LayerPanel.createTestLayer());
         renderDepth = 2;
+        statusBar = new StatusBar(renderDepth);
         menuBar = new MenuBar();
         menuBar.addIMEventListener(listener);
-        statusBar = new StatusBar(renderDepth);
         layerPanel = new LayerPanel(map.getLayer("test-layer"), renderDepth);
         layerPanel.addIMEventListener(listener);
         toolsPanel = new JPanel();
@@ -88,19 +90,23 @@ public class UI extends JFrame implements IMEventSource {
         toolsPanel.add(layerManagementPanel,   BorderLayout.CENTER);
         toolsPanel.setPreferredSize(toolsPanel.getMinimumSize());   // leave as much space as possible for layerPanel
         
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, toolsPanel, layerPanel);
+        
         setTitle("IcosaMapper");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, toolsPanel, layerPanel);
         setJMenuBar(menuBar);
         add(splitPane,  BorderLayout.CENTER);
         add(statusBar,  BorderLayout.PAGE_END);
         
         pack();
         // JFrame doesn't seem to automatically adopt the contentPane's minimum size, so we'll call it explicitly
-        // HACK: for some reason the minimum height is still about 18 pixels short
+        // HACK: for some reason the minimum height is still about 18 pixels short. dunno why, CBA to find out ATM
         setMinimumSize(new Dimension(getMinimumSize().width, getMinimumSize().height + 18));
+        
+        setExtendedState(UI.MAXIMIZED_BOTH);
+        setVisible(true);
     }
     
       ///////////////////

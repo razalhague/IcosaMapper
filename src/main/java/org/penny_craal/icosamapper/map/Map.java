@@ -30,7 +30,7 @@ import java.util.List;
  */
 public class Map implements Serializable {
     private static final long serialVersionUID = 1L;
-    LinkedHashMap<String, Layer> layers;
+    private LinkedHashMap<String, Layer> layers;
     
     /**
      * Constructs an empty map.
@@ -41,7 +41,7 @@ public class Map implements Serializable {
     
     /**
      * Adds the specified layer to the Map.
-     * @param layer the layer to be added
+     * @param layer     the layer to be added
      */
     public void addLayer(Layer layer) {
         layers.put(layer.getName(), layer);
@@ -50,7 +50,7 @@ public class Map implements Serializable {
     /**
      * Retrieves the specified layer from the Map.
      * @param layerName the layer to be retrieved
-     * @return the specified layer
+     * @return          the specified layer
      */
     public Layer getLayer(String layerName) {
         return layers.get(layerName);
@@ -66,8 +66,8 @@ public class Map implements Serializable {
     
     /**
      * Renames a layer in the Map.
-     * @param oldName old name
-     * @param newName new name
+     * @param oldName   old name
+     * @param newName   new name
      */
     public void renameLayer(String oldName, String newName) {
         Layer layer = layers.get(oldName);
@@ -76,6 +76,10 @@ public class Map implements Serializable {
         layers.put(newName, layer);
     }
     
+    /**
+     * Lists the names of layers.
+     * @return          list of layer names
+     */
     public List<String> getLayerNames() {
         return new ArrayList<>(layers.keySet());
     }
@@ -83,14 +87,21 @@ public class Map implements Serializable {
     /**
      * Gets an element from the specified location.
      * @param layerName name of the layer
-     * @param p the path to the element
-     * @return the specified element
+     * @param p         the path to the element
+     * @return          the specified element
      * @throws InvalidPathException when the given path does not point to an element
      */
     public byte getElement(String layerName, Path p) throws InvalidPathException {
         return layers.get(layerName).getElement(p);
     }
     
+    /**
+     * Sets the element at the specified location to the given value.
+     * @param layerName name of the layer
+     * @param p         path to the element
+     * @param val       value for the element
+     * @throws InvalidPathException
+     */
     public void setElement(String layerName, Path p, byte val) throws InvalidPathException {
         layers.get(layerName).setElement(p, val);
     }
@@ -98,7 +109,7 @@ public class Map implements Serializable {
     /**
      * Divides the specified element.
      * @param layerName name of the layer
-     * @param p path to the element
+     * @param p         path to the element
      * @throws InvalidPathException when the given path does not point to an element 
      */
     public void divide(String layerName, Path p) throws InvalidPathException {
@@ -108,7 +119,7 @@ public class Map implements Serializable {
     /**
      * Unites the specified element (removes children).
      * @param layerName name of the layer
-     * @param p path to the element
+     * @param p         path to the element
      * @throws InvalidPathException when the given path does not point to an element
      */
     public void unite(String layerName, Path p) throws InvalidPathException {
@@ -116,10 +127,11 @@ public class Map implements Serializable {
     }
     
     /**
-     * Renders the values of one layer at the given depth as colours. Elements that do not exist have the colour of their parent. 
+     * Renders the values of one layer at the given depth as colours. Elements that do not exist have the colour of
+     * their parent.
      * @param layerName the layer to be rendered
-     * @param depth 
-     * @return 
+     * @param depth     how deeply to render
+     * @return          an array depicting the Map at the specified depth
      */
     public int[] renderArray(String layerName, int depth) {
         return layers.get(layerName).renderArray(depth);

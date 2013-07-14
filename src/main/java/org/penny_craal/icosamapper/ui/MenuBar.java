@@ -39,7 +39,7 @@ import org.penny_craal.icosamapper.ui.events.SaveMap;
 import org.penny_craal.icosamapper.ui.events.SaveMapAs;
 
 /**
- *
+ * A menu bar for the window.
  * @author Ville Jokela
  */
 @SuppressWarnings("serial")

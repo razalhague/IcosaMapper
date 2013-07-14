@@ -20,16 +20,21 @@
 package org.penny_craal.icosamapper;
 
 /**
- * Data access Exception
+ * Data Access Exception
  * @author Ville Jokela
  */
 @SuppressWarnings("serial")
 public class DAException extends Exception {
     /**
      * Constructs the DAE.
-     * @param ex the exception that caused this exception.
+     * @param msg       message to be prepended before the cause's message
+     * @param cause     the exception that caused this exception.
      */
-    public DAException(Exception cause) {
-        super(cause);
+    public DAException(String msg, Throwable cause) {
+        super(msg + ": " + cause.getMessage(), cause);
+    }
+
+    public DAException(String msg) {
+        super(msg);
     }
 }

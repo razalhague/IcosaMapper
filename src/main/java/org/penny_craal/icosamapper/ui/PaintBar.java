@@ -34,7 +34,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 /**
- *
+ * A button bar for selecting a paint tool.
  * @author Ville Jokela
  */
 @SuppressWarnings("serial")

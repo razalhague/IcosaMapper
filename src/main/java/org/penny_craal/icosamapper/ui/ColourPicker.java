@@ -38,6 +38,7 @@ import org.penny_craal.icosamapper.map.LayerRenderer;
  */
 @SuppressWarnings("serial")
 public class ColourPicker extends JPanel {
+    // TODO: show the whole scale of all available colours somewhere
     private LayerRenderer lr;
     private JSpinner spinner;
     private JSlider slider;

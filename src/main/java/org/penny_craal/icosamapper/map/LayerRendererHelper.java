@@ -28,12 +28,12 @@ import java.io.Serializable;
 public abstract class LayerRendererHelper implements LayerRenderer, Serializable {
     @Override
     public int[] renderArray(byte[] values) {
-        int[] rValues = new int[values.length];
+        int[] rendered = new int[values.length];
         
-        for (int i = 0; i < rValues.length; i++) {
-            rValues[i] = renderByte(values[i]);
+        for (int i = 0; i < rendered.length; i++) {
+            rendered[i] = renderByte(values[i]);
         }
         
-        return rValues;
+        return rendered;
     }
 }

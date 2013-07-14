@@ -27,7 +27,7 @@ package org.penny_craal.icosamapper.map;
 public class InvalidPathException extends Exception {
     /**
      * Constructs a InvalidPathException with the default message.
-     * @param p the offending Path
+     * @param p         the offending Path
      */
     protected InvalidPathException(Path p) {
         super("The given path is invalid: " + p.toString());
@@ -35,8 +35,8 @@ public class InvalidPathException extends Exception {
 
     /**
      * Constructs a InvalidPathException with an additional message added to the default message.
-     * @param p the offending Path
-     * @param msg the additional message
+     * @param p         the offending Path
+     * @param msg       the additional message
      */
     protected InvalidPathException(Path p, String msg) {
         super("The given path is invalid for this operation (" + msg + "): " + p.toString());

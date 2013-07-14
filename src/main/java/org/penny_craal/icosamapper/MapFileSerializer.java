@@ -35,30 +35,29 @@ import org.penny_craal.icosamapper.map.Map;
 public class MapFileSerializer implements MapDAO {
     private File file;
     
-    /* Constructs the DAO */
+    /**
+     * Constructs the serializer
+     * @param file  file to save to
+     */
     public MapFileSerializer(File file) {
         this.file = file;
     }
 
     @Override
     public void save(Map map) throws DAException {
-        try {
-            FileOutputStream fos = new FileOutputStream(file);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
             oos.writeObject(map);
         } catch (IOException ex) {
-            throw new DAException(ex);
+            throw new DAException("Serialization failed", ex);
         }
     }
 
     @Override
     public Map load() throws DAException {
-        try {
-            FileInputStream fis = new FileInputStream(file);
-            ObjectInputStream ois = new ObjectInputStream(fis);
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
             return (Map) ois.readObject();
         } catch (IOException | ClassNotFoundException ex) {
-            throw new DAException(ex);
+            throw new DAException("Deserialization failed", ex);
         }
     }
 }

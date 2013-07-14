@@ -72,10 +72,6 @@ public class PaintPanel extends JPanel implements IMEventSource {
         add(opSize,         BorderLayout.PAGE_END);
     }
     
-    public byte getValue() {
-        return colourPicker.getValue();
-    }
-    
     public PaintBar.Tool getTool() {
         return paintBar.getTool();
     }

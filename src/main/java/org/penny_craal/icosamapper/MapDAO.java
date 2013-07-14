@@ -28,13 +28,14 @@ import org.penny_craal.icosamapper.map.Map;
 public interface MapDAO {
     /**
      * Saves the map.
-     * @param map the map to be saved
+     * @param map       the map to be saved
      * @throws DAException when something goes wrong with the saving
      */
     public void save(Map map) throws DAException;
+    
     /**
      * Loads the map.
-     * @return the loaded map
+     * @return          the loaded map
      * @throws DAException when something goes wrong with the loading
      */
     public Map load() throws DAException;

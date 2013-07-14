@@ -39,17 +39,12 @@ public class IcosaMapper {
      * @param args ignored
      */
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
+        SwingUtilities.invokeLater(new Runnable() { @Override public void run() {
                 Thread.setDefaultUncaughtExceptionHandler(new Handler());
                 UI ui = new UI();
-                ui.setExtendedState(UI.MAXIMIZED_BOTH);
-                ui.setVisible(true);
                 Listener listener = new Listener();
                 ui.addIMEventListener(listener);
-            }
-        });
+        }});
     }
     
     private static class Listener implements IMEventListener {
@@ -64,9 +59,11 @@ public class IcosaMapper {
         public void uncaughtException(Thread thread, Throwable thrwbl) {
             Frame[] frames = Frame.getFrames();
             thrwbl.printStackTrace();
-            JOptionPane.showMessageDialog(frames[0],
+            JOptionPane.showMessageDialog(
+                    frames[0],
                     thrwbl.getStackTrace(),
-                    thrwbl.getClass().getCanonicalName() + " caught in " + thread.getName() + ": " + thrwbl.getMessage(),
+                    "Caught " + thrwbl.getClass().getCanonicalName() + " in " + thread.getName()
+                        + ": " + thrwbl.getMessage(),
                     JOptionPane.ERROR_MESSAGE
             );
             for (Frame frame: frames) {

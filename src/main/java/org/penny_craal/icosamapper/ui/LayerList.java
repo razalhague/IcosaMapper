@@ -14,7 +14,7 @@ import org.penny_craal.icosamapper.ui.events.IMEventSource;
 import org.penny_craal.icosamapper.ui.events.LayerSelected;
 
 /**
- *
+ * Lists the layers in a Map.
  * @author Ville Jokela
  */
 @SuppressWarnings("serial")
