@@ -1,4 +1,6 @@
 nbactions.xml
 nb-configuration.xml
+.idea
+*.iml
 /gfx/Thumbs.db
 /target/
