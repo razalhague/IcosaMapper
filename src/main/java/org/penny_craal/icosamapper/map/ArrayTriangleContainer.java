@@ -59,7 +59,7 @@ abstract public class ArrayTriangleContainer implements TriangleContainer, Seria
             return this.getMeanValue();
         } else if (p.length() == 1) {
             return vals[p.first()];
-        } else if (tris != null || tris[p.first()] != null) {
+        } else if (tris != null && tris[p.first()] != null) {
             return tris[p.first()].getElement(p.rest());
         } else {
             throw new InvalidPathException(p);
@@ -151,8 +151,10 @@ abstract public class ArrayTriangleContainer implements TriangleContainer, Seria
         // TODO: recursive calculation?
         if (getSize() == 20) {
             return (int) (20 * Math.pow(9, depth-1));
-        } else /* getSize() == 9 */ {
+        } else if (getSize() == 9) {
             return (int) Math.pow(9, depth);
+        } else {
+            throw new RuntimeException("impossible size " + getSize());
         }
     }
     

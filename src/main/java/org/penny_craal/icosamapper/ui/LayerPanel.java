@@ -127,8 +127,9 @@ public class LayerPanel extends JPanel implements IMEventSource {
      */
     public void setLayer(Layer layer) {
         this.layer = layer;
-        if (zoom != null && !layer.isValidPath(zoom))
+        if (zoom != null && !layer.isValidPath(zoom)) {
             zoom = null;
+        }
     }
     
     /**
@@ -363,7 +364,6 @@ public class LayerPanel extends JPanel implements IMEventSource {
     
     /**
      * Checks if the point is outside the icosahedron's bounding rectangle.
-     * @param panelSize
      * @param relPanel
      * @return 
      */
@@ -506,12 +506,14 @@ public class LayerPanel extends JPanel implements IMEventSource {
     private class Listener extends MouseInputAdapter {
         @Override
         public void mouseClicked(MouseEvent me) {
-            if (zoom != null)   // won't handle zoom yet
+            if (zoom != null) {   // won't handle zoom yet
                 throw new UnsupportedOperationException("Not supported yet.");
+            }
             Dimension panelSize = getSize();
             Point relPanel = me.getPoint();
-            if (outsideIcosaRect(relPanel))
+            if (outsideIcosaRect(relPanel)) {
                 return;
+            }
             Dimension mapSize = new Dimension(panelSize.width - (insets.left + insets.right), panelSize.height - (insets.top + insets.bottom));
             Point relMap = new Point(relPanel.x - insets.left, relPanel.y - insets.top);
             Path path = resolvePathFromRelCoordsInArray(
@@ -522,19 +524,20 @@ public class LayerPanel extends JPanel implements IMEventSource {
                     new LinkedList<Byte>(),
                     drawDepth
             );
-            if (path == null)
+            if (path == null) {
                 return; // outside of icosahedron
+            }
             fireEvent(new Paint(LayerPanel.this, path));
         }
 
         @Override
         public void mouseEntered(MouseEvent me) {
-            //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            // do nothing for now
         }
 
         @Override
         public void mouseExited(MouseEvent me) {
-            //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            // do nothing for now
         }
 
         @Override
@@ -544,7 +547,7 @@ public class LayerPanel extends JPanel implements IMEventSource {
 
         @Override
         public void mouseMoved(MouseEvent me) {
-            //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            // do nothing for now
         }
     }
 }

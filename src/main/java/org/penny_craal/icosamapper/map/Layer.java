@@ -91,16 +91,7 @@ public class Layer implements TriangleContainer, Serializable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("{ name: ");
-        
-        sb.append(name);
-        sb.append(", LR: ");
-        sb.append(lr.getType());
-        sb.append(", ");
-        sb.append(ih.toString());
-        sb.append(" }");
-        
-        return sb.toString();
+        return "{ name: " + name + ", LR: " + lr.getType() + ", " + ih.toString() + " }";
     }
     
     @Override

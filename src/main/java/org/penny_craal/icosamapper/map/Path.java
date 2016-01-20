@@ -41,7 +41,6 @@ public class Path {
     /**
      * Constructs a Path
      * @param path
-     * @param index 
      */
     public Path(List<Byte> path) {
         byte[] bytePath = new byte[path.size()];

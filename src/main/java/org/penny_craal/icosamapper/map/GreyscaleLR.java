@@ -48,6 +48,6 @@ public class GreyscaleLR extends LayerRendererHelper {
     
     @Override
     public int hashCode() {
-        return 144;     // all GreyscaleLRs are identical, so a random number is sufficient.
+        return 144;     // all GreyscaleLRs are identical, so a pre-determined number is sufficient.
     }
 }

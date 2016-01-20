@@ -43,13 +43,16 @@ public class LayerList extends JList<String> implements IMEventSource {
     private class Listener extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent me) {
-            if (me.getClickCount() <= 1)
+            if (me.getClickCount() <= 1) {
                 return;
+            }
             Rectangle r = getCellBounds(0, getLastVisibleIndex());
-            if (r == null)
+            if (r == null) {
                 throw new RuntimeException("getCellBounds() returned null");
-            if (!r.contains(me.getPoint()))
+            }
+            if (!r.contains(me.getPoint())) {
                 return;
+            }
             
             fireEvent(new LayerSelected(LayerList.this, LayerList.this.getSelectedValue()));
         }

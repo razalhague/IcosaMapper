@@ -118,9 +118,11 @@ public class PaintBar extends JPanel {
     private class Listener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent ae) {
-            for (Button b: paintButtons)
-                if (b.tool.toolName.equals(ae.getActionCommand()))
+            for (Button b: paintButtons) {
+                if (b.tool.toolName.equals(ae.getActionCommand())) {
                     tool = b.tool;
+                }
+            }
             fireStateChanged();
         }
     }

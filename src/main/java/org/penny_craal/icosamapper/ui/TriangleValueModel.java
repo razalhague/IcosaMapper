@@ -66,9 +66,11 @@ public class TriangleValueModel  {
         Object[] listeners = ell.getListenerList();     // Guaranteed to return a non-null array
         // Process the listeners last to first, notifying
         // those that are interested in this event
-        for (int i = listeners.length - 2; i >= 0; i -= 2)
-            if (listeners[i] == ChangeListener.class)
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == ChangeListener.class) {
                 ((ChangeListener) listeners[i + 1]).stateChanged(ce);
+            }
+        }
     }
     
     public class BRM implements BoundedRangeModel {
@@ -109,8 +111,9 @@ public class TriangleValueModel  {
         public void setValue(int i) {
             oldValue = value;
             value = (byte) i;
-            if (oldValue != value)
+            if (oldValue != value) {
                 TriangleValueModel.this.fireStateChanged();
+            }
         }
 
         @Override
@@ -157,9 +160,11 @@ public class TriangleValueModel  {
             Object[] listeners = ell.getListenerList();     // Guaranteed to return a non-null array
             // Process the listeners last to first, notifying
             // those that are interested in this event
-            for (int i = listeners.length - 2; i >= 0; i -= 2)
-                if (listeners[i] == ChangeListener.class)
+            for (int i = listeners.length - 2; i >= 0; i -= 2) {
+                if (listeners[i] == ChangeListener.class) {
                     ((ChangeListener) listeners[i + 1]).stateChanged(ce);
+                }
+            }
         }
     }
     
@@ -179,27 +184,31 @@ public class TriangleValueModel  {
         public void setValue(Object o) {
             oldValue = value;
             int v = (int) o;
-            if (v < MIN_VALUE || v > MAX_VALUE)
+            if (v < MIN_VALUE || v > MAX_VALUE) {
                 throw new IllegalArgumentException("Value must be between " + MIN_VALUE + " and " + MAX_VALUE);
+            }
             value = (byte) v;
-            if (oldValue != value)
+            if (oldValue != value) {
                 TriangleValueModel.this.fireStateChanged();
+            }
         }
 
         @Override
         public Object getNextValue() {
-            if (Util.toInt(value) == MAX_VALUE)
+            if (Util.toInt(value) == MAX_VALUE) {
                 return null;
-            else
+            } else {
                 return Util.toInt(value) + 1;
+            }
         }
 
         @Override
         public Object getPreviousValue() {
-            if (Util.toInt(value) == MIN_VALUE)
+            if (Util.toInt(value) == MIN_VALUE) {
                 return null;
-            else
+            } else {
                 return Util.toInt(value) - 1;
+            }
         }
         
           ///////////////////
@@ -221,9 +230,11 @@ public class TriangleValueModel  {
             Object[] listeners = ell.getListenerList();     // Guaranteed to return a non-null array
             // Process the listeners last to first, notifying
             // those that are interested in this event
-            for (int i = listeners.length - 2; i >= 0; i -= 2)
-                if (listeners[i] == ChangeListener.class)
+            for (int i = listeners.length - 2; i >= 0; i -= 2) {
+                if (listeners[i] == ChangeListener.class) {
                     ((ChangeListener) listeners[i + 1]).stateChanged(ce);
+                }
+            }
         }
     }
 }

@@ -70,7 +70,7 @@ public class LayerManagementBar extends JPanel {
         ;
         public final String toolName;
         
-        private Tool(String name) {
+        Tool(String name) {
             this.toolName = name;
         }
     }
@@ -101,9 +101,11 @@ public class LayerManagementBar extends JPanel {
         Object[] listeners = listenerList.getListenerList();     // Guaranteed to return a non-null array
         // Process the listeners last to first, notifying
         // those that are interested in this event
-        for (int i = listeners.length - 2; i >= 0; i -= 2)
-            if (listeners[i] == ActionListener.class)
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == ActionListener.class) {
                 ((ActionListener) listeners[i + 1]).actionPerformed(ae);
+            }
+        }
     }
     
     private class Listener implements ActionListener {
