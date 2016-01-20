@@ -31,12 +31,12 @@ public interface MapDAO {
      * @param map       the map to be saved
      * @throws DAException when something goes wrong with the saving
      */
-    public void save(Map map) throws DAException;
+    void save(Map map) throws DAException;
     
     /**
      * Loads the map.
      * @return          the loaded map
      * @throws DAException when something goes wrong with the loading
      */
-    public Map load() throws DAException;
+    Map load() throws DAException;
 }
