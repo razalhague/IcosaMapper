@@ -19,45 +19,40 @@
 
 package org.penny_craal.icosamapper;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 
 import org.penny_craal.icosamapper.map.Map;
 
 /**
- * An implementation of MapDAO using Java's serialization, saved to a file.
+ * An implementation of MapDAO using the file system.
  * @author Ville Jokela
  */
-public class MapFileSerializer implements MapDAO {
+public class FileMapDAO implements MapDAO {
     private File file;
     
     /**
-     * Constructs the serializer
+     * Constructs the DAO
      * @param file  file to save to
      */
-    public MapFileSerializer(File file) {
+    public FileMapDAO(File file) {
         this.file = file;
     }
 
     @Override
-    public void save(Map map) throws DAException {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-            oos.writeObject(map);
-        } catch (IOException ex) {
-            throw new DAException("Serialization failed", ex);
+    public void save(Map map, MapSerializer serializer) throws DAException {
+        try (OutputStream dst = new FileOutputStream(file)) {
+            serializer.serialize(map, dst);
+        } catch (IOException e) {
+            throw new DAException("Serialization failed", e);
         }
     }
 
     @Override
-    public Map load() throws DAException {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-            return (Map) ois.readObject();
-        } catch (IOException | ClassNotFoundException ex) {
-            throw new DAException("Deserialization failed", ex);
+    public Map load(MapSerializer serializer) throws DAException {
+        try (InputStream src = new FileInputStream(file)) {
+            return serializer.deserialize(src);
+        } catch (IOException e) {
+            throw new DAException("Deserialization failed", e);
         }
     }
 }

@@ -31,12 +31,12 @@ public interface MapDAO {
      * @param map       the map to be saved
      * @throws DAException when something goes wrong with the saving
      */
-    void save(Map map) throws DAException;
+    void save(Map map, MapSerializer serializer) throws DAException;
     
     /**
      * Loads the map.
      * @return          the loaded map
      * @throws DAException when something goes wrong with the loading
      */
-    Map load() throws DAException;
+    Map load(MapSerializer serializer) throws DAException;
 }
