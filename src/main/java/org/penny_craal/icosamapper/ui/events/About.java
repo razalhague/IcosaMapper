@@ -27,7 +27,7 @@ public class About extends IMEvent {
     private static final long serialVersionUID = 1L;
 
     public About(Object source) {
-        super(source);
+        super(source, EventType.about);
     }
 
     @Override

@@ -30,7 +30,7 @@ public class ToolSelected extends IMEvent {
     public final PaintBar.Tool tool;
 
     public ToolSelected(Object source, PaintBar.Tool tool) {
-        super(source);
+        super(source, EventType.toolSelected);
         this.tool = tool;
     }
 

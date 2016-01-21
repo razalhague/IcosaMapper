@@ -27,7 +27,7 @@ public class Exit extends IMEvent {
     private static final long serialVersionUID = 1L;
 
     public Exit(Object source) {
-        super(source);
+        super(source, EventType.exit);
     }
 
     @Override

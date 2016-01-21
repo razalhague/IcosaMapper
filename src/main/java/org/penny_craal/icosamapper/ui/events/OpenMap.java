@@ -27,7 +27,7 @@ public class OpenMap extends IMEvent {
     private static final long serialVersionUID = 1L;
 
     public OpenMap(Object source) {
-        super(source);
+        super(source, EventType.openMap);
     }
 
     @Override

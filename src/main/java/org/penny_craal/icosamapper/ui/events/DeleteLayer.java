@@ -28,7 +28,7 @@ public class DeleteLayer extends IMEvent {
     public final String name;
 
     public DeleteLayer(Object source, String name) {
-        super(source);
+        super(source, EventType.deleteLayer);
         this.name = name;
     }
 

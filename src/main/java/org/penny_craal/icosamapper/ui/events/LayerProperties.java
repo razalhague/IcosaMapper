@@ -28,7 +28,7 @@ public class LayerProperties extends IMEvent {
     public final String layerName;
 
     public LayerProperties(Object source, String layerName) {
-        super(source);
+        super(source, EventType.layerProperties);
         this.layerName = layerName;
     }
 

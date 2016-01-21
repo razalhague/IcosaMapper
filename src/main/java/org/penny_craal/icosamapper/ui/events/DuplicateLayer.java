@@ -28,7 +28,7 @@ public class DuplicateLayer extends IMEvent {
     public final String layerName;
 
     public DuplicateLayer(Object source, String layerName) {
-        super(source);
+        super(source, EventType.duplicateLayer);
         this.layerName = layerName;
     }
 

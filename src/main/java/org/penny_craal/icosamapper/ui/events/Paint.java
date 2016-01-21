@@ -30,7 +30,7 @@ public class Paint extends IMEvent {
     public final Path path;
 
     public Paint(Object source, Path path) {
-        super(source);
+        super(source, EventType.paint);
         this.path = path;
     }
 

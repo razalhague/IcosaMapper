@@ -27,7 +27,7 @@ public class NewLayer extends IMEvent {
     private static final long serialVersionUID = 1L;
 
     public NewLayer(Object source) {
-        super(source);
+        super(source, EventType.newLayer);
     }
 
     @Override

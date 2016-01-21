@@ -30,7 +30,7 @@ public class ColourSelected extends IMEvent {
     public final byte value;
 
     public ColourSelected(Object source, byte value) {
-        super(source);
+        super(source, EventType.colourSelected);
         this.value = value;
     }
 

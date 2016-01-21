@@ -28,7 +28,7 @@ public class LayerSelected extends IMEvent {
     public final String layerName;
     
     public LayerSelected(Object source, String layerName) {
-        super(source);
+        super(source, EventType.layerSelected);
         this.layerName = layerName;
     }
 

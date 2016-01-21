@@ -27,7 +27,7 @@ public class NewMap extends IMEvent {
     private static final long serialVersionUID = 1L;
 
     public NewMap(Object source) {
-        super(source);
+        super(source, EventType.newMap);
     }
 
     @Override

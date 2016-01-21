@@ -28,7 +28,7 @@ public class OpSizeSelected extends IMEvent {
     public final int opSize;
 
     public OpSizeSelected(Object source, int opSize) {
-        super(source);
+        super(source, EventType.opSizeSelected);
         this.opSize = opSize;
     }
 

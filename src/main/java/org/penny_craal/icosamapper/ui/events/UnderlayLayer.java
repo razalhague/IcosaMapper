@@ -28,7 +28,7 @@ public class UnderlayLayer extends IMEvent {
     public final String layerName;
     
     public UnderlayLayer(Object source, String layerName) {
-        super(source);
+        super(source, EventType.underlayLayer);
         this.layerName = layerName;
     }
 

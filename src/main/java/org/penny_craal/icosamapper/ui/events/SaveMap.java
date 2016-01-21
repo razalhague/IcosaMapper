@@ -27,7 +27,7 @@ public class SaveMap extends IMEvent {
     private static final long serialVersionUID = 1L;
 
     public SaveMap(Object source) {
-        super(source);
+        super(source, EventType.saveMap);
     }
 
     @Override

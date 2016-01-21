@@ -27,7 +27,31 @@ import java.util.EventObject;
  */
 @SuppressWarnings("serial")
 public class IMEvent extends EventObject {
-    protected IMEvent(Object source) {
+    public final EventType type;
+
+    protected IMEvent(Object source, EventType type) {
         super(source);
+        this.type = type;
+    }
+
+    public enum EventType {
+        about,
+        colourSelected,
+        deleteLayer,
+        duplicateLayer,
+        exit,
+        layerActionWithoutLayer,
+        layerProperties,
+        layerSelected,
+        newLayer,
+        newMap,
+        openMap,
+        opSizeSelected,
+        paint,
+        renameLayer,
+        saveMap,
+        saveMapAs,
+        toolSelected,
+        underlayLayer,
     }
 }

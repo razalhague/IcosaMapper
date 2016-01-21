@@ -28,7 +28,7 @@ public class RenameLayer extends IMEvent {
     public final String layer;
 
     public RenameLayer(Object source, String layer) {
-        super(source);
+        super(source, EventType.renameLayer);
         this.layer = layer;
     }
 
