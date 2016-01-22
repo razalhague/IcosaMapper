@@ -24,16 +24,42 @@ import java.awt.Frame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.penny_craal.icosamapper.map.GreyscaleLR;
+import org.penny_craal.icosamapper.map.Layer;
+import org.penny_craal.icosamapper.map.Map;
+import org.penny_craal.icosamapper.ui.LayerPanel;
+import org.penny_craal.icosamapper.ui.PaintBar;
 import org.penny_craal.icosamapper.ui.UI;
-import org.penny_craal.icosamapper.ui.events.IMEvent;
-import org.penny_craal.icosamapper.ui.events.IMEventListener;
+import org.penny_craal.icosamapper.ui.events.*;
 
 /**
  * The main class for the program.
  * @author Ville Jokela
  * @author James Pearce
  */
-public class IcosaMapper {
+public class IcosaMapper implements IMEventListener {
+    private UI ui;
+    private Map map;
+    private String layerName;
+    private byte colour;
+    private PaintBar.Tool tool;
+    private int opSize;
+
+    private static final byte defaultColour = 0;
+    private static final int defaultOpSize = 1;
+    private static final PaintBar.Tool defaultTool = PaintBar.Tool.DRAW;
+
+    private IcosaMapper() {
+        map = new Map();
+        map.addLayer(LayerPanel.createTestLayer());
+        layerName = map.getLayerNames().get(0);
+        colour = defaultColour;
+        tool = defaultTool;
+        opSize = defaultOpSize;
+        ui = new UI(map, defaultColour, defaultTool, defaultOpSize);
+        ui.addIMEventListener(this);
+    }
+
     /**
      * The main method for the program.
      * @param args ignored
@@ -41,19 +67,80 @@ public class IcosaMapper {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() { @Override public void run() {
                 Thread.setDefaultUncaughtExceptionHandler(new Handler());
-                UI ui = new UI();
-                Listener listener = new Listener();
-                ui.addIMEventListener(listener);
+                IcosaMapper icosaMapper = new IcosaMapper();
         }});
     }
-    
-    private static class Listener implements IMEventListener {
-        @Override
-        public void handleEvent(IMEvent ime) {
-            System.out.println(ime);
+
+    @Override
+    public void handleEvent(IMEvent ime) {
+        System.out.println(ime);
+        switch (ime.type) {
+            case about:
+                // TODO: popup an about dialog
+                break;
+            case colourSelected:
+                colour = ((ColourSelected) ime).value;
+                break;
+            case deleteLayer:
+                // TODO: confirm removal
+                map.removeLayer(((DeleteLayer) ime).name);
+                break;
+            case duplicateLayer:
+                // TODO: duplicate layer
+                break;
+            case exit:
+                // TODO: ask to confirm if unsaved changes
+                System.exit(0);
+                break;
+            case layerActionWithoutLayer:
+                // TODO: popup a window telling user to select a layer
+                break;
+            case layerProperties:
+                // TODO: open layer properties window
+                break;
+            case layerSelected:
+                layerName = ((LayerSelected) ime).layerName;
+                break;
+            case newLayer:
+                // TODO: ask new layer's name, renderer and initial value
+                map.addLayer(new Layer("new layer", new GreyscaleLR(), (byte) 0));
+                break;
+            case newMap:
+                // TODO: ask if user really wants to create new map, old map will be discarded
+                map = new Map();
+                break;
+            case openMap:
+                // TODO: open dialog for opening a map
+                break;
+            case opSizeSelected:
+                opSize = ((OpSizeSelected) ime).opSize;
+                break;
+            case paint:
+                // TODO: handle all the different tools
+                break;
+            case renameLayer:
+                // TODO: popup window asking for layer's new name
+                RenameLayer rl = (RenameLayer) ime;
+                map.renameLayer(rl.layer, "new name");
+                break;
+            case saveMap:
+                // TODO: save map
+                break;
+            case saveMapAs:
+                // TODO: open dialog for saving map
+                break;
+            case toolSelected:
+                tool = ((ToolSelected) ime).tool;
+                break;
+            case underlayLayer:
+                // TODO: underlay layer
+                break;
+            default:
+                throw new RuntimeException("unrecognized event type");
         }
+        ui.refresh(colour, layerName, tool, opSize);
     }
-    
+
     private static class Handler implements Thread.UncaughtExceptionHandler {
         @Override
         public void uncaughtException(Thread thread, Throwable thrwbl) {

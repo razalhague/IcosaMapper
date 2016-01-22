@@ -39,29 +39,27 @@ import org.penny_craal.icosamapper.ui.events.IMEventSource;
 import org.penny_craal.icosamapper.ui.events.OpSizeSelected;
 import org.penny_craal.icosamapper.ui.events.ToolSelected;
 
-import static org.penny_craal.icosamapper.map.Constants.*;
-
 /**
  *
  * @author Ville Jokela
  */
 @SuppressWarnings("serial")
 public class PaintPanel extends JPanel implements IMEventSource {
-    private JPanel opSize;
+    private JPanel opSizePanel;
     private JSpinner opSizeSpinner;
     private PaintBar paintBar;
     private ColourPicker colourPicker;
     
-    public PaintPanel() {
+    public PaintPanel(int opSize, PaintBar.Tool tool, byte colour) {
         Listener listener = new Listener();
-        opSize = new JPanel();
-        opSize.add(new JLabel("Operating size"));
-        opSizeSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
+        opSizePanel = new JPanel();
+        opSizePanel.add(new JLabel("Operating size"));
+        opSizeSpinner = new JSpinner(new SpinnerNumberModel(opSize, 1, 10, 1));
         opSizeSpinner.addChangeListener(listener);
-        opSize.add(opSizeSpinner);
-        paintBar = new PaintBar();
+        opSizePanel.add(opSizeSpinner);
+        paintBar = new PaintBar(tool);
         paintBar.addChangeListener(listener);
-        colourPicker = new ColourPicker(new GreyscaleLR(), (byte) MIN_VALUE);
+        colourPicker = new ColourPicker(new GreyscaleLR(), colour);
         colourPicker.addChangeListener(listener);
         
         setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED), "Paint"));
@@ -69,9 +67,21 @@ public class PaintPanel extends JPanel implements IMEventSource {
         
         add(colourPicker,   BorderLayout.CENTER);
         add(paintBar,       BorderLayout.LINE_END);
-        add(opSize,         BorderLayout.PAGE_END);
+        add(opSizePanel,    BorderLayout.PAGE_END);
     }
-    
+
+    public void setOpSize(int opSize) {
+        opSizeSpinner.setValue(opSize);
+    }
+
+    public void setColour(byte colour) {
+        colourPicker.setColour(colour);
+    }
+
+    public void setTool(PaintBar.Tool tool) {
+        paintBar.setTool(tool);
+    }
+
     public PaintBar.Tool getTool() {
         return paintBar.getTool();
     }
@@ -93,7 +103,7 @@ public class PaintPanel extends JPanel implements IMEventSource {
     protected void fireEvent(IMEvent ime) {
         IMEventHelper.fireEvent(listenerList, ime);
     }
-    
+
     private class Listener implements ChangeListener {
         @Override
         public void stateChanged(ChangeEvent ce) {

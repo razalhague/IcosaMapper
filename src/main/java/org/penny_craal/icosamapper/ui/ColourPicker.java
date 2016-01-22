@@ -85,13 +85,17 @@ public class ColourPicker extends JPanel {
     public void removeChangeListener(ChangeListener cl) {
         listenerList.remove(ChangeListener.class, cl);
     }
-    
+
     protected void fireStateChanged() {
         ChangeEvent ce = new ChangeEvent(this);
         for (ChangeListener cl: listenerList.getListeners(ChangeListener.class))
             cl.stateChanged(ce);
     }
-    
+
+    public void setColour(byte colour) {
+        value.setValue(colour);
+    }
+
     private class Listener implements ChangeListener {
         @Override
         public void stateChanged(ChangeEvent ce) {

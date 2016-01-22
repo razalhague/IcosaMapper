@@ -19,8 +19,7 @@
 
 package org.penny_craal.icosamapper.ui;
 
-import java.awt.GridLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -51,10 +50,10 @@ public class PaintBar extends JPanel {
         add(new Button(Tool.ZOOM_OUT,   "zoom out"));
     }};
     
-    public PaintBar() {
+    public PaintBar(Tool tool) {
         bg = new ButtonGroup();
-        tool = null;
-        
+        this.tool = tool;
+
         setLayout(new GridLayout(0,2));
         
         Listener listener = new Listener();
@@ -64,6 +63,9 @@ public class PaintBar extends JPanel {
             button.addActionListener(listener);
             button.setActionCommand(b.tool.toolName);
             button.setMargin(new Insets(2, 2, 2, 2));
+            if (b.tool == tool) {
+                button.setSelected(true);
+            }
             bg.add(button);
             add(button);
         }
@@ -72,7 +74,14 @@ public class PaintBar extends JPanel {
     public Tool getTool() {
         return tool;
     }
-    
+
+    public void setTool(Tool tool) {
+        this.tool = tool;
+        for (int i = 0; i < paintButtons.size(); i++) {
+            ((JToggleButton) getComponent(i)).setSelected(paintButtons.get(i).tool == tool);
+        }
+    }
+
     public enum Tool {
         DRAW        ("draw"),
         FILL        ("fill"),

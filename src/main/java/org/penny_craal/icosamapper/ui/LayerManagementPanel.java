@@ -106,11 +106,11 @@ public class LayerManagementPanel extends JPanel implements IMEventSource {
                     fireEvent(new DuplicateLayer(LayerManagementPanel.this, layerList.getSelectedValue()));
                 } else if (cmd.equals(LayerManagementBar.Tool.RENAME.toolName)) {
                     fireEvent(new RenameLayer(LayerManagementPanel.this, layerList.getSelectedValue()));
-                } else if   (cmd.equals(LayerManagementBar.Tool.PROPERTIES.toolName)) {
+                } else if (cmd.equals(LayerManagementBar.Tool.PROPERTIES.toolName)) {
                     fireEvent(new LayerProperties(LayerManagementPanel.this, layerList.getSelectedValue()));
-                } else if   (cmd.equals(LayerManagementBar.Tool.UNDERLAY.toolName)) {
+                } else if (cmd.equals(LayerManagementBar.Tool.UNDERLAY.toolName)) {
                     fireEvent(new UnderlayLayer(LayerManagementPanel.this, layerList.getSelectedValue()));
-                } else if   (cmd.equals(LayerManagementBar.Tool.DELETE.toolName)) {
+                } else if (cmd.equals(LayerManagementBar.Tool.DELETE.toolName)) {
                     fireEvent(new DeleteLayer(LayerManagementPanel.this, layerList.getSelectedValue()));
                 }
             }

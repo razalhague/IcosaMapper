@@ -21,6 +21,9 @@ package org.penny_craal.icosamapper.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -30,10 +33,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.EventListenerList;
 
 import org.penny_craal.icosamapper.map.Map;
-import org.penny_craal.icosamapper.ui.events.IMEvent;
-import org.penny_craal.icosamapper.ui.events.IMEventHelper;
-import org.penny_craal.icosamapper.ui.events.IMEventListener;
-import org.penny_craal.icosamapper.ui.events.IMEventSource;
+import org.penny_craal.icosamapper.ui.events.*;
 
 /**
  * The user interface for IcosaMapper.
@@ -42,8 +42,10 @@ import org.penny_craal.icosamapper.ui.events.IMEventSource;
  */
 @SuppressWarnings("serial")
 public class UI extends JFrame implements IMEventSource {
-    private EventListenerList listenerList;
     private Map map;
+    private String layerName;
+
+    private EventListenerList listenerList;
     private int renderDepth;
       ////////////////////
      // sub-components //
@@ -57,7 +59,10 @@ public class UI extends JFrame implements IMEventSource {
     private PaintPanel paintPanel;
     private LayerManagementPanel layerManagementPanel;
 
-    public UI() {
+    public UI(Map map, byte colour, PaintBar.Tool tool, int opSize) {
+        this.map = map;
+        this.layerName = map.getLayerNames().get(0);
+
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (
@@ -70,17 +75,15 @@ public class UI extends JFrame implements IMEventSource {
         }
         Listener listener = new Listener();
         listenerList = new EventListenerList();
-        map = new Map();
-        map.addLayer(LayerPanel.createTestLayer());
         renderDepth = 2;
         statusBar = new StatusBar(renderDepth);
         menuBar = new MenuBar();
         menuBar.addIMEventListener(listener);
-        layerPanel = new LayerPanel(map.getLayer("test-layer"), renderDepth);
+        layerPanel = new LayerPanel(map.getLayer(layerName), renderDepth);
         layerPanel.addIMEventListener(listener);
         toolsPanel = new JPanel();
         toolsPanel.setLayout(new BorderLayout());
-        paintPanel = new PaintPanel();
+        paintPanel = new PaintPanel(opSize, tool, colour);
         paintPanel.addIMEventListener(listener);
         layerManagementPanel = new LayerManagementPanel();
         layerManagementPanel.addIMEventListener(listener);
@@ -93,13 +96,14 @@ public class UI extends JFrame implements IMEventSource {
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, toolsPanel, layerPanel);
         
         setTitle("IcosaMapper");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        addWindowListener(listener);
         setLayout(new BorderLayout());
         
         setJMenuBar(menuBar);
         add(splitPane,  BorderLayout.CENTER);
         add(statusBar,  BorderLayout.PAGE_END);
-        
+
         pack();
         // JFrame doesn't seem to automatically adopt the contentPane's minimum size, so we'll call it explicitly
         // HACK: for some reason the minimum height is still about 18 pixels short. dunno why, CBA to find out ATM
@@ -107,6 +111,37 @@ public class UI extends JFrame implements IMEventSource {
         
         setExtendedState(UI.MAXIMIZED_BOTH);
         setVisible(true);
+    }
+
+    public void setMap(Map map) {
+        this.map = map;
+        this.layerName = map.getLayerNames().get(0);
+        layerPanel.setLayer(map.getLayer(map.getLayerNames().get(0)));
+    }
+
+    public void refresh(byte colour, String layerName, PaintBar.Tool tool, int opSize) {
+        if (!this.layerName.equals(layerName)) {
+            layerPanel.setLayer(map.getLayer(layerName));
+            layerPanel.repaint();
+        }
+        this.layerName = layerName;
+        paintPanel.setTool(tool);
+        paintPanel.setOpSize(opSize);
+        paintPanel.setColour(colour);
+        // remove any layers not in the map
+        LayerListModel llm = layerManagementPanel.getLayerListModel();
+        List<String> layerNames = map.getLayerNames();
+        for (String l: llm.getLayers()) {
+            if (!layerNames.contains(l)) {
+                llm.removeElement(l);
+            }
+        }
+        // add any layers not in the display list
+        for (String l: layerNames) {
+            if (!llm.getLayers().contains(l)) {
+                llm.addElement(l);
+            }
+        }
     }
     
       ///////////////////
@@ -126,11 +161,43 @@ public class UI extends JFrame implements IMEventSource {
     protected void fireEvent(IMEvent ime) {
         IMEventHelper.fireEvent(listenerList, ime);
     }
-    
-    private class Listener implements IMEventListener {
+
+    private class Listener implements IMEventListener, WindowListener {
+        // for IMEventListener
         @Override
         public void handleEvent(IMEvent ime) {
             fireEvent(ime); // just pass on the event
+        }
+
+        // the rest are for WindowListener
+
+        @Override
+        public void windowOpened(WindowEvent windowEvent) {
+        }
+
+        @Override
+        public void windowClosing(WindowEvent windowEvent) {
+            fireEvent(new Exit(UI.this));
+        }
+
+        @Override
+        public void windowClosed(WindowEvent windowEvent) {
+        }
+
+        @Override
+        public void windowIconified(WindowEvent windowEvent) {
+        }
+
+        @Override
+        public void windowDeiconified(WindowEvent windowEvent) {
+        }
+
+        @Override
+        public void windowActivated(WindowEvent windowEvent) {
+        }
+
+        @Override
+        public void windowDeactivated(WindowEvent windowEvent) {
         }
     }
 }

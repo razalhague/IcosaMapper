@@ -343,7 +343,7 @@ public class LayerPanel extends JPanel implements IMEventSource {
         }
     }
     
-    protected static Layer createTestLayer() {
+    public static Layer createTestLayer() {
         Layer layer = new Layer("test-layer", new GreyscaleLR(), (byte) 0);
         
         try {
@@ -352,7 +352,7 @@ public class LayerPanel extends JPanel implements IMEventSource {
                 layer.divide(new Path(api));
                 for (int j = 0; j < 9; j++) {
                     byte[] apj = {(byte) i, (byte) j};
-                    layer.setElement(new Path(apj), (byte) (256/20*i + 256/20/9*j));
+                    layer.setElement(new Path(apj), (byte) (256.0/20*i + 256.0/20/9*j));
                 }
             }
         } catch (InvalidPathException ex) {

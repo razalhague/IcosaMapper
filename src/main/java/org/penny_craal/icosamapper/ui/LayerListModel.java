@@ -32,7 +32,7 @@ import javax.swing.AbstractListModel;
  */
 @SuppressWarnings("serial")
 public class LayerListModel extends AbstractListModel<String> {
-    List<String> layers;
+    private List<String> layers;
 
     public LayerListModel(Collection<String> layers) {
         this.layers = new ArrayList<>(layers);
@@ -47,6 +47,10 @@ public class LayerListModel extends AbstractListModel<String> {
             layers.add(element);
         }
         fireIntervalAdded(this, layers.indexOf(element), layers.indexOf(element));
+    }
+
+    public List<String> getLayers() {
+        return new ArrayList<>(layers);
     }
 
     public void addAll(Collection<String> cs) {
