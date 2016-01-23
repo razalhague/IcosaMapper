@@ -25,11 +25,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.List;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 import javax.swing.event.EventListenerList;
 
 import org.penny_craal.icosamapper.map.Map;
@@ -142,6 +138,10 @@ public class UI extends JFrame implements IMEventSource {
                 llm.addElement(l);
             }
         }
+    }
+
+    public boolean confirmExit() {
+        return JOptionPane.showConfirmDialog(this, "Really quit? Any unsaved changes will be lost.", "Quit IcosaMapper?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
     }
     
       ///////////////////

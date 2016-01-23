@@ -44,6 +44,7 @@ public class IcosaMapper implements IMEventListener {
     private byte colour;
     private PaintBar.Tool tool;
     private int opSize;
+    private boolean hasUnsavedChanges = false;
 
     private static final byte defaultColour = 0;
     private static final int defaultOpSize = 1;
@@ -83,20 +84,23 @@ public class IcosaMapper implements IMEventListener {
                 break;
             case deleteLayer:
                 // TODO: confirm removal
+                hasUnsavedChanges = true;
                 map.removeLayer(((DeleteLayer) ime).name);
                 break;
             case duplicateLayer:
                 // TODO: duplicate layer
+                hasUnsavedChanges = true;
                 break;
             case exit:
-                // TODO: ask to confirm if unsaved changes
-                System.exit(0);
+                if (!hasUnsavedChanges || ui.confirmExit()) {
+                    System.exit(0);
+                }
                 break;
             case layerActionWithoutLayer:
                 // TODO: popup a window telling user to select a layer
                 break;
             case layerProperties:
-                // TODO: open layer properties window
+                // TODO: open layer properties window & update hasUnsavedChanges if necessary
                 break;
             case layerSelected:
                 layerName = ((LayerSelected) ime).layerName;
@@ -104,30 +108,37 @@ public class IcosaMapper implements IMEventListener {
             case newLayer:
                 // TODO: ask new layer's name, renderer and initial value
                 map.addLayer(new Layer("new layer", new GreyscaleLR(), (byte) 0));
+                hasUnsavedChanges = true;
                 break;
             case newMap:
                 // TODO: ask if user really wants to create new map, old map will be discarded
                 map = new Map();
+                hasUnsavedChanges = false;
                 break;
             case openMap:
                 // TODO: open dialog for opening a map
+                hasUnsavedChanges = false;
                 break;
             case opSizeSelected:
                 opSize = ((OpSizeSelected) ime).opSize;
                 break;
             case paint:
+                hasUnsavedChanges = true;
                 // TODO: handle all the different tools
                 break;
             case renameLayer:
                 // TODO: popup window asking for layer's new name
                 RenameLayer rl = (RenameLayer) ime;
                 map.renameLayer(rl.layer, "new name");
+                hasUnsavedChanges = true;
                 break;
             case saveMap:
                 // TODO: save map
+                hasUnsavedChanges = false;
                 break;
             case saveMapAs:
                 // TODO: open dialog for saving map
+                hasUnsavedChanges = false;
                 break;
             case toolSelected:
                 tool = ((ToolSelected) ime).tool;
