@@ -97,7 +97,7 @@ public class IcosaMapper implements IMEventListener {
                 }
                 break;
             case layerActionWithoutLayer:
-                // TODO: popup a window telling user to select a layer
+                ui.askToSelectLayer();
                 break;
             case layerProperties:
                 // TODO: open layer properties window & update hasUnsavedChanges if necessary

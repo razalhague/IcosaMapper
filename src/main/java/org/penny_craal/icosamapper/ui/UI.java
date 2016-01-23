@@ -148,6 +148,10 @@ public class UI extends JFrame implements IMEventSource {
         return (String) JOptionPane.showInputDialog(this, "New name for layer", "Rename layer", JOptionPane.QUESTION_MESSAGE, null, null, layer);
     }
 
+    public void askToSelectLayer() {
+        JOptionPane.showMessageDialog(this, "Please select a layer.", "No layer selected", JOptionPane.INFORMATION_MESSAGE);
+    }
+
       ///////////////////
      // Listener crap //
     ///////////////////
