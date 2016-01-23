@@ -143,7 +143,11 @@ public class UI extends JFrame implements IMEventSource {
     public boolean confirmExit() {
         return JOptionPane.showConfirmDialog(this, "Really quit? Any unsaved changes will be lost.", "Quit IcosaMapper?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
     }
-    
+
+    public String renameLayer(String layer) {
+        return (String) JOptionPane.showInputDialog(this, "New name for layer", "Rename layer", JOptionPane.QUESTION_MESSAGE, null, null, layer);
+    }
+
       ///////////////////
      // Listener crap //
     ///////////////////

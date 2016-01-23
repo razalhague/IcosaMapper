@@ -127,10 +127,15 @@ public class IcosaMapper implements IMEventListener {
                 // TODO: handle all the different tools
                 break;
             case renameLayer:
-                // TODO: popup window asking for layer's new name
                 RenameLayer rl = (RenameLayer) ime;
-                map.renameLayer(rl.layer, "new name");
-                hasUnsavedChanges = true;
+                String newName = ui.renameLayer(rl.layer);
+                if (newName != null) {
+                    map.renameLayer(rl.layer, newName);
+                    hasUnsavedChanges = true;
+                    if (rl.layer.equals(layerName)) {
+                        layerName = newName;
+                    }
+                }
                 break;
             case saveMap:
                 // TODO: save map
