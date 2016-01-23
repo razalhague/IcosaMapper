@@ -83,9 +83,11 @@ public class IcosaMapper implements IMEventListener {
                 colour = ((ColourSelected) ime).value;
                 break;
             case deleteLayer:
-                // TODO: confirm removal
-                hasUnsavedChanges = true;
-                map.removeLayer(((DeleteLayer) ime).name);
+                DeleteLayer dl = (DeleteLayer) ime;
+                if (ui.confirmLayerRemoval(dl.name)) {
+                    hasUnsavedChanges = true;
+                    map.removeLayer(dl.name);
+                }
                 break;
             case duplicateLayer:
                 // TODO: duplicate layer

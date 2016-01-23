@@ -152,6 +152,10 @@ public class UI extends JFrame implements IMEventSource {
         JOptionPane.showMessageDialog(this, "Please select a layer.", "No layer selected", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    public boolean confirmLayerRemoval(String name) {
+        return JOptionPane.showConfirmDialog(this, "Do you want to remove layer \"" + name + "\"?", "Remove layer", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
+    }
+
       ///////////////////
      // Listener crap //
     ///////////////////
