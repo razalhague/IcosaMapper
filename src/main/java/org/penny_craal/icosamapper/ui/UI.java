@@ -28,6 +28,8 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
 
+import org.penny_craal.icosamapper.map.Layer;
+import org.penny_craal.icosamapper.map.LayerRenderer;
 import org.penny_craal.icosamapper.map.Map;
 import org.penny_craal.icosamapper.ui.events.*;
 
@@ -54,10 +56,13 @@ public class UI extends JFrame implements IMEventSource {
     // these two go into toolsPanel
     private PaintPanel paintPanel;
     private LayerManagementPanel layerManagementPanel;
+    private Listener listener;
 
     public UI(Map map, byte colour, PaintBar.Tool tool, int opSize) {
         this.map = map;
         this.layerName = map.getLayerNames().get(0);
+        Layer layer = map.getLayer(layerName);
+        LayerRenderer lr = layer.getLayerRenderer();
 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -69,19 +74,19 @@ public class UI extends JFrame implements IMEventSource {
         ) {
             // falls back to java default LAF (Metal)
         }
-        Listener listener = new Listener();
+        listener = new Listener();
         listenerList = new EventListenerList();
         renderDepth = 2;
         statusBar = new StatusBar(renderDepth);
         menuBar = new MenuBar();
         menuBar.addIMEventListener(listener);
-        layerPanel = new LayerPanel(map.getLayer(layerName), renderDepth);
+        layerPanel = new LayerPanel(layer, renderDepth);
         layerPanel.addIMEventListener(listener);
         toolsPanel = new JPanel();
         toolsPanel.setLayout(new BorderLayout());
-        paintPanel = new PaintPanel(opSize, tool, colour);
+        paintPanel = new PaintPanel(opSize, tool, colour, lr);
         paintPanel.addIMEventListener(listener);
-        layerManagementPanel = new LayerManagementPanel();
+        layerManagementPanel = new LayerManagementPanel(layerName, lr.getType());
         layerManagementPanel.addIMEventListener(listener);
         layerManagementPanel.getLayerListModel().addAll(map.getLayerNames());
         
@@ -112,18 +117,22 @@ public class UI extends JFrame implements IMEventSource {
     public void setMap(Map map) {
         this.map = map;
         this.layerName = map.getLayerNames().get(0);
-        layerPanel.setLayer(map.getLayer(map.getLayerNames().get(0)));
+        Layer layer = map.getLayer(map.getLayerNames().get(0));
+        layerPanel.setLayer(layer);
+        paintPanel.setLayerRenderer(layer.getLayerRenderer());
     }
 
-    public void refresh(byte colour, String layerName, PaintBar.Tool tool, int opSize) {
+    public void refresh(byte colour, String layerName, PaintBar.Tool tool, int opSize, LayerRenderer lr) {
         if (!this.layerName.equals(layerName)) {
             layerPanel.setLayer(map.getLayer(layerName));
             layerPanel.repaint();
+            layerManagementPanel.layerRendererChanged(map.getLayer(layerName).getLayerRenderer());
         }
         this.layerName = layerName;
         paintPanel.setTool(tool);
         paintPanel.setOpSize(opSize);
         paintPanel.setColour(colour);
+        paintPanel.setLayerRenderer(lr);
         // remove any layers not in the map
         LayerListModel llm = layerManagementPanel.getLayerListModel();
         List<String> layerNames = map.getLayerNames();

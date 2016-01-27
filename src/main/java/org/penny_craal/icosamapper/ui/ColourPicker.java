@@ -73,7 +73,13 @@ public class ColourPicker extends JPanel {
     public byte getValue() {
         return value.getValue();
     }
-    
+
+    public void setLayerRenderer(LayerRenderer lr) {
+        this.lr = lr;
+        colour.setBackground(new Color(lr.renderByte(value.getValue())));
+        repaint();
+    }
+
       ///////////////////
      // Listener crap //
     ///////////////////

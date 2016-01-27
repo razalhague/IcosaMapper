@@ -41,7 +41,7 @@ public class IMEvent extends EventObject {
         duplicateLayer,
         exit,
         layerActionWithoutLayer,
-        layerProperties,
+        layerRendererChanged,
         layerSelected,
         newLayer,
         newMap,

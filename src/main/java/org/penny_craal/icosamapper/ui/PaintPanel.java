@@ -31,6 +31,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.penny_craal.icosamapper.map.GreyscaleLR;
+import org.penny_craal.icosamapper.map.LayerRenderer;
 import org.penny_craal.icosamapper.ui.events.ColourSelected;
 import org.penny_craal.icosamapper.ui.events.IMEvent;
 import org.penny_craal.icosamapper.ui.events.IMEventHelper;
@@ -50,7 +51,7 @@ public class PaintPanel extends JPanel implements IMEventSource {
     private PaintBar paintBar;
     private ColourPicker colourPicker;
     
-    public PaintPanel(int opSize, PaintBar.Tool tool, byte colour) {
+    public PaintPanel(int opSize, PaintBar.Tool tool, byte colour, LayerRenderer lr) {
         Listener listener = new Listener();
         opSizePanel = new JPanel();
         opSizePanel.add(new JLabel("Operating size"));
@@ -59,7 +60,7 @@ public class PaintPanel extends JPanel implements IMEventSource {
         opSizePanel.add(opSizeSpinner);
         paintBar = new PaintBar(tool);
         paintBar.addChangeListener(listener);
-        colourPicker = new ColourPicker(new GreyscaleLR(), colour);
+        colourPicker = new ColourPicker(lr, colour);
         colourPicker.addChangeListener(listener);
         
         setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED), "Paint"));
@@ -80,6 +81,10 @@ public class PaintPanel extends JPanel implements IMEventSource {
 
     public void setTool(PaintBar.Tool tool) {
         paintBar.setTool(tool);
+    }
+
+    public void setLayerRenderer(LayerRenderer lr) {
+        colourPicker.setLayerRenderer(lr);
     }
 
     public PaintBar.Tool getTool() {

@@ -41,7 +41,6 @@ public class LayerManagementBar extends JPanel {
         add(new Button(Tool.NEW,        "create new layer"));
         add(new Button(Tool.DUPLICATE,  "duplicate layer"));
         add(new Button(Tool.RENAME,     "rename layer"));
-        add(new Button(Tool.PROPERTIES, "edit layer's properties"));
         add(new Button(Tool.UNDERLAY,   "create an underlay"));
         add(new Button(Tool.DELETE,     "delete layer"));
     }};
@@ -64,7 +63,6 @@ public class LayerManagementBar extends JPanel {
         NEW         ("new"),
         DUPLICATE   ("duplicate"),
         RENAME      ("rename"),
-        PROPERTIES  ("properties"),
         UNDERLAY    ("underlay"),
         DELETE      ("delete"),
         ;

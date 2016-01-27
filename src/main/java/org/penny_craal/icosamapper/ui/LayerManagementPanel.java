@@ -19,26 +19,16 @@
 
 package org.penny_craal.icosamapper.ui;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 
-import org.penny_craal.icosamapper.ui.events.DeleteLayer;
-import org.penny_craal.icosamapper.ui.events.DuplicateLayer;
-import org.penny_craal.icosamapper.ui.events.IMEvent;
-import org.penny_craal.icosamapper.ui.events.IMEventHelper;
-import org.penny_craal.icosamapper.ui.events.IMEventListener;
-import org.penny_craal.icosamapper.ui.events.IMEventSource;
-import org.penny_craal.icosamapper.ui.events.LayerActionWithoutLayer;
-import org.penny_craal.icosamapper.ui.events.LayerProperties;
-import org.penny_craal.icosamapper.ui.events.NewLayer;
-import org.penny_craal.icosamapper.ui.events.RenameLayer;
-import org.penny_craal.icosamapper.ui.events.UnderlayLayer;
+import org.penny_craal.icosamapper.map.GreyscaleLR;
+import org.penny_craal.icosamapper.map.LayerRenderer;
+import org.penny_craal.icosamapper.ui.events.*;
 
 /**
  * Panel for managing layers.
@@ -48,18 +38,30 @@ import org.penny_craal.icosamapper.ui.events.UnderlayLayer;
 public class LayerManagementPanel extends JPanel implements IMEventSource {
     private LayerList layerList;
     private LayerManagementBar layerManagementBar;
-    
-    public LayerManagementPanel() {
+    private JComboBox<String> rendererCombo;
+    private String layerName;
+    private String layerRendererName;
+
+    private static final String[] layerRenderers = {
+            "Greyscale",
+    };
+
+    public LayerManagementPanel(String layerName, String layerRendererName) {
+        this.layerName = layerName;
+        this.layerRendererName = layerRendererName;
         Listener listener = new Listener();
         layerList = new LayerList(new LayerListModel());
         layerList.addIMEventListener(listener);
         JScrollPane scrollPane = new JScrollPane(layerList);
         layerManagementBar = new LayerManagementBar();
         layerManagementBar.addActionListener(listener);
-        
+        rendererCombo = new JComboBox<>(layerRenderers);
+        rendererCombo.addActionListener(listener);
+
         setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED), "Layers"));
         setLayout(new BorderLayout());
-        
+
+        add(rendererCombo,      BorderLayout.PAGE_START);
         add(layerManagementBar, BorderLayout.LINE_END);
         add(scrollPane,         BorderLayout.CENTER);
     }
@@ -67,7 +69,19 @@ public class LayerManagementPanel extends JPanel implements IMEventSource {
     public LayerListModel getLayerListModel() {
         return (LayerListModel) layerList.getModel();
     }
-    
+
+    public void layerRendererChanged(LayerRenderer lr) {
+        String type = lr.getType();
+        for (int i = 0; i < layerRenderers.length; i++) {
+            if (layerRenderers[i].equals(type)) {
+                rendererCombo.setSelectedIndex(i);
+                return;
+            }
+        }
+
+        throw new RuntimeException("unexpected LayerRenderer type: " + type);
+    }
+
       ///////////////////
      // Listener crap //
     ///////////////////
@@ -93,26 +107,33 @@ public class LayerManagementPanel extends JPanel implements IMEventSource {
             fireEvent(ime); // just pass on the event
         }
 
-        // for LayerManagementBar
+        // for LayerManagementBar & lr-combo box
         @Override
         public void actionPerformed(ActionEvent ae) {
             String cmd = ae.getActionCommand();
-            if (cmd.equals(LayerManagementBar.Tool.NEW.toolName)) {
-                fireEvent(new NewLayer(LayerManagementPanel.this));
-            } else {
-                if (layerList.getSelectedValue() == null) {
-                    fireEvent(new LayerActionWithoutLayer(LayerManagementPanel.this));
-                } else if (cmd.equals(LayerManagementBar.Tool.DUPLICATE.toolName)) {
-                    fireEvent(new DuplicateLayer(LayerManagementPanel.this, layerList.getSelectedValue()));
-                } else if (cmd.equals(LayerManagementBar.Tool.RENAME.toolName)) {
-                    fireEvent(new RenameLayer(LayerManagementPanel.this, layerList.getSelectedValue()));
-                } else if (cmd.equals(LayerManagementBar.Tool.PROPERTIES.toolName)) {
-                    fireEvent(new LayerProperties(LayerManagementPanel.this, layerList.getSelectedValue()));
-                } else if (cmd.equals(LayerManagementBar.Tool.UNDERLAY.toolName)) {
-                    fireEvent(new UnderlayLayer(LayerManagementPanel.this, layerList.getSelectedValue()));
-                } else if (cmd.equals(LayerManagementBar.Tool.DELETE.toolName)) {
-                    fireEvent(new DeleteLayer(LayerManagementPanel.this, layerList.getSelectedValue()));
+            if (ae.getSource().equals(layerManagementBar)) {
+                if (cmd.equals(LayerManagementBar.Tool.NEW.toolName)) {
+                    fireEvent(new NewLayer(LayerManagementPanel.this));
+                } else {
+                    if (layerList.getSelectedValue() == null) {
+                        fireEvent(new LayerActionWithoutLayer(LayerManagementPanel.this));
+                    } else if (cmd.equals(LayerManagementBar.Tool.DUPLICATE.toolName)) {
+                        fireEvent(new DuplicateLayer(LayerManagementPanel.this, layerList.getSelectedValue()));
+                    } else if (cmd.equals(LayerManagementBar.Tool.RENAME.toolName)) {
+                        fireEvent(new RenameLayer(LayerManagementPanel.this, layerList.getSelectedValue()));
+                    } else if (cmd.equals(LayerManagementBar.Tool.UNDERLAY.toolName)) {
+                        fireEvent(new UnderlayLayer(LayerManagementPanel.this, layerList.getSelectedValue()));
+                    } else if (cmd.equals(LayerManagementBar.Tool.DELETE.toolName)) {
+                        fireEvent(new DeleteLayer(LayerManagementPanel.this, layerList.getSelectedValue()));
+                    }
                 }
+            } else if (ae.getSource().equals(rendererCombo)) {
+                String newLR = (String) rendererCombo.getSelectedItem();
+                if (!newLR.equals(layerRendererName)) {
+                    fireEvent(new LayerRendererChanged(LayerManagementPanel.this, layerName, new GreyscaleLR()));   // TODO: choose correct LayerRenderer
+                }
+            } else {
+                throw new RuntimeException("unrecognized action source in action event: " + ae);
             }
         }
     }

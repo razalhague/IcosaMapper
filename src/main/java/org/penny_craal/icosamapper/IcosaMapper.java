@@ -101,8 +101,9 @@ public class IcosaMapper implements IMEventListener {
             case layerActionWithoutLayer:
                 ui.askToSelectLayer();
                 break;
-            case layerProperties:
-                // TODO: open layer properties window & update hasUnsavedChanges if necessary
+            case layerRendererChanged:
+                LayerRendererChanged lrc = (LayerRendererChanged) ime;
+                map.getLayer(layerName).setLayerRenderer(lrc.lr);
                 break;
             case layerSelected:
                 layerName = ((LayerSelected) ime).layerName;
@@ -156,7 +157,7 @@ public class IcosaMapper implements IMEventListener {
             default:
                 throw new RuntimeException("unrecognized event type");
         }
-        ui.refresh(colour, layerName, tool, opSize);
+        ui.refresh(colour, layerName, tool, opSize, map.getLayer(layerName).getLayerRenderer());
     }
 
     private static class Handler implements Thread.UncaughtExceptionHandler {

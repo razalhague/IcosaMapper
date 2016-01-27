@@ -89,6 +89,14 @@ public class Layer implements TriangleContainer, Serializable {
         return 1;
     }
 
+    public LayerRenderer getLayerRenderer() {
+        return lr;
+    }
+
+    public void setLayerRenderer(LayerRenderer layerRenderer) {
+        this.lr = layerRenderer;
+    }
+
     @Override
     public String toString() {
         return "{ name: " + name + ", LR: " + lr.getType() + ", " + ih.toString() + " }";
