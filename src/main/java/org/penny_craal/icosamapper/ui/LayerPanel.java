@@ -37,11 +37,8 @@ import org.penny_craal.icosamapper.map.GreyscaleLR;
 import org.penny_craal.icosamapper.map.InvalidPathException;
 import org.penny_craal.icosamapper.map.Layer;
 import org.penny_craal.icosamapper.map.Path;
-import org.penny_craal.icosamapper.ui.events.Paint;
-import org.penny_craal.icosamapper.ui.events.IMEvent;
-import org.penny_craal.icosamapper.ui.events.IMEventHelper;
-import org.penny_craal.icosamapper.ui.events.IMEventListener;
-import org.penny_craal.icosamapper.ui.events.IMEventSource;
+import org.penny_craal.icosamapper.ui.events.*;
+import org.penny_craal.icosamapper.ui.events.Interact;
 
 /**
  * A widget that displays a Layer.
@@ -75,6 +72,7 @@ public class LayerPanel extends JPanel implements IMEventSource {
     private Layer layer;
     private Path zoom;
     private int drawDepth;
+    private int opSize;
     private Insets insets;
     private static final int MIN_DRAWAREA_SIZE = 100;
     private static final Insets DEFAULT_INSETS = new Insets(8, 8, 8, 8);
@@ -87,10 +85,11 @@ public class LayerPanel extends JPanel implements IMEventSource {
      * @param drawDepth
      * @param insets 
      */
-    public LayerPanel(Layer layer, int drawDepth, Insets insets) {
+    public LayerPanel(Layer layer, int drawDepth, int opSize, Insets insets) {
         this.layer = layer;
         this.drawDepth = drawDepth;
         this.insets = insets;
+        this.opSize = opSize;
         zoom = null;
         Listener listener = new Listener();
         addMouseListener(listener);
@@ -101,8 +100,8 @@ public class LayerPanel extends JPanel implements IMEventSource {
         setPreferredSize(new Dimension(insets.left + 1100 + insets.right, insets.top + 600 + insets.bottom));
     }
     
-    public LayerPanel(Layer layer, int drawDepth) {
-        this(layer, drawDepth, DEFAULT_INSETS);
+    public LayerPanel(Layer layer, int drawDepth, int opSize) {
+        this(layer, drawDepth, opSize, DEFAULT_INSETS);
     }
     
     private void updateMinimumSize() {
@@ -153,6 +152,10 @@ public class LayerPanel extends JPanel implements IMEventSource {
      */
     public void setDrawDepth(int drawDepth) {
         this.drawDepth = drawDepth;
+    }
+
+    public void setOpSize(int opSize) {
+        this.opSize = opSize;
     }
     
     @Override
@@ -522,12 +525,12 @@ public class LayerPanel extends JPanel implements IMEventSource {
                     topIsSkewedLeft,
                     childFromIcosahedronSRPC,
                     new LinkedList<Byte>(),
-                    drawDepth
+                    opSize
             );
             if (path == null) {
                 return; // outside of icosahedron
             }
-            fireEvent(new Paint(LayerPanel.this, path));
+            fireEvent(new Interact(LayerPanel.this, path));
         }
 
         @Override

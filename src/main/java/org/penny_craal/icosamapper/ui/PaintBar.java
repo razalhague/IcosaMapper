@@ -33,7 +33,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 /**
- * A button bar for selecting a paint tool.
+ * A button bar for selecting an interact tool.
  * @author Ville Jokela
  */
 @SuppressWarnings("serial")
@@ -41,7 +41,7 @@ public class PaintBar extends JPanel {
     private ButtonGroup bg;
     private Tool tool;
             
-    private final static List<Button> paintButtons = new ArrayList<Button>() {{
+    private final static List<Button> interactButtons = new ArrayList<Button>() {{
         add(new Button(Tool.DRAW,       "draw on the map"));
         add(new Button(Tool.FILL,       "fill an area"));
         add(new Button(Tool.DIVIDE,     "divide a triangle"));
@@ -57,7 +57,7 @@ public class PaintBar extends JPanel {
         setLayout(new GridLayout(0,2));
         
         Listener listener = new Listener();
-        for (Button b: paintButtons) {
+        for (Button b: interactButtons) {
             JToggleButton button = new JToggleButton(new ImageIcon(getClass().getResource("/gfx/" + b.tool.toolName + ".png")));
             button.setToolTipText(b.tooltip);
             button.addActionListener(listener);
@@ -77,8 +77,8 @@ public class PaintBar extends JPanel {
 
     public void setTool(Tool tool) {
         this.tool = tool;
-        for (int i = 0; i < paintButtons.size(); i++) {
-            ((JToggleButton) getComponent(i)).setSelected(paintButtons.get(i).tool == tool);
+        for (int i = 0; i < interactButtons.size(); i++) {
+            ((JToggleButton) getComponent(i)).setSelected(interactButtons.get(i).tool == tool);
         }
     }
 
@@ -127,7 +127,7 @@ public class PaintBar extends JPanel {
     private class Listener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent ae) {
-            for (Button b: paintButtons) {
+            for (Button b: interactButtons) {
                 if (b.tool.toolName.equals(ae.getActionCommand())) {
                     tool = b.tool;
                 }

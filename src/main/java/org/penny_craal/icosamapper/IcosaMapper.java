@@ -25,8 +25,10 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.penny_craal.icosamapper.map.GreyscaleLR;
+import org.penny_craal.icosamapper.map.InvalidPathException;
 import org.penny_craal.icosamapper.map.Layer;
 import org.penny_craal.icosamapper.map.Map;
+import org.penny_craal.icosamapper.map.Path;
 import org.penny_craal.icosamapper.ui.LayerPanel;
 import org.penny_craal.icosamapper.ui.PaintBar;
 import org.penny_craal.icosamapper.ui.UI;
@@ -74,6 +76,7 @@ public class IcosaMapper implements IMEventListener {
 
     @Override
     public void handleEvent(IMEvent ime) {
+        boolean mapChanges = false;
         System.out.println(ime);
         switch (ime.type) {
             case about:
@@ -125,9 +128,10 @@ public class IcosaMapper implements IMEventListener {
             case opSizeSelected:
                 opSize = ((OpSizeSelected) ime).opSize;
                 break;
-            case paint:
+            case interact:
                 hasUnsavedChanges = true;
-                // TODO: handle all the different tools
+                Path path = ((Interact) ime).path;
+                mapChanges = interact(path);
                 break;
             case renameLayer:
                 RenameLayer rl = (RenameLayer) ime;
@@ -157,7 +161,37 @@ public class IcosaMapper implements IMEventListener {
             default:
                 throw new RuntimeException("unrecognized event type");
         }
-        ui.refresh(colour, layerName, tool, opSize, map.getLayer(layerName).getLayerRenderer());
+        ui.refresh(colour, layerName, tool, opSize, map.getLayer(layerName).getLayerRenderer(), mapChanges);
+    }
+
+    private boolean interact(Path path) {
+        switch (tool) {
+            case DRAW:
+                // TODO: handle opSize
+                try {
+                    map.getLayer(layerName).setElement(path, colour);
+                } catch (InvalidPathException e) {
+                    throw new RuntimeException("could not paint element " + path + ", does not exist", e);
+                }
+                return true;
+            case FILL:
+                // TODO: fill tool
+                return true;
+            case DIVIDE:
+                // TODO: divide tool
+                return true;
+            case UNITE:
+                // TODO: unite tool
+                return true;
+            case ZOOM_IN:
+                // TODO: zooming
+                return false;
+            case ZOOM_OUT:
+                // TODO: zooming
+                return false;
+            default:
+                throw new RuntimeException("unrecognized tool: " + tool);
+        }
     }
 
     private static class Handler implements Thread.UncaughtExceptionHandler {

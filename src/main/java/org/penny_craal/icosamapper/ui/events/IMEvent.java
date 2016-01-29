@@ -47,7 +47,7 @@ public class IMEvent extends EventObject {
         newMap,
         openMap,
         opSizeSelected,
-        paint,
+        interact,
         renameLayer,
         saveMap,
         saveMapAs,

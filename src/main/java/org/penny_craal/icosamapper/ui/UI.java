@@ -80,7 +80,7 @@ public class UI extends JFrame implements IMEventSource {
         statusBar = new StatusBar(renderDepth);
         menuBar = new MenuBar();
         menuBar.addIMEventListener(listener);
-        layerPanel = new LayerPanel(layer, renderDepth);
+        layerPanel = new LayerPanel(layer, renderDepth, opSize);
         layerPanel.addIMEventListener(listener);
         toolsPanel = new JPanel();
         toolsPanel.setLayout(new BorderLayout());
@@ -122,11 +122,14 @@ public class UI extends JFrame implements IMEventSource {
         paintPanel.setLayerRenderer(layer.getLayerRenderer());
     }
 
-    public void refresh(byte colour, String layerName, PaintBar.Tool tool, int opSize, LayerRenderer lr) {
+    public void refresh(byte colour, String layerName, PaintBar.Tool tool, int opSize, LayerRenderer lr, boolean mapChanges) {
+        layerPanel.setOpSize(opSize);
         if (!this.layerName.equals(layerName)) {
             layerPanel.setLayer(map.getLayer(layerName));
             layerPanel.repaint();
             layerManagementPanel.layerRendererChanged(map.getLayer(layerName).getLayerRenderer());
+        } else if (mapChanges) {
+            layerPanel.repaint();
         }
         this.layerName = layerName;
         paintPanel.setTool(tool);

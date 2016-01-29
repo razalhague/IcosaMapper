@@ -109,6 +109,7 @@ public class LayerManagementBar extends JPanel {
     private class Listener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent ae) {
+            ae.setSource(LayerManagementBar.this);
             fireEvent(ae);
         }
     }
