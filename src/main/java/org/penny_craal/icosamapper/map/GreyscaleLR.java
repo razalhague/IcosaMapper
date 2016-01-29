@@ -38,7 +38,7 @@ public class GreyscaleLR extends LayerRendererHelper {
 
     @Override
     public String getType() {
-        return "Grayscale";
+        return "Greyscale";
     }
     
     @Override
