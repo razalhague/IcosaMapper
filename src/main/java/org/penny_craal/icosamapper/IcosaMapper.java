@@ -167,7 +167,6 @@ public class IcosaMapper implements IMEventListener {
     private boolean interact(Path path) {
         switch (tool) {
             case DRAW:
-                // TODO: handle opSize
                 try {
                     map.getLayer(layerName).setElement(path, colour);
                 } catch (InvalidPathException e) {
