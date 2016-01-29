@@ -20,6 +20,7 @@
 package org.penny_craal.icosamapper.map;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * A TriangleContainer that uses arrays to store the values of its children's values within itself. Only works with sizes of 9 and 20.
@@ -124,10 +125,10 @@ abstract public class ArrayTriangleContainer implements TriangleContainer, Seria
         int n = 0;
         
         for (byte v: vals) {
-            n += v;
+            n += Util.toInt(v);
         }
-        
-        return (byte) (n/getSize());
+
+        return (byte) (n/vals.length);
     }
     
     @Override
