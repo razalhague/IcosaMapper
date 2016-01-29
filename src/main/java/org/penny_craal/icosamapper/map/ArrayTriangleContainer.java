@@ -70,6 +70,12 @@ abstract public class ArrayTriangleContainer implements TriangleContainer, Seria
     public void setElement(Path ap, byte val) throws InvalidPathException {
         if (ap.length() == 1) {
             vals[ap.first()] = val;
+            if (tris != null && tris[ap.first()] != null) {
+                for (int i = 0; i < tris[ap.first()].getSize(); i++) {
+                    byte[] path = {(byte) i};
+                    tris[ap.first()].setElement(new Path(path), val);
+                }
+            }
         } else if (tris != null && tris[ap.first()] != null) {
             tris[ap.first()].setElement(ap.rest(), val);
             vals[ap.first()] = tris[ap.first()].getMeanValue();

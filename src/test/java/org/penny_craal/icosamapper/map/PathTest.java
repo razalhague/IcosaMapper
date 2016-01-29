@@ -29,8 +29,11 @@ public class PathTest {
     public void testFirst() {
         System.out.println("first");
         Path instance = new Path(path);
-        for (int i = 0; i < path.length; i++, instance = instance.rest()) {
+        for (int i = 0; i < path.length; i++) {
             assertEquals(path[i], instance.first());
+            if (instance.length() != 1) {
+                instance = instance.rest();
+            }
         }
     }
 
@@ -41,8 +44,11 @@ public class PathTest {
     public void testLength() {
         System.out.println("length");
         Path instance = new Path(path);
-        for (int i = 0; i < path.length; i++, instance = instance.rest()) {
+        for (int i = 0; i < path.length; i++) {
             assertEquals(path.length - i, instance.length());
+            if (instance.length() != 1) {
+                instance = instance.rest();
+            }
         }
     }
 

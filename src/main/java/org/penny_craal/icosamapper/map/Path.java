@@ -82,6 +82,9 @@ public class Path {
      * @return a Path without the first element.
      */
     public Path rest() {
+        if (length() == 1) {
+            throw new RuntimeException("Trying to do .rest() on a Path of length one");
+        }
         return new Path(path, index + 1);
     }
     
