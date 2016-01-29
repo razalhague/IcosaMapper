@@ -177,7 +177,11 @@ public class IcosaMapper implements IMEventListener {
                 // TODO: fill tool
                 return true;
             case DIVIDE:
-                // TODO: divide tool
+                try {
+                    map.divide(layerName, path);
+                } catch (InvalidPathException e) {
+                    throw new RuntimeException("could not paint element " + path + ", does not exist", e);
+                }
                 return true;
             case UNITE:
                 // TODO: unite tool
