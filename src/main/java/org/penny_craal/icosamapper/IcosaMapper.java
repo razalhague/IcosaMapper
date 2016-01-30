@@ -20,6 +20,7 @@
 package org.penny_craal.icosamapper;
 
 import java.awt.Frame;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -27,6 +28,7 @@ import javax.swing.SwingUtilities;
 import org.penny_craal.icosamapper.map.GreyscaleLR;
 import org.penny_craal.icosamapper.map.InvalidPathException;
 import org.penny_craal.icosamapper.map.Layer;
+import org.penny_craal.icosamapper.map.LayerRenderer;
 import org.penny_craal.icosamapper.map.Map;
 import org.penny_craal.icosamapper.map.Path;
 import org.penny_craal.icosamapper.ui.LayerPanel;
@@ -51,6 +53,8 @@ public class IcosaMapper implements IMEventListener {
     private static final byte defaultColour = 0;
     private static final int defaultOpSize = 1;
     private static final PaintBar.Tool defaultTool = PaintBar.Tool.DRAW;
+    private static final String defaultNewLayerName = "New Layer";
+    private static final LayerRenderer defaultLayerRenderer = new GreyscaleLR();
 
     private IcosaMapper() {
         newMap();
@@ -116,8 +120,20 @@ public class IcosaMapper implements IMEventListener {
                 layerName = ((LayerSelected) ime).layerName;
                 break;
             case newLayer:
-                // TODO: ask new layer's name, renderer and initial value
-                map.addLayer(new Layer("new layer", new GreyscaleLR(), (byte) 0));
+                List<String> layerNames = map.getLayerNames();
+                String newLayerName = null;
+
+                if (!layerNames.contains(defaultNewLayerName)) {
+                    newLayerName = defaultNewLayerName;
+                } else {
+                    for (int i = 2; newLayerName == null && i < Integer.MAX_VALUE; i++) {
+                        String potentialNewLayerName = defaultNewLayerName + " (" + i + ")";
+                        if (!layerNames.contains(potentialNewLayerName)) {
+                            newLayerName = potentialNewLayerName;
+                        }
+                    }
+                }
+                map.addLayer(new Layer(newLayerName, defaultLayerRenderer, defaultColour));
                 hasUnsavedChanges = true;
                 break;
             case newMap:
