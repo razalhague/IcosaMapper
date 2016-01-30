@@ -180,11 +180,15 @@ public class IcosaMapper implements IMEventListener {
                 try {
                     map.divide(layerName, path);
                 } catch (InvalidPathException e) {
-                    throw new RuntimeException("could not paint element " + path + ", does not exist", e);
+                    throw new RuntimeException("could not divide element " + path + ", does not exist", e);
                 }
                 return true;
             case UNITE:
-                // TODO: unite tool
+                try {
+                    map.unite(layerName, path);
+                } catch (InvalidPathException e) {
+                    throw new RuntimeException("could not unite element " + path + ", does not exist", e);
+                }
                 return true;
             case ZOOM_IN:
                 // TODO: zooming

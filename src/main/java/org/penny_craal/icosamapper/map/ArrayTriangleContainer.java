@@ -102,7 +102,7 @@ abstract public class ArrayTriangleContainer implements TriangleContainer, Seria
             } else {
                 tris[p.first()] = new ArrayTriangle(vals[p.first()]);
             }
-        } else if (tris != null){
+        } else if (tris != null && tris[p.first()] != null) {
             tris[p.first()].divide(p.rest());
         } else {
             throw new InvalidPathException(p);

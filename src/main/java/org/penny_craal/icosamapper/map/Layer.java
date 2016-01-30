@@ -62,7 +62,7 @@ public class Layer implements TriangleContainer, Serializable {
     
     @Override
     public void unite(Path p) throws InvalidPathException {
-        ih.divide(p);
+        ih.unite(p);
     }
 
     @Override
