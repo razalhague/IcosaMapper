@@ -53,14 +53,18 @@ public class IcosaMapper implements IMEventListener {
     private static final PaintBar.Tool defaultTool = PaintBar.Tool.DRAW;
 
     private IcosaMapper() {
+        newMap();
+        ui = new UI(map, defaultColour, defaultTool, defaultOpSize);
+        ui.addIMEventListener(this);
+    }
+
+    private void newMap() {
         map = new Map();
         map.addLayer(LayerPanel.createTestLayer());
         layerName = map.getLayerNames().get(0);
         colour = defaultColour;
         tool = defaultTool;
         opSize = defaultOpSize;
-        ui = new UI(map, defaultColour, defaultTool, defaultOpSize);
-        ui.addIMEventListener(this);
     }
 
     /**
@@ -117,9 +121,11 @@ public class IcosaMapper implements IMEventListener {
                 hasUnsavedChanges = true;
                 break;
             case newMap:
-                // TODO: ask if user really wants to create new map, old map will be discarded
-                map = new Map();
-                hasUnsavedChanges = false;
+                if (!hasUnsavedChanges || ui.confirmNewMap()) {
+                    newMap();
+                    ui.setMap(map);
+                    hasUnsavedChanges = false;
+                }
                 break;
             case openMap:
                 // TODO: open dialog for opening a map

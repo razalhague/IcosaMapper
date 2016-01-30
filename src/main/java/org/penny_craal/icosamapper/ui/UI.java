@@ -119,6 +119,7 @@ public class UI extends JFrame implements IMEventSource {
         this.layerName = map.getLayerNames().get(0);
         Layer layer = map.getLayer(map.getLayerNames().get(0));
         layerPanel.setLayer(layer);
+        layerPanel.repaint();
         paintPanel.setLayerRenderer(layer.getLayerRenderer());
     }
 
@@ -154,6 +155,10 @@ public class UI extends JFrame implements IMEventSource {
 
     public boolean confirmExit() {
         return JOptionPane.showConfirmDialog(this, "Really quit? Any unsaved changes will be lost.", "Quit IcosaMapper?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
+    }
+
+    public boolean confirmNewMap() {
+        return JOptionPane.showConfirmDialog(this, "Really make new map? Any unsaved changes to current map will be lost.", "New map?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
     }
 
     public String renameLayer(String layer) {
