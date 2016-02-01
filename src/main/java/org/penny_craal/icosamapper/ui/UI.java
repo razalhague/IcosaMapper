@@ -23,10 +23,12 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
 import java.util.List;
 
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.penny_craal.icosamapper.map.Layer;
 import org.penny_craal.icosamapper.map.LayerRenderer;
@@ -171,6 +173,38 @@ public class UI extends JFrame implements IMEventSource {
 
     public boolean confirmLayerRemoval(String name) {
         return JOptionPane.showConfirmDialog(this, "Do you want to remove layer \"" + name + "\"?", "Remove layer", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
+    }
+
+    public File chooseSaveFile(File file) {
+        JFileChooser chooser = new JFileChooser();
+        if (file != null) {
+            chooser.setCurrentDirectory(file);
+        }
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("IcosaMapper map files", "icosamap");
+        chooser.setFileFilter(filter);
+        if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            File newFile = chooser.getSelectedFile();
+            if (!newFile.getAbsolutePath().endsWith(".icosamap")) {
+                newFile = new File(newFile.getAbsoluteFile() + ".icosamap");
+            }
+            return newFile;
+        } else {
+            return null;
+        }
+    }
+
+    public File chooseOpenFile(File file) {
+        JFileChooser chooser = new JFileChooser();
+        if (file != null) {
+            chooser.setCurrentDirectory(file);
+        }
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("IcosaMapper map files", "icosamap");
+        chooser.setFileFilter(filter);
+        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            return chooser.getSelectedFile();
+        } else {
+            return null;
+        }
     }
 
       ///////////////////

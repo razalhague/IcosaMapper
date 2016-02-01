@@ -20,6 +20,7 @@
 package org.penny_craal.icosamapper;
 
 import java.awt.Frame;
+import java.io.File;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -49,6 +50,7 @@ public class IcosaMapper implements IMEventListener {
     private PaintBar.Tool tool;
     private int opSize;
     private boolean hasUnsavedChanges = false;
+    private File mapFile = null;
 
     private static final byte defaultColour = 0;
     private static final int defaultOpSize = 1;
@@ -69,6 +71,7 @@ public class IcosaMapper implements IMEventListener {
         colour = defaultColour;
         tool = defaultTool;
         opSize = defaultOpSize;
+        mapFile = null;
     }
 
     /**
@@ -86,6 +89,7 @@ public class IcosaMapper implements IMEventListener {
     public void handleEvent(IMEvent ime) {
         boolean mapChanges = false;
         System.out.println(ime);
+        // TODO: put each case into its own method to clean things up?
         switch (ime.type) {
             case about:
                 // TODO: popup an about dialog
@@ -144,8 +148,21 @@ public class IcosaMapper implements IMEventListener {
                 }
                 break;
             case openMap:
-                // TODO: open dialog for opening a map
-                hasUnsavedChanges = false;
+                File file = ui.chooseOpenFile(mapFile);
+                if (file != null) {
+                    System.out.println("opening file from: " + file.getAbsolutePath());
+                    MapDAO dao = new FileMapDAO(file);
+                    try {
+                        map = dao.load(new JavaMapSerializer());
+                        layerName = map.getLayerNames().get(0);
+                        ui.setMap(map);
+                        mapFile = file;
+                        hasUnsavedChanges = false;
+                        mapChanges = true;
+                    } catch (DAException e) {
+                        throw new RuntimeException("could not open file", e);
+                    }
+                }
                 break;
             case opSizeSelected:
                 opSize = ((OpSizeSelected) ime).opSize;
@@ -167,12 +184,14 @@ public class IcosaMapper implements IMEventListener {
                 }
                 break;
             case saveMap:
-                // TODO: save map
-                hasUnsavedChanges = false;
+                if (mapFile != null) {
+                    save(mapFile);
+                } else {
+                    saveAs();
+                }
                 break;
             case saveMapAs:
-                // TODO: open dialog for saving map
-                hasUnsavedChanges = false;
+                saveAs();
                 break;
             case toolSelected:
                 tool = ((ToolSelected) ime).tool;
@@ -184,6 +203,25 @@ public class IcosaMapper implements IMEventListener {
                 throw new RuntimeException("unrecognized event type");
         }
         ui.refresh(colour, layerName, tool, opSize, map.getLayer(layerName).getLayerRenderer(), mapChanges);
+    }
+
+    private void saveAs() {
+        File file = ui.chooseSaveFile(mapFile);
+        if (file != null) {
+            System.out.println("saving to: " + file.getAbsolutePath());
+            save(file);
+        }
+    }
+
+    private void save(File file) {
+        MapDAO dao = new FileMapDAO(file);
+        try {
+            dao.save(map, new JavaMapSerializer());
+            mapFile = file;
+            hasUnsavedChanges = false;
+        } catch (DAException e) {
+            throw new RuntimeException("could not save file", e);
+        }
     }
 
     private boolean interact(Path path) {
