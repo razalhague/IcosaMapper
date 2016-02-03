@@ -53,5 +53,6 @@ public class IMEvent extends EventObject {
         saveMapAs,
         toolSelected,
         underlayLayer,
+        configureLayerRenderer
     }
 }

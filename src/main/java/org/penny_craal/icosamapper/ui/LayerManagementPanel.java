@@ -39,6 +39,7 @@ public class LayerManagementPanel extends JPanel implements IMEventSource {
     private LayerList layerList;
     private LayerManagementBar layerManagementBar;
     private JComboBox<String> rendererCombo;
+    private JButton rendererButton;
     private String layerName;
     private String layerRendererName;
 
@@ -55,13 +56,21 @@ public class LayerManagementPanel extends JPanel implements IMEventSource {
         JScrollPane scrollPane = new JScrollPane(layerList);
         layerManagementBar = new LayerManagementBar();
         layerManagementBar.addActionListener(listener);
+
+        JPanel rendererPanel = new JPanel(new BorderLayout());
         rendererCombo = new JComboBox<>(layerRenderers);
+        rendererButton = new JButton(new ImageIcon(getClass().getResource("/gfx/gear.png")));
+        rendererButton.setToolTipText("Configure layer renderer");
+        rendererButton.addActionListener(listener);
+        rendererButton.setMargin(new Insets(2, 2, 2, 2));
+        rendererPanel.add(rendererCombo, BorderLayout.CENTER);
+        rendererPanel.add(rendererButton, BorderLayout.LINE_END);
         rendererCombo.addActionListener(listener);
 
         setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED), "Layers"));
         setLayout(new BorderLayout());
 
-        add(rendererCombo,      BorderLayout.PAGE_START);
+        add(rendererPanel,      BorderLayout.PAGE_START);
         add(layerManagementBar, BorderLayout.LINE_END);
         add(scrollPane,         BorderLayout.CENTER);
     }
@@ -132,6 +141,8 @@ public class LayerManagementPanel extends JPanel implements IMEventSource {
                 if (!newLR.equals(layerRendererName)) {
                     fireEvent(new LayerRendererChanged(LayerManagementPanel.this, layerName, new GreyscaleLR()));   // TODO: choose correct LayerRenderer
                 }
+            } else if (ae.getSource().equals(rendererButton)) {
+                fireEvent(new ConfigureLayerRenderer(rendererButton, layerName));
             } else {
                 throw new RuntimeException("unrecognized action source in action event: " + ae);
             }
