@@ -142,7 +142,7 @@ public class LayerManagementPanel extends JPanel implements IMEventSource {
                     fireEvent(new LayerRendererChanged(LayerManagementPanel.this, layerName, new GreyscaleLR()));   // TODO: choose correct LayerRenderer
                 }
             } else if (ae.getSource().equals(rendererButton)) {
-                fireEvent(new ConfigureLayerRenderer(rendererButton, layerName));
+                fireEvent(new ConfigureLayerRenderer(LayerManagementPanel.this, layerName));
             } else {
                 throw new RuntimeException("unrecognized action source in action event: " + ae);
             }
