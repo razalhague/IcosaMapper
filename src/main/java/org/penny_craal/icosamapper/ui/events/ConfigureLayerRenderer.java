@@ -10,4 +10,9 @@ public class ConfigureLayerRenderer extends IMEvent {
         super(source, EventType.configureLayerRenderer);
         this.layerName = layerName;
     }
+
+    @Override
+    public String toString() {
+        return "ConfigureLaterRenderer: " + layerName;
+    }
 }
