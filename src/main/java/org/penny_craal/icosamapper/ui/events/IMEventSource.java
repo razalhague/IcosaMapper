@@ -24,6 +24,6 @@ package org.penny_craal.icosamapper.ui.events;
  * @author Ville Jokela
  */
 public interface IMEventSource {
-    public void addIMEventListener(IMEventListener imel);
-    public void removeIMEventListener(IMEventListener imel);
+    void addIMEventListener(IMEventListener imel);
+    void removeIMEventListener(IMEventListener imel);
 }

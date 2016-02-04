@@ -29,18 +29,18 @@ public interface LayerRenderer {
      * @param value     the byte value to be rendered
      * @return          an RGB value encoded as an integer. Bits: 0-7: blue, 8-15: green, 16-23: red.
      */
-    abstract public int renderByte(byte value);
+    int renderByte(byte value);
     
     /**
      * Transforms an array of values into an array of colours.
      * @param values    the values to be rendered
      * @return          an array of RGB values encoded as integers. Bits: 0-7: blue, 8-15: green, 16-23: red.
      */
-    abstract public int[] renderArray(byte[] values);
+    int[] renderArray(byte[] values);
     
     /**
      * Returns the type of this renderer.
      * @return          the type of this renderer
      */
-    abstract public String getType();
+    String getType();
 }
