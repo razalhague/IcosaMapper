@@ -21,6 +21,8 @@ package org.penny_craal.icosamapper.map;
 
 import java.io.Serializable;
 
+import org.penny_craal.icosamapper.map.layerrenderers.LayerRenderer;
+
 /**
  * A layer in the map. 
  * @author Ville Jokela

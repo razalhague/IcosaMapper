@@ -13,34 +13,36 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  * contact me <ville.jokela@penny-craal.org>
  */
 
-package org.penny_craal.icosamapper.map;
+package org.penny_craal.icosamapper.map.layerrenderers.variabletypes;
 
 /**
- * A translator between a byte value and a colour.
  * @author Ville Jokela
  */
-public interface LayerRenderer {
-    /**
-     * Transforms a byte value into a colour (encoded as an int).
-     * @param value     the byte value to be rendered
-     * @return          an RGB value encoded as an integer. Bits: 0-7: blue, 8-15: green, 16-23: red.
-     */
-    int renderByte(byte value);
-    
-    /**
-     * Transforms an array of values into an array of colours.
-     * @param values    the values to be rendered
-     * @return          an array of RGB values encoded as integers. Bits: 0-7: blue, 8-15: green, 16-23: red.
-     */
-    int[] renderArray(byte[] values);
-    
-    /**
-     * Returns the type of this renderer.
-     * @return          the type of this renderer
-     */
-    String getType();
+public class IntegerType implements VariableType {
+    public final int minimum;
+    public final int maximum;
+
+    public IntegerType(int minimum, int maximum) {
+        this.minimum = minimum;
+        this.maximum = maximum;
+    }
+
+    @Override
+    public String getName() {
+        return "IntegerType";
+    }
+
+    @Override
+    public boolean isValid(Object object) {
+        if (!(object instanceof Integer)) {
+            return false;
+        }
+
+        Integer i = (Integer) object;
+        return i >= minimum && i <= maximum;
+    }
 }

@@ -13,41 +13,26 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  * contact me <ville.jokela@penny-craal.org>
  */
 
-package org.penny_craal.icosamapper.map;
+package org.penny_craal.icosamapper.ui.events;
 
 /**
- * A LayerRenderer that simply interprets the byte value as a shade of grey.
  * @author Ville Jokela
  */
-public class GreyscaleLR extends LayerRendererHelper {
+public class LayerRendererReconfigured extends IMEvent {
     private static final long serialVersionUID = 1L;
-    /**
-     * Constructs this object.
-     */
-    public GreyscaleLR() {
+    public final String variableName;
+
+    public LayerRendererReconfigured(Object source, String variableName) {
+        super(source, IMEvent.EventType.layerRendererReconfigured);
+        this.variableName = variableName;
     }
 
     @Override
-    public int renderByte(byte value) {
-        return Util.encodeAsInt(Util.toInt(value), Util.toInt(value), Util.toInt(value));
-    }
-
-    @Override
-    public String getType() {
-        return "Greyscale";
-    }
-    
-    @Override
-    public boolean equals(Object other) {
-        return other instanceof GreyscaleLR;    // all GreyscaleLRs are identical
-    }
-    
-    @Override
-    public int hashCode() {
-        return 144;     // all GreyscaleLRs are identical, so a pre-determined number is sufficient.
+    public String toString() {
+        return "LayerRendererReconfigured: " + variableName;
     }
 }

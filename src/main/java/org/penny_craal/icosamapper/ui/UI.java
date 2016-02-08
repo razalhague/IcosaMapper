@@ -24,6 +24,7 @@ import java.awt.Dimension;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.*;
@@ -31,7 +32,7 @@ import javax.swing.event.EventListenerList;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.penny_craal.icosamapper.map.Layer;
-import org.penny_craal.icosamapper.map.LayerRenderer;
+import org.penny_craal.icosamapper.map.layerrenderers.LayerRenderer;
 import org.penny_craal.icosamapper.map.Map;
 import org.penny_craal.icosamapper.ui.events.*;
 
@@ -59,12 +60,14 @@ public class UI extends JFrame implements IMEventSource {
     private PaintPanel paintPanel;
     private LayerManagementPanel layerManagementPanel;
     private Listener listener;
+    private java.util.Map<String, LayerRendererConfigurationDialog> lrConfDialogs;
 
     public UI(Map map, byte colour, PaintBar.Tool tool, int opSize) {
         this.map = map;
         this.layerName = map.getLayerNames().get(0);
         Layer layer = map.getLayer(layerName);
         LayerRenderer lr = layer.getLayerRenderer();
+        lrConfDialogs = new java.util.HashMap<>();
 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -207,6 +210,15 @@ public class UI extends JFrame implements IMEventSource {
         }
     }
 
+    public void openConfigureLayerRendererDialog() {
+        if (!lrConfDialogs.containsKey(layerName)) {
+            LayerRendererConfigurationDialog lrcd = new LayerRendererConfigurationDialog(this, layerName, map.getLayer(layerName).getLayerRenderer());
+            lrcd.addIMEventListener(listener);
+            lrcd.addWindowListener(listener);
+            lrConfDialogs.put(layerName, lrcd);
+        }
+    }
+
       ///////////////////
      // Listener crap //
     ///////////////////
@@ -240,7 +252,19 @@ public class UI extends JFrame implements IMEventSource {
 
         @Override
         public void windowClosing(WindowEvent windowEvent) {
-            fireEvent(new Exit(UI.this));
+            if (windowEvent.getSource().equals(UI.this)) {
+                fireEvent(new Exit(UI.this));
+            } else {
+                for (Iterator<java.util.Map.Entry<String, LayerRendererConfigurationDialog>> it = lrConfDialogs.entrySet().iterator(); it.hasNext(); ) {
+                    java.util.Map.Entry<String, LayerRendererConfigurationDialog> entry = it.next();
+                    if (windowEvent.getSource().equals(entry.getValue())) {
+                        entry.getValue().dispose();
+                        it.remove();
+                        return;
+                    }
+                }
+                throw new RuntimeException("unrecognized event source for WindowEvent: " + windowEvent);
+            }
         }
 
         @Override

@@ -26,10 +26,10 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import org.penny_craal.icosamapper.map.GreyscaleLR;
+import org.penny_craal.icosamapper.map.layerrenderers.Greyscale;
 import org.penny_craal.icosamapper.map.InvalidPathException;
 import org.penny_craal.icosamapper.map.Layer;
-import org.penny_craal.icosamapper.map.LayerRenderer;
+import org.penny_craal.icosamapper.map.layerrenderers.LayerRenderer;
 import org.penny_craal.icosamapper.map.Map;
 import org.penny_craal.icosamapper.map.Path;
 import org.penny_craal.icosamapper.ui.LayerPanel;
@@ -56,7 +56,7 @@ public class IcosaMapper implements IMEventListener {
     private static final int defaultOpSize = 1;
     private static final PaintBar.Tool defaultTool = PaintBar.Tool.DRAW;
     private static final String defaultNewLayerName = "New Layer";
-    private static final LayerRenderer defaultLayerRenderer = new GreyscaleLR();
+    private static final LayerRenderer defaultLayerRenderer = new Greyscale();
 
     private IcosaMapper() {
         newMap();
@@ -119,6 +119,7 @@ public class IcosaMapper implements IMEventListener {
             case layerRendererChanged:
                 LayerRendererChanged lrc = (LayerRendererChanged) ime;
                 map.getLayer(layerName).setLayerRenderer(lrc.lr);
+                mapChanges = true;
                 break;
             case layerSelected:
                 layerName = ((LayerSelected) ime).layerName;
@@ -198,6 +199,12 @@ public class IcosaMapper implements IMEventListener {
                 break;
             case underlayLayer:
                 // TODO: underlay layer
+                break;
+            case configureLayerRenderer:
+                ui.openConfigureLayerRendererDialog();
+                break;
+            case layerRendererReconfigured:
+                mapChanges = true;
                 break;
             default:
                 throw new RuntimeException("unrecognized event type");

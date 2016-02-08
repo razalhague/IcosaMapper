@@ -33,7 +33,7 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.event.MouseInputAdapter;
 
-import org.penny_craal.icosamapper.map.GreyscaleLR;
+import org.penny_craal.icosamapper.map.layerrenderers.Greyscale;
 import org.penny_craal.icosamapper.map.InvalidPathException;
 import org.penny_craal.icosamapper.map.Layer;
 import org.penny_craal.icosamapper.map.Path;
@@ -347,7 +347,7 @@ public class LayerPanel extends JPanel implements IMEventSource {
     }
     
     public static Layer createTestLayer() {
-        Layer layer = new Layer("test-layer", new GreyscaleLR(), (byte) 0);
+        Layer layer = new Layer("test-layer", new Greyscale(), (byte) 0);
         
         try {
             for (int i = 0; i < 20; i++) {

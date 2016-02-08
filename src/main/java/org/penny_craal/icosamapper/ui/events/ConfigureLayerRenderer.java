@@ -13,6 +13,6 @@ public class ConfigureLayerRenderer extends IMEvent {
 
     @Override
     public String toString() {
-        return "ConfigureLaterRenderer: " + layerName;
+        return "ConfigureLayerRenderer: " + layerName;
     }
 }

@@ -1,7 +1,7 @@
 package org.penny_craal.icosamapper;
 
 import org.penny_craal.icosamapper.map.*;
-import org.testng.Assert;
+import org.penny_craal.icosamapper.map.layerrenderers.Greyscale;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -22,7 +22,7 @@ public class JavaMapSerializerTest {
     public void setUp() throws InvalidPathException {
         byte[] ap = {1};
         map = new Map();
-        map.addLayer(new Layer("test-layer", new GreyscaleLR(), (byte) 0));
+        map.addLayer(new Layer("test-layer", new Greyscale(), (byte) 0));
         map.divide("test-layer", new Path(ap));
         serializer = new JavaMapSerializer();
     }

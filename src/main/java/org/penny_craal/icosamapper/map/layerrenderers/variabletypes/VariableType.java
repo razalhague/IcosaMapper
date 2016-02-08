@@ -13,27 +13,26 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  * contact me <ville.jokela@penny-craal.org>
  */
 
-package org.penny_craal.icosamapper.map;
-
-import java.io.Serializable;
+package org.penny_craal.icosamapper.map.layerrenderers.variabletypes;
 
 /**
- * An abstract helper class for implementations of LayerRenderer.
  * @author Ville Jokela
  */
-public abstract class LayerRendererHelper implements LayerRenderer, Serializable {
-    @Override
-    public int[] renderArray(byte[] values) {
-        int[] rendered = new int[values.length];
-        
-        for (int i = 0; i < rendered.length; i++) {
-            rendered[i] = renderByte(values[i]);
-        }
-        
-        return rendered;
-    }
+public interface VariableType {
+    /**
+     * Gets the name of this type.
+     * @return  name of this type
+     */
+    String getName();
+
+    /**
+     * Tests if the object is valid for this variable type.
+     * @param object    object to be tested
+     * @return          is the object valid
+     */
+    boolean isValid(Object object);
 }

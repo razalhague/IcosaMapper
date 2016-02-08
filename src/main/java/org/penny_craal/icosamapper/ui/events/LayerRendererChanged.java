@@ -1,6 +1,6 @@
 package org.penny_craal.icosamapper.ui.events;
 
-import org.penny_craal.icosamapper.map.LayerRenderer;
+import org.penny_craal.icosamapper.map.layerrenderers.LayerRenderer;
 
 /**
  * @author Ville Jokela

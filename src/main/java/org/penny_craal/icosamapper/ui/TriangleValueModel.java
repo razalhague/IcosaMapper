@@ -25,41 +25,42 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 
-import org.penny_craal.icosamapper.map.Util;
-
-import static org.penny_craal.icosamapper.map.Constants.*;
-
 /**
- * TriangleValueModel presents two views (BoundedRangeModel and SpinnerModel) of one byte value.
+ * TriangleValueModel presents two views (BoundedRangeModel and SpinnerModel) of an integer.
  * @author Ville Jokela
  */
 @SuppressWarnings("serial")
 public class TriangleValueModel  {
-    private byte value;
+    private int value;
     // for some reason JSpinner and JSlider insist on sending two events whenever the value is changed.
-    // oldValue is used to filter
-    private byte oldValue;
+    // oldValue is used to filter duplicate events
+    private int oldValue;
     private EventListenerList ell;
     private BRM brm;
     private SM sm;
+    private final int minValue;
+    private final int maxValue;
     
-    public TriangleValueModel(byte value) {
-        this.value = value;
+    public TriangleValueModel(int defValue, int minValue, int maxValue) {
+        this.value = defValue;
         oldValue = value;
+        this.minValue = minValue;
+        this.maxValue = maxValue;
         ell = new EventListenerList();
         brm = new BRM();
         sm = new SM();
     }
 
-    public byte getValue() {
+    public int getValue() {
         return value;
     }
 
-    public void setValue(byte value) {
+    public void setValue(int value) {
         oldValue = this.value;
         this.value = value;
-        if (oldValue != value)
+        if (oldValue != value) {
             fireStateChanged();
+        }
     }
 
     public BRM getBoundedRangeModel() {
@@ -103,7 +104,7 @@ public class TriangleValueModel  {
         
         @Override
         public int getMinimum() {
-            return MIN_VALUE;
+            return minValue;
         }
 
         @Override
@@ -113,7 +114,7 @@ public class TriangleValueModel  {
 
         @Override
         public int getMaximum() {
-            return MAX_VALUE;
+            return maxValue;
         }
 
         @Override
@@ -123,13 +124,13 @@ public class TriangleValueModel  {
 
         @Override
         public int getValue() {
-            return Util.toInt(value);
+            return value;
         }
 
         @Override
         public void setValue(int i) {
             oldValue = value;
-            value = (byte) i;
+            value = i;
             if (oldValue != value) {
                 TriangleValueModel.this.fireStateChanged();
             }
@@ -196,17 +197,17 @@ public class TriangleValueModel  {
         
         @Override
         public Object getValue() {
-            return Util.toInt(value);
+            return value;
         }
 
         @Override
         public void setValue(Object o) {
             oldValue = value;
             int v = (int) o;
-            if (v < MIN_VALUE || v > MAX_VALUE) {
-                throw new IllegalArgumentException("Value must be between " + MIN_VALUE + " and " + MAX_VALUE);
+            if (v < minValue || v > maxValue) {
+                throw new IllegalArgumentException("Value must be between " + minValue + " and " + maxValue);
             }
-            value = (byte) v;
+            value = v;
             if (oldValue != value) {
                 TriangleValueModel.this.fireStateChanged();
             }
@@ -214,19 +215,19 @@ public class TriangleValueModel  {
 
         @Override
         public Object getNextValue() {
-            if (Util.toInt(value) == MAX_VALUE) {
+            if (value == maxValue) {
                 return null;
             } else {
-                return Util.toInt(value) + 1;
+                return value + 1;
             }
         }
 
         @Override
         public Object getPreviousValue() {
-            if (Util.toInt(value) == MIN_VALUE) {
+            if (value == minValue) {
                 return null;
             } else {
-                return Util.toInt(value) - 1;
+                return value - 1;
             }
         }
         

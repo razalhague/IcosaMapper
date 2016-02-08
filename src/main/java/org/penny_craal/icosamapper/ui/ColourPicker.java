@@ -29,7 +29,8 @@ import javax.swing.border.BevelBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.penny_craal.icosamapper.map.LayerRenderer;
+import org.penny_craal.icosamapper.map.Constants;
+import org.penny_craal.icosamapper.map.layerrenderers.LayerRenderer;
 
 /**
  * A widget for choosing a colour from ones that are used by the LayerRenderer
@@ -48,7 +49,7 @@ public class ColourPicker extends JPanel {
     
     public ColourPicker(LayerRenderer lr, byte initValue) {
         this.lr = lr;
-        value = new TriangleValueModel(initValue);
+        value = new TriangleValueModel(initValue, Constants.MIN_VALUE, Constants.MAX_VALUE);
         
         Listener listener = new Listener();
         
@@ -57,7 +58,7 @@ public class ColourPicker extends JPanel {
         slider.setOrientation(JSlider.HORIZONTAL);
         value.addChangeListener(listener);
         colour = new JPanel();
-        colour.setBackground(new Color(lr.renderByte(value.getValue())));
+        colour.setBackground(new Color(lr.renderByte((byte) value.getValue())));
         colourContainer = new JPanel();
         colourContainer.setLayout(new BorderLayout());
         colourContainer.setBorder(new BevelBorder(BevelBorder.LOWERED));
@@ -71,12 +72,12 @@ public class ColourPicker extends JPanel {
     }
     
     public byte getValue() {
-        return value.getValue();
+        return (byte) value.getValue();
     }
 
     public void setLayerRenderer(LayerRenderer lr) {
         this.lr = lr;
-        colour.setBackground(new Color(lr.renderByte(value.getValue())));
+        colour.setBackground(new Color(lr.renderByte((byte) value.getValue())));
         repaint();
     }
 
@@ -105,7 +106,7 @@ public class ColourPicker extends JPanel {
     private class Listener implements ChangeListener {
         @Override
         public void stateChanged(ChangeEvent ce) {
-            colour.setBackground(new Color(lr.renderByte(value.getValue())));
+            colour.setBackground(new Color(lr.renderByte((byte) value.getValue())));
             fireStateChanged();
         }
     }

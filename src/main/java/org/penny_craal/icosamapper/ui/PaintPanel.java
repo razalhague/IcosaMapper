@@ -30,8 +30,7 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.penny_craal.icosamapper.map.GreyscaleLR;
-import org.penny_craal.icosamapper.map.LayerRenderer;
+import org.penny_craal.icosamapper.map.layerrenderers.LayerRenderer;
 import org.penny_craal.icosamapper.ui.events.ColourSelected;
 import org.penny_craal.icosamapper.ui.events.IMEvent;
 import org.penny_craal.icosamapper.ui.events.IMEventHelper;

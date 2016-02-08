@@ -26,8 +26,9 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 
-import org.penny_craal.icosamapper.map.GreyscaleLR;
-import org.penny_craal.icosamapper.map.LayerRenderer;
+import org.penny_craal.icosamapper.map.layerrenderers.Greyscale;
+import org.penny_craal.icosamapper.map.layerrenderers.LayerRenderer;
+import org.penny_craal.icosamapper.map.layerrenderers.SingleColour;
 import org.penny_craal.icosamapper.ui.events.*;
 
 /**
@@ -44,7 +45,8 @@ public class LayerManagementPanel extends JPanel implements IMEventSource {
     private String layerRendererName;
 
     private static final String[] layerRenderers = {
-            "Greyscale",
+            Greyscale.type,
+            SingleColour.type,
     };
 
     public LayerManagementPanel(String layerName, String layerRendererName) {
@@ -139,7 +141,19 @@ public class LayerManagementPanel extends JPanel implements IMEventSource {
             } else if (ae.getSource().equals(rendererCombo)) {
                 String newLR = (String) rendererCombo.getSelectedItem();
                 if (!newLR.equals(layerRendererName)) {
-                    fireEvent(new LayerRendererChanged(LayerManagementPanel.this, layerName, new GreyscaleLR()));   // TODO: choose correct LayerRenderer
+                    layerRendererName = newLR;
+                    LayerRenderer lr;
+                    switch (newLR) {
+                        case SingleColour.type:
+                            lr = new SingleColour();
+                            break;
+                        case Greyscale.type:
+                            lr = new Greyscale();
+                            break;
+                        default:
+                            throw new RuntimeException("unrecognized layer renderer type: " + newLR);
+                    }
+                    fireEvent(new LayerRendererChanged(LayerManagementPanel.this, layerName, lr));
                 }
             } else if (ae.getSource().equals(rendererButton)) {
                 fireEvent(new ConfigureLayerRenderer(LayerManagementPanel.this, layerName));
