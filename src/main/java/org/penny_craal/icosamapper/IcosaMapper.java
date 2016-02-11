@@ -89,6 +89,7 @@ public class IcosaMapper implements IMEventListener {
     @Override
     public void handleEvent(IMEvent ime) {
         boolean mapChanges = false;
+        boolean layerRendererChanged = false;
         System.out.println(ime);
         // TODO: put each case into its own method to clean things up?
         switch (ime.type) {
@@ -120,6 +121,7 @@ public class IcosaMapper implements IMEventListener {
             case layerRendererChanged:
                 LayerRendererChanged lrc = (LayerRendererChanged) ime;
                 mapChanges = true;
+                layerRendererChanged = true;
                 if (!map.getLayer(layerName).getLayerRenderer().getType().equals(lrc.lr)) {
                     LayerRenderer lr;
                     switch (lrc.lr) {
@@ -225,7 +227,7 @@ public class IcosaMapper implements IMEventListener {
             default:
                 throw new RuntimeException("unrecognized event type");
         }
-        ui.refresh(colour, layerName, tool, opSize, map.getLayer(layerName).getLayerRenderer(), mapChanges);
+        ui.refresh(colour, layerName, tool, opSize, layerRendererChanged, mapChanges);
     }
 
     private void saveAs() {

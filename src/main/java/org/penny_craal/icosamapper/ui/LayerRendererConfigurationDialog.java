@@ -20,7 +20,6 @@
 package org.penny_craal.icosamapper.ui;
 
 import java.awt.*;
-import java.util.EventListener;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,19 +39,52 @@ public class LayerRendererConfigurationDialog extends JDialog implements IMEvent
     private LayerRendererDisplay layerRendererDisplay;
     private EventListenerList listenerList = new EventListenerList();
     private Map<String, VariableFactory.VariableComponent> components = new HashMap<>();
-    private Map<String, VariableType> variableMap;
+    private Listener listener;
 
     public LayerRendererConfigurationDialog(JFrame frame, String layerName, LayerRenderer lr) {
-        super(frame, layerName + ": " + lr.getType());
+        super(frame);
         this.layerName = layerName;
         this.lr = lr;
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        listener = new Listener();
+
+        setTitle();
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        Listener listener = new Listener();
+        populate();
+        setVisible(true);
+    }
 
-        variableMap = lr.getVariables();
+    private void setTitle() {
+        setTitle(layerName + ": " + lr.getType());
+    }
+
+    public void populate() {
+        if (layerRendererDisplay != null) {
+            remove(layerRendererDisplay);
+        }
+        for (Map.Entry<String, VariableFactory.VariableComponent> entry: components.entrySet()) {
+            remove(entry.getValue());
+        }
+        components.clear();
+        layerRendererDisplay = new LayerRendererDisplay(lr);
+        add(layerRendererDisplay, BorderLayout.CENTER);
+        add(makeVariablePanel(), BorderLayout.PAGE_END);
+        pack();
+        setMinimumSize(getPreferredSize());
+        repaint();
+    }
+
+    public void setLayerRenderer(String layerName, LayerRenderer lr) {
+        this.layerName = layerName;
+        this.lr = lr;
+        setTitle();
+        populate();
+    }
+
+    private JPanel makeVariablePanel() {
         JPanel variablePanel = new JPanel();
+        Map<String, VariableType> variableMap = lr.getVariables();
         variablePanel.setLayout(new BoxLayout(variablePanel, BoxLayout.PAGE_AXIS));
         for (Map.Entry<String, VariableType> entry: variableMap.entrySet()) {
             String variableName = entry.getKey();
@@ -64,12 +96,7 @@ public class LayerRendererConfigurationDialog extends JDialog implements IMEvent
             variablePanel.add(vc);
         }
 
-        layerRendererDisplay = new LayerRendererDisplay(lr);
-        add(layerRendererDisplay, BorderLayout.CENTER);
-        add(variablePanel, BorderLayout.PAGE_END);
-        pack();
-        setMinimumSize(getPreferredSize());
-        setVisible(true);
+        return variablePanel;
     }
 
     ///////////////////

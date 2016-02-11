@@ -60,14 +60,14 @@ public class UI extends JFrame implements IMEventSource {
     private PaintPanel paintPanel;
     private LayerManagementPanel layerManagementPanel;
     private Listener listener;
-    private java.util.Map<String, LayerRendererConfigurationDialog> lrConfDialogs;
+    private LayerRendererConfigurationDialog lrConfDialog;
 
     public UI(Map map, byte colour, PaintBar.Tool tool, int opSize) {
         this.map = map;
         this.layerName = map.getLayerNames().get(0);
         Layer layer = map.getLayer(layerName);
         LayerRenderer lr = layer.getLayerRenderer();
-        lrConfDialogs = new java.util.HashMap<>();
+        lrConfDialog = null;
 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -128,20 +128,26 @@ public class UI extends JFrame implements IMEventSource {
         paintPanel.setLayerRenderer(layer.getLayerRenderer());
     }
 
-    public void refresh(byte colour, String layerName, PaintBar.Tool tool, int opSize, LayerRenderer lr, boolean mapChanges) {
+    public void refresh(byte colour, String layerName, PaintBar.Tool tool, int opSize, boolean layerRendererChanged, boolean mapChanges) {
         layerPanel.setOpSize(opSize);
         if (!this.layerName.equals(layerName)) {
             layerPanel.setLayer(map.getLayer(layerName));
             layerPanel.repaint();
             layerManagementPanel.layerRendererChanged(map.getLayer(layerName).getLayerRenderer());
+            if (lrConfDialog != null) {
+                lrConfDialog.setLayerRenderer(layerName, map.getLayer(layerName).getLayerRenderer());
+            }
         } else if (mapChanges) {
             layerPanel.repaint();
+        }
+        if (layerRendererChanged && lrConfDialog != null) {
+            lrConfDialog.setLayerRenderer(layerName, map.getLayer(layerName).getLayerRenderer());
         }
         this.layerName = layerName;
         paintPanel.setTool(tool);
         paintPanel.setOpSize(opSize);
         paintPanel.setColour(colour);
-        paintPanel.setLayerRenderer(lr);
+        paintPanel.setLayerRenderer(map.getLayer(layerName).getLayerRenderer());
         // remove any layers not in the map
         LayerListModel llm = layerManagementPanel.getLayerListModel();
         List<String> layerNames = map.getLayerNames();
@@ -211,11 +217,10 @@ public class UI extends JFrame implements IMEventSource {
     }
 
     public void openConfigureLayerRendererDialog() {
-        if (!lrConfDialogs.containsKey(layerName)) {
-            LayerRendererConfigurationDialog lrcd = new LayerRendererConfigurationDialog(this, layerName, map.getLayer(layerName).getLayerRenderer());
-            lrcd.addIMEventListener(listener);
-            lrcd.addWindowListener(listener);
-            lrConfDialogs.put(layerName, lrcd);
+        if (lrConfDialog == null) {
+            lrConfDialog = new LayerRendererConfigurationDialog(this, layerName, map.getLayer(layerName).getLayerRenderer());
+            lrConfDialog.addIMEventListener(listener);
+            lrConfDialog.addWindowListener(listener);
         }
     }
 
@@ -254,15 +259,9 @@ public class UI extends JFrame implements IMEventSource {
         public void windowClosing(WindowEvent windowEvent) {
             if (windowEvent.getSource().equals(UI.this)) {
                 fireEvent(new Exit(UI.this));
+            } else if (windowEvent.getSource().equals(lrConfDialog)) {
+                lrConfDialog = null;
             } else {
-                for (Iterator<java.util.Map.Entry<String, LayerRendererConfigurationDialog>> it = lrConfDialogs.entrySet().iterator(); it.hasNext(); ) {
-                    java.util.Map.Entry<String, LayerRendererConfigurationDialog> entry = it.next();
-                    if (windowEvent.getSource().equals(entry.getValue())) {
-                        entry.getValue().dispose();
-                        it.remove();
-                        return;
-                    }
-                }
                 throw new RuntimeException("unrecognized event source for WindowEvent: " + windowEvent);
             }
         }
