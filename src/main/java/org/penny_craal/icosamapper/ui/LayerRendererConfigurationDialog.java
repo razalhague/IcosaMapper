@@ -37,6 +37,7 @@ public class LayerRendererConfigurationDialog extends JDialog implements IMEvent
     private String layerName;
     private LayerRenderer lr;
     private LayerRendererDisplay layerRendererDisplay;
+    private JPanel variablePanel;
     private EventListenerList listenerList = new EventListenerList();
     private Map<String, VariableFactory.VariableComponent> components = new HashMap<>();
     private Listener listener;
@@ -63,13 +64,17 @@ public class LayerRendererConfigurationDialog extends JDialog implements IMEvent
         if (layerRendererDisplay != null) {
             remove(layerRendererDisplay);
         }
+        if (variablePanel != null) {
+            remove(variablePanel);
+        }
         for (Map.Entry<String, VariableFactory.VariableComponent> entry: components.entrySet()) {
             remove(entry.getValue());
         }
         components.clear();
         layerRendererDisplay = new LayerRendererDisplay(lr);
+        variablePanel = makeVariablePanel();
         add(layerRendererDisplay, BorderLayout.CENTER);
-        add(makeVariablePanel(), BorderLayout.PAGE_END);
+        add(variablePanel, BorderLayout.PAGE_END);
         pack();
         setMinimumSize(getPreferredSize());
         repaint();
@@ -83,17 +88,32 @@ public class LayerRendererConfigurationDialog extends JDialog implements IMEvent
     }
 
     private JPanel makeVariablePanel() {
-        JPanel variablePanel = new JPanel();
+        JPanel variablePanel = new JPanel(new GridBagLayout());
+        GridBagConstraints labelConstraints = new GridBagConstraints();
+        labelConstraints.weightx = 0;
+        labelConstraints.gridx = 0;
+        labelConstraints.anchor = GridBagConstraints.LINE_START;
+        labelConstraints.insets = new Insets(0,2,0,2);
+        GridBagConstraints componentConstraints = new GridBagConstraints();
+        componentConstraints.weightx = 1000;
+        componentConstraints.gridx = 1;
+        componentConstraints.fill = GridBagConstraints.BOTH;
+
         Map<String, VariableType> variableMap = lr.getVariables();
-        variablePanel.setLayout(new BoxLayout(variablePanel, BoxLayout.PAGE_AXIS));
+        int i = 0;
+
         for (Map.Entry<String, VariableType> entry: variableMap.entrySet()) {
+            labelConstraints.gridy = i;
+            componentConstraints.gridy = i;
             String variableName = entry.getKey();
-            // TODO: make label for variable name
             Object initValue = lr.getValue(variableName);
             VariableFactory.VariableComponent vc = VariableFactory.makeComponentFor(variableName, entry.getValue(), initValue);
             vc.addIMEventListener(listener);
             components.put(variableName, vc);
-            variablePanel.add(vc);
+            JLabel name = new JLabel(entry.getKey());
+            variablePanel.add(name, labelConstraints);
+            variablePanel.add(vc, componentConstraints);
+            i++;
         }
 
         return variablePanel;
