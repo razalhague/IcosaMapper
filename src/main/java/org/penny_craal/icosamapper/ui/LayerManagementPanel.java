@@ -83,6 +83,7 @@ public class LayerManagementPanel extends JPanel implements IMEventSource {
 
     public void layerRendererChanged(LayerRenderer lr) {
         String type = lr.getType();
+
         for (int i = 0; i < layerRenderers.length; i++) {
             if (layerRenderers[i].equals(type)) {
                 rendererCombo.setSelectedIndex(i);
@@ -142,18 +143,7 @@ public class LayerManagementPanel extends JPanel implements IMEventSource {
                 String newLR = (String) rendererCombo.getSelectedItem();
                 if (!newLR.equals(layerRendererName)) {
                     layerRendererName = newLR;
-                    LayerRenderer lr;
-                    switch (newLR) {
-                        case SingleColour.type:
-                            lr = new SingleColour();
-                            break;
-                        case Greyscale.type:
-                            lr = new Greyscale();
-                            break;
-                        default:
-                            throw new RuntimeException("unrecognized layer renderer type: " + newLR);
-                    }
-                    fireEvent(new LayerRendererChanged(LayerManagementPanel.this, layerName, lr));
+                    fireEvent(new LayerRendererChanged(LayerManagementPanel.this, layerName, newLR));
                 }
             } else if (ae.getSource().equals(rendererButton)) {
                 fireEvent(new ConfigureLayerRenderer(LayerManagementPanel.this, layerName));

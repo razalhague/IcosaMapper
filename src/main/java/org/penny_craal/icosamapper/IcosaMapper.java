@@ -32,6 +32,7 @@ import org.penny_craal.icosamapper.map.Layer;
 import org.penny_craal.icosamapper.map.layerrenderers.LayerRenderer;
 import org.penny_craal.icosamapper.map.Map;
 import org.penny_craal.icosamapper.map.Path;
+import org.penny_craal.icosamapper.map.layerrenderers.SingleColour;
 import org.penny_craal.icosamapper.ui.LayerPanel;
 import org.penny_craal.icosamapper.ui.PaintBar;
 import org.penny_craal.icosamapper.ui.UI;
@@ -118,8 +119,23 @@ public class IcosaMapper implements IMEventListener {
                 break;
             case layerRendererChanged:
                 LayerRendererChanged lrc = (LayerRendererChanged) ime;
-                map.getLayer(layerName).setLayerRenderer(lrc.lr);
                 mapChanges = true;
+                if (!map.getLayer(layerName).getLayerRenderer().getType().equals(lrc.lr)) {
+                    LayerRenderer lr;
+                    switch (lrc.lr) {
+                        case SingleColour.type:
+                            lr = new SingleColour();
+                            break;
+                        case Greyscale.type:
+                            lr = new Greyscale();
+                            break;
+                        default:
+                            throw new RuntimeException("unrecognized layer renderer type: " + lrc.lr);
+                    }
+                    map.getLayer(layerName).setLayerRenderer(lr);
+                } else {
+                    System.out.println("new LR type same as old LR type, ignoring");
+                }
                 break;
             case layerSelected:
                 layerName = ((LayerSelected) ime).layerName;
