@@ -79,6 +79,10 @@ public class VariableFactory {
             setLayout(new BorderLayout());
             JSlider slider = new JSlider(tvm.getBoundedRangeModel());
             JSpinner spinner = new JSpinner(tvm.getSpinnerModel());
+            int minLength = Integer.toString(integerType.minimum).length();
+            int maxLength = Integer.toString(integerType.maximum).length();
+            JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) spinner.getEditor();
+            editor.getTextField().setColumns(Math.max(minLength, maxLength));
             slider.addChangeListener(listener);
             spinner.addChangeListener(listener);
             add(slider, BorderLayout.CENTER);
