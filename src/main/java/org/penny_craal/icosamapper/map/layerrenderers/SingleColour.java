@@ -33,33 +33,39 @@ import org.penny_craal.icosamapper.map.layerrenderers.variabletypes.VariableType
 public class SingleColour extends LayerRendererHelper {
     private int hue;
     private int saturation;
+    private int maxLightness;
 
     private static final String HUE = "hue";
     private static final String SAT = "saturation";
+    private static final String MAX_LIGHT = "maxLightness";
+    private static final int minValue = 0;
+    private static final int maxValue = 255;
     private static final Map<String, VariableType> variables = Collections.unmodifiableMap(new HashMap<String, VariableType>() {{
-        put(HUE, new IntegerType(0, 255));
-        put(SAT, new IntegerType(0, 255));
+        put(HUE, new IntegerType(minValue, maxValue));
+        put(SAT, new IntegerType(minValue, maxValue));
+        put(MAX_LIGHT, new IntegerType(minValue, maxValue));
     }});
 
     public static final String type = "SingleColour";
 
     public SingleColour() {
-        this(0, 255);
+        this(minValue, maxValue, maxValue/2);
     }
 
-    public SingleColour(int hue, int saturation) {
+    public SingleColour(int hue, int saturation, int maxLightness) {
         this.hue = hue;
         this.saturation = saturation;
+        this.maxLightness = maxLightness;
     }
 
     @Override
     public int renderByte(byte value) {
-        double h, s, v, c, x, r = 0, g = 0, b = 0;
+        double h, s, l, c, x, m, r = 0, g = 0, b = 0, mv = maxValue;
         int hSection;
-        v = Util.toInt(value) / 255.0;
-        h = hue / 255.0;
-        s = saturation / 255.0;
-        c = v * s;
+        l = (Util.toInt(value) / mv) * (maxLightness / (double) maxValue);
+        h = hue / mv;
+        s = saturation / mv;
+        c = (1 - Math.abs(2*l - 1)) * s;
         x = c * (1 - Math.abs(((h*6) % 2) - 1));
         hSection = (int) Math.floor(h * 6);
         switch (hSection) {
@@ -91,10 +97,13 @@ public class SingleColour extends LayerRendererHelper {
             default:
                 throw new RuntimeException("error");
         }
+
+        m = l - (c/2);
+
         return Util.encodeAsInt(
-                (int) (r * 255),
-                (int) (g * 255),
-                (int) (b * 255)
+                (int) ((r+m) * 255),
+                (int) ((g+m) * 255),
+                (int) ((b+m) * 255)
         );
     }
 
@@ -115,6 +124,8 @@ public class SingleColour extends LayerRendererHelper {
                 return hue;
             case SAT:
                 return saturation;
+            case MAX_LIGHT:
+                return maxLightness;
             default:
                 throw new RuntimeException("unrecognized variable name " + variableName);
         }
@@ -128,6 +139,9 @@ public class SingleColour extends LayerRendererHelper {
                 break;
             case SAT:
                 saturation = (Integer) value;
+                break;
+            case MAX_LIGHT:
+                maxLightness = (Integer) value;
                 break;
             default:
                 throw new RuntimeException("unrecognized variable name " + variableName + " that passed helper class check, problem in code");
