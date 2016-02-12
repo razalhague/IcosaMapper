@@ -32,6 +32,7 @@ import javax.swing.event.EventListenerList;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.penny_craal.icosamapper.map.Layer;
+import org.penny_craal.icosamapper.map.Path;
 import org.penny_craal.icosamapper.map.layerrenderers.LayerRenderer;
 import org.penny_craal.icosamapper.map.Map;
 import org.penny_craal.icosamapper.ui.events.*;
@@ -222,6 +223,14 @@ public class UI extends JFrame implements IMEventSource {
             lrConfDialog.addIMEventListener(listener);
             lrConfDialog.addWindowListener(listener);
         }
+    }
+
+    public void zoomIn(Path path) {
+        layerPanel.zoomIn(path);
+    }
+
+    public void zoomOut() {
+        layerPanel.zoomOut();
     }
 
       ///////////////////

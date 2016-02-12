@@ -19,6 +19,7 @@
 
 package org.penny_craal.icosamapper.map;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -86,6 +87,35 @@ public class Path {
             throw new RuntimeException("Trying to do .rest() on a Path of length one");
         }
         return new Path(path, index + 1);
+    }
+
+    /**
+     * Returns a new Path that is this path combined with the other
+     * @param that  path to append onto this path
+     * @return      combined path
+     */
+    public Path append(Path that) {
+        List<Byte> fullPath = new ArrayList<>(this.length() + that.length());
+        for (int i = this.index; i < this.path.length; i++) {
+            fullPath.add(this.path[i]);
+        }
+        for (int i = that.index; i < that.path.length; i++) {
+            fullPath.add(that.path[i]);
+        }
+
+        return new Path(fullPath);
+    }
+
+    public Path clipped() {
+        if (length() == 1) {
+            return null;
+        }
+        List<Byte> newPath = new ArrayList<>(length() - 1);
+        for (int i = index; i < path.length - 1; i++) {
+            newPath.add(path[i]);
+        }
+
+        return new Path(newPath);
     }
     
     @Override

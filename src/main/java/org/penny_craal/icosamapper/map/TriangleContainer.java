@@ -79,4 +79,6 @@ public interface TriangleContainer {
      * @return the values of the children at the specified depth.
      */
     byte[] render(int depth);
+
+    byte[] render(Path zoom, int depth) throws InvalidPathException;
 }

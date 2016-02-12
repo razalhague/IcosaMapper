@@ -277,10 +277,14 @@ public class IcosaMapper implements IMEventListener {
                 }
                 return true;
             case ZOOM_IN:
-                // TODO: zooming
+                if (map.getLayer(layerName).isValidPath(path)) {
+                    ui.zoomIn(path);
+                } else {
+                    throw new RuntimeException("trying to zoom into an invalid path");
+                }
                 return false;
             case ZOOM_OUT:
-                // TODO: zooming
+                ui.zoomOut();
                 return false;
             default:
                 throw new RuntimeException("unrecognized tool: " + tool);

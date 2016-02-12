@@ -130,6 +130,21 @@ abstract public class ArrayTriangleContainer implements TriangleContainer, Seria
 
         return (byte) (n/vals.length);
     }
+
+    @Override
+    public byte[] render(Path zoom, int depth) throws InvalidPathException {
+        if (zoom == null) {
+            return render(depth);
+        } else if (tris == null) {
+            throw new InvalidPathException(zoom);
+        } else if (zoom.length() == 1) {
+            return tris[zoom.first()].render(depth);
+        } else if (tris[zoom.first()] != null) {
+            return render(zoom.rest(), depth);
+        } else {
+            throw new InvalidPathException(zoom);
+        }
+    }
     
     @Override
     public byte[] render(int depth) {

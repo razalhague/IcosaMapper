@@ -27,7 +27,6 @@ public class PathTest {
      */
     @Test
     public void testFirst() {
-        System.out.println("first");
         Path instance = new Path(path);
         for (int i = 0; i < path.length; i++) {
             assertEquals(path[i], instance.first());
@@ -42,7 +41,6 @@ public class PathTest {
      */
     @Test
     public void testLength() {
-        System.out.println("length");
         Path instance = new Path(path);
         for (int i = 0; i < path.length; i++) {
             assertEquals(path.length - i, instance.length());
@@ -57,9 +55,46 @@ public class PathTest {
      */
     @Test
     public void testRest() {
-        System.out.println("rest");
         // the test for first() tests this method as well as it can be tested
         testFirst();
+    }
+
+    /**
+     * Test of append method, of class Path.
+     */
+    @Test
+    public void testAppend() {
+        Path instance = new Path(path);
+        instance = instance.append(instance);
+        for (int i = 0; i < path.length*2; i++) {
+            assertEquals(path[i%path.length], instance.first());
+            if (instance.length() != 1) {
+                instance = instance.rest();
+            }
+        }
+    }
+
+    /**
+     * Test of clipped method, of class Path.
+     */
+    @Test
+    public void testClipped() {
+        Path instance = new Path(path);
+        for (int i = 1; i < path.length; i++) {
+            Path clipped = instance.clipped();
+            if (i == path.length) {
+                assertNull(clipped);
+            } else {
+                assertEquals(path.length - i, clipped.length());
+                for (int j = 0; j < path.length - i; j++) {
+                    assertEquals(path[j], clipped.first());
+                    if (clipped.length() != 1) {
+                        clipped = clipped.rest();
+                    }
+                }
+            }
+            instance = instance.clipped();
+        }
     }
 
     /**
@@ -67,7 +102,6 @@ public class PathTest {
      */
     @Test
     public void testToString() {
-        System.out.println("toString");
         Path instance = new Path(path);
         assertEquals("{ CUR: 1, 2, 3, 4, 5 }", instance.toString());
     }

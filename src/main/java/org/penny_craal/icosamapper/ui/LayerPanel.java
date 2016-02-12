@@ -157,7 +157,25 @@ public class LayerPanel extends JPanel implements IMEventSource {
     public void setOpSize(int opSize) {
         this.opSize = opSize;
     }
-    
+
+    public void zoomIn(Path path) {
+        if (zoom == null) {
+            zoom = path;
+        } else {
+            zoom = zoom.append(path);
+        }
+        repaint();
+    }
+
+    public void zoomOut() {
+        if (zoom == null) {
+            throw new RuntimeException("trying to zoom out when not zoomed in");
+        } else {
+            zoom = zoom.clipped();
+        }
+        repaint();
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -165,26 +183,69 @@ public class LayerPanel extends JPanel implements IMEventSource {
         if (layer == null) {
             return;
         }
-        
-        if (zoom == null) {
-            int[] values = layer.renderArray(drawDepth);
-            paintIcosahedron(
-                    g2d,
-                    values,
-                    0,
-                    values.length,
-                    drawDepth,
-                    insets.left,
-                    insets.top,
-                    (getWidth() - (insets.left + insets.right))/5.5,
-                    (getHeight() - (insets.top + insets.bottom))/3.0,
-                    topIsSkewedLeft
-            );
-        } else /* zoom != null */ {
-            // TODO
-        }
+
+        boolean excepted;
+        do {
+            excepted = false;
+            try {
+                if (zoom == null) {
+                    int[] values = layer.renderArray(drawDepth);
+                    paintIcosahedron(
+                            g2d,
+                            values,
+                            0,
+                            values.length,
+                            drawDepth,
+                            insets.left,
+                            insets.top,
+                            (getWidth() - (insets.left + insets.right)) / 5.5,
+                            (getHeight() - (insets.top + insets.bottom)) / 3.0,
+                            topIsSkewedLeft
+                    );
+                } else /* zoom != null */ {
+                    int[] values = layer.renderArray(zoom, drawDepth);
+                    paintTriangle(
+                            g2d,
+                            values,
+                            0,
+                            values.length,
+                            drawDepth,
+                            insets.left,
+                            insets.top,
+                            (getWidth() - (insets.left + insets.right)),
+                            (getHeight() - (insets.top + insets.bottom)),
+                            isPointUp(zoom)
+                    );
+                }
+            } catch (InvalidPathException e) {
+                excepted = true;
+                if (zoom != null) {
+                    zoom = zoom.clipped();
+                } else {
+                    throw new RuntimeException("these exceptions should only rise from the zoom != null branch so this should never happen", e);
+                }
+            }
+        } while (excepted);
     }
-    
+
+    private boolean isPointUp(Path zoom) {
+        boolean pointUp = zoom.first() < 10;    // determines the icosahedron part
+        while (zoom.length() != 1) {
+            zoom = zoom.rest();
+            if (pointUp) {
+                if (zoom.first() == 2 || zoom.first() == 5 || zoom.first() == 7) {
+                    pointUp = !pointUp;
+                }
+            } else {
+                if (zoom.first() == 1 || zoom.first() == 3 || zoom.first() == 6) {
+                    pointUp = !pointUp;
+                }
+            }
+        }
+
+        return pointUp;
+    }
+
     private void paintIcosahedron(
             Graphics2D g2d,
             int[] values,
@@ -366,22 +427,22 @@ public class LayerPanel extends JPanel implements IMEventSource {
     }
     
     /**
-     * Checks if the point is outside the icosahedron's bounding rectangle.
+     * Checks if the point is withing the drawing area.
      * @param relPanel
      * @return 
      */
-    private boolean outsideIcosaRect(Point relPanel) {
+    private boolean withinDrawingArea(Point relPanel) {
         Dimension panelSize = getSize();
         if (relPanel.x < insets.left)
-            return true;
+            return false;
         if (relPanel.x >= (panelSize.width - insets.right))
-            return true;
+            return false;
         if (relPanel.y < insets.top)
-            return true;
+            return false;
         if (relPanel.y >= (panelSize.height - insets.bottom))
-            return true;
+            return false;
 
-        return false;
+        return true;
     }
     
     // [skew:0=right,1=left][row][position:0=upper,1=lower][column]; -1 = no child
@@ -509,24 +570,36 @@ public class LayerPanel extends JPanel implements IMEventSource {
     private class Listener extends MouseInputAdapter {
         @Override
         public void mouseClicked(MouseEvent me) {
-            if (zoom != null) {   // won't handle zoom yet
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
             Dimension panelSize = getSize();
             Point relPanel = me.getPoint();
-            if (outsideIcosaRect(relPanel)) {
+            if (!withinDrawingArea(relPanel)) {
                 return;
             }
+            Path path;
             Dimension mapSize = new Dimension(panelSize.width - (insets.left + insets.right), panelSize.height - (insets.top + insets.bottom));
             Point relMap = new Point(relPanel.x - insets.left, relPanel.y - insets.top);
-            Path path = resolvePathFromRelCoordsInArray(
-                    relMap.getX() / mapSize.getWidth(),
-                    relMap.getY() / mapSize.getHeight(),
-                    topIsSkewedLeft,
-                    childFromIcosahedronSRPC,
-                    new LinkedList<Byte>(),
-                    opSize
-            );
+            if (zoom == null) {
+                path = resolvePathFromRelCoordsInArray(
+                        relMap.getX() / mapSize.getWidth(),
+                        relMap.getY() / mapSize.getHeight(),
+                        topIsSkewedLeft,
+                        childFromIcosahedronSRPC,
+                        new LinkedList<Byte>(),
+                        opSize
+                );
+            } else /* zoom != null */ {
+                path = resolvePathFromRelCoordsInArray(
+                        relMap.getX() / mapSize.getWidth(),
+                        relMap.getY() / mapSize.getHeight(),
+                        isPointUp(zoom),
+                        childFromTrianglePRPC,
+                        new LinkedList<Byte>(),
+                        opSize
+                );
+                if (path != null) {
+                    path = zoom.append(path);
+                }
+            }
             if (path == null) {
                 return; // outside of icosahedron
             }

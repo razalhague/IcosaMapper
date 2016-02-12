@@ -81,11 +81,19 @@ public class Layer implements TriangleContainer, Serializable {
     public byte[] render(int depth) {
         return ih.render(depth);
     }
-    
+
+    public byte[] render(Path zoom, int depth) throws InvalidPathException {
+        return ih.render(zoom, depth);
+    }
+
     public int[] renderArray(int depth) {
         return lr.renderArray(render(depth));
     }
-    
+
+    public int[] renderArray(Path zoom, int depth) throws InvalidPathException {
+        return lr.renderArray(render(zoom, depth));
+    }
+
     @Override
     public int getSize() {
         return 1;
