@@ -223,6 +223,7 @@ public class IcosaMapper implements IMEventListener {
                 break;
             case layerRendererReconfigured:
                 mapChanges = true;
+                hasUnsavedChanges = true;
                 break;
             default:
                 throw new RuntimeException("unrecognized event type");
