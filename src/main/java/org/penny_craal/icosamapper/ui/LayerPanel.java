@@ -158,12 +158,9 @@ public class LayerPanel extends JPanel implements IMEventSource {
         this.opSize = opSize;
     }
 
-    public void zoomIn(Path path) {
-        if (zoom == null) {
-            zoom = path;
-        } else {
-            zoom = zoom.append(path);
-        }
+    public void setZoom(Path zoom) {
+        System.out.println("zoom set to: " + zoom);
+        this.zoom = zoom;
         repaint();
     }
 

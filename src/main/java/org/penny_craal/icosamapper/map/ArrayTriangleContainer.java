@@ -140,7 +140,7 @@ abstract public class ArrayTriangleContainer implements TriangleContainer, Seria
         } else if (zoom.length() == 1) {
             return tris[zoom.first()].render(depth);
         } else if (tris[zoom.first()] != null) {
-            return render(zoom.rest(), depth);
+            return tris[zoom.first()].render(zoom.rest(), depth);
         } else {
             throw new InvalidPathException(zoom);
         }

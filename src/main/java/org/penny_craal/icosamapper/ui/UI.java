@@ -226,7 +226,7 @@ public class UI extends JFrame implements IMEventSource {
     }
 
     public void zoomIn(Path path) {
-        layerPanel.zoomIn(path);
+        layerPanel.setZoom(path);
     }
 
     public void zoomOut() {
