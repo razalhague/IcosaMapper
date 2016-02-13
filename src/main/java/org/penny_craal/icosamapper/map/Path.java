@@ -41,7 +41,7 @@ public class Path {
     
     /**
      * Constructs a Path
-     * @param path
+     * @param path  list of bytes that defines the path
      */
     public Path(List<Byte> path) {
         byte[] bytePath = new byte[path.size()];
@@ -53,9 +53,9 @@ public class Path {
     }
     
     /**
-     * Constructs a Path
-     * @param path
-     * @param index 
+     * Constructs a Path. This is essentially an optimization for the rest() method. Probably unnecessary, too.
+     * @param path      array of bytes that defines the path
+     * @param index     index in that array that marks the first element in the path. all elements before this are ignored.
      */
     private Path(byte[] path, int index) {
         this.path = path;
@@ -106,6 +106,10 @@ public class Path {
         return new Path(fullPath);
     }
 
+    /**
+     * Returns a new Path without the final element.
+     * @return a new path that lacks the final element.
+     */
     public Path clipped() {
         if (length() == 1) {
             return null;
@@ -117,15 +121,17 @@ public class Path {
 
         return new Path(newPath);
     }
-    
+
+    /**
+     * Returns a string representation of the Path.
+     * @return  as described above
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("{ ");
-        
-        for (int i = 0; i < path.length; i++) {
-            if (i == index) {
-                sb.append("CUR: ");
-            }
+        sb.append("CUR: ");
+
+        for (int i = index; i < path.length; i++) {
             sb.append(path[i]);
             sb.append(", ");
         }
