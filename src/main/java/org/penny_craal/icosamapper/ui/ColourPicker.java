@@ -30,6 +30,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.penny_craal.icosamapper.map.Constants;
+import org.penny_craal.icosamapper.map.Util;
 import org.penny_craal.icosamapper.map.layerrenderers.LayerRenderer;
 
 /**
@@ -49,7 +50,7 @@ public class ColourPicker extends JPanel {
     
     public ColourPicker(LayerRenderer lr, byte initValue) {
         this.lr = lr;
-        value = new TriangleValueModel(initValue, Constants.MIN_VALUE, Constants.MAX_VALUE);
+        value = new TriangleValueModel(Util.toInt(initValue), Constants.MIN_VALUE, Constants.MAX_VALUE);
         
         Listener listener = new Listener();
         
@@ -100,7 +101,7 @@ public class ColourPicker extends JPanel {
     }
 
     public void setColour(byte colour) {
-        value.setValue(colour);
+        value.setValue(Util.toInt(colour));
     }
 
     private class Listener implements ChangeListener {
