@@ -43,6 +43,19 @@ abstract public class ArrayTriangleContainer implements TriangleContainer, Seria
         }
     }
 
+    protected ArrayTriangleContainer(ArrayTriangleContainer that) {
+        this.vals = that.vals.clone();
+        if (that.tris == null) {
+            this.tris = null;
+        } else {
+            this.tris = that.tris.clone();
+
+            for (int i = 0; i < this.tris.length; i++) {
+                this.tris[i] = this.tris[i].copy();
+            }
+        }
+    }
+
     @Override
     public boolean isValidPath(Path p) {
         if (p.length() <= 1) {

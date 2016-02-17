@@ -57,6 +57,7 @@ public class IcosaMapper implements IMEventListener {
     private static final int defaultOpSize = 1;
     private static final PaintBar.Tool defaultTool = PaintBar.Tool.DRAW;
     private static final String defaultNewLayerName = "New Layer";
+    private static final String copyOfPrefix = "Copy of ";
     private static final LayerRenderer defaultLayerRenderer = new Greyscale();
 
     private IcosaMapper() {
@@ -107,7 +108,9 @@ public class IcosaMapper implements IMEventListener {
                 }
                 break;
             case duplicateLayer:
-                // TODO: duplicate layer
+                Layer newLayer = map.getLayer(layerName).copy();
+                newLayer.setName(getNewLayerName(copyOfPrefix + newLayer.getName()));
+                map.addLayer(newLayer);
                 hasUnsavedChanges = true;
                 break;
             case exit:
@@ -143,20 +146,7 @@ public class IcosaMapper implements IMEventListener {
                 layerName = ((LayerSelected) ime).layerName;
                 break;
             case newLayer:
-                List<String> layerNames = map.getLayerNames();
-                String newLayerName = null;
-
-                if (!layerNames.contains(defaultNewLayerName)) {
-                    newLayerName = defaultNewLayerName;
-                } else {
-                    for (int i = 2; newLayerName == null && i < Integer.MAX_VALUE; i++) {
-                        String potentialNewLayerName = defaultNewLayerName + " (" + i + ")";
-                        if (!layerNames.contains(potentialNewLayerName)) {
-                            newLayerName = potentialNewLayerName;
-                        }
-                    }
-                }
-                map.addLayer(new Layer(newLayerName, defaultLayerRenderer, defaultColour));
+                map.addLayer(new Layer(getNewLayerName(defaultNewLayerName), defaultLayerRenderer, defaultColour));
                 hasUnsavedChanges = true;
                 break;
             case newMap:
@@ -229,6 +219,23 @@ public class IcosaMapper implements IMEventListener {
                 throw new RuntimeException("unrecognized event type");
         }
         ui.refresh(colour, layerName, tool, opSize, layerRendererChanged, mapChanges);
+    }
+
+    private String getNewLayerName(String baseName) {
+        String newLayerName = null;
+        List<String> layerNames = map.getLayerNames();
+        if (!layerNames.contains(baseName)) {
+            newLayerName = baseName;
+        } else {
+            for (int i = 2; newLayerName == null && i < Integer.MAX_VALUE; i++) {
+                String potentialNewLayerName = baseName + " (" + i + ")";
+                if (!layerNames.contains(potentialNewLayerName)) {
+                    newLayerName = potentialNewLayerName;
+                }
+            }
+        }
+
+        return newLayerName;
     }
 
     private void saveAs() {

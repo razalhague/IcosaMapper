@@ -81,4 +81,10 @@ public interface TriangleContainer {
     byte[] render(int depth);
 
     byte[] render(Path zoom, int depth) throws InvalidPathException;
+
+    /**
+     * Returns an independent copy of this object. Not using Object.clone(), because it's a mess.
+     * @return the copy
+     */
+    TriangleContainer copy();
 }

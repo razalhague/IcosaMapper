@@ -34,9 +34,18 @@ public class ArrayIcosahedron extends ArrayTriangleContainer {
     public ArrayIcosahedron(byte init) {
         super(init);
     }
+
+    protected ArrayIcosahedron(ArrayTriangleContainer atc) {
+        super(atc);
+    }
     
     @Override
     public int getSize() {
         return size;
+    }
+
+    @Override
+    public TriangleContainer copy() {
+        return new ArrayIcosahedron(this);
     }
 }

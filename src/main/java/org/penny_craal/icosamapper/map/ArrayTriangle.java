@@ -34,9 +34,17 @@ public class ArrayTriangle extends ArrayTriangleContainer {
     public ArrayTriangle(byte init) {
         super(init);
     }
-    
+
+    protected ArrayTriangle(ArrayTriangleContainer atc) {
+        super(atc);
+    }
     @Override
     public int getSize() {
         return size;
+    }
+
+    @Override
+    public TriangleContainer copy() {
+        return new ArrayTriangle(this);
     }
 }

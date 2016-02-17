@@ -27,23 +27,29 @@ import org.penny_craal.icosamapper.map.layerrenderers.LayerRenderer;
  * A layer in the map. 
  * @author Ville Jokela
  */
-public class Layer implements TriangleContainer, Serializable {
+public final class Layer implements TriangleContainer, Serializable {
     private static final long serialVersionUID = 1L;
     private String name;
     private LayerRenderer lr;
-    private ArrayIcosahedron ih;
+    private TriangleContainer ih;
     
     public Layer(String name, LayerRenderer lr, byte init) {
         this.name = name;
         this.lr = lr;
         ih = new ArrayIcosahedron(init);
     }
-    
+
+    private Layer(Layer that) {
+        this.name = that.name;
+        this.lr = that.lr.copy();
+        this.ih = that.ih.copy();
+    }
+
     public String getName() {
         return name;
     }
 
-    void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
     
@@ -131,5 +137,10 @@ public class Layer implements TriangleContainer, Serializable {
         result = 37 * result + ih.hashCode();
         
         return result;
+    }
+
+    @Override
+    public Layer copy() {
+        return new Layer(this);
     }
 }

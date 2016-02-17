@@ -58,6 +58,12 @@ public class SingleColour extends LayerRendererHelper {
         this.maxLightness = maxLightness;
     }
 
+    protected SingleColour(SingleColour that) {
+        this.hue = that.hue;
+        this.saturation = that.saturation;
+        this.maxLightness = that.maxLightness;
+    }
+
     @Override
     public int renderByte(byte value) {
         double h, s, l, c, x, m, r = 0, g = 0, b = 0, mv = maxValue;
@@ -146,5 +152,10 @@ public class SingleColour extends LayerRendererHelper {
             default:
                 throw new RuntimeException("unrecognized variable name " + variableName + " that passed helper class check, problem in code");
         }
+    }
+
+    @Override
+    public SingleColour copy() {
+        return new SingleColour(this);
     }
 }

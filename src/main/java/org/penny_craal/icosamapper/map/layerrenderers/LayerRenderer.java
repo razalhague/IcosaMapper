@@ -27,7 +27,7 @@ import org.penny_craal.icosamapper.map.layerrenderers.variabletypes.VariableType
  * A translator between a byte value and a colour.
  * @author Ville Jokela
  */
-public interface LayerRenderer {
+public interface LayerRenderer extends Cloneable {
     /**
      * Transforms a byte value into a colour (encoded as an int).
      * @param value     the byte value to be rendered
@@ -67,4 +67,10 @@ public interface LayerRenderer {
      * @param value             value of the variable
      */
     void setVariable(String variableName, Object value);
+
+    /**
+     * Makes an independent copy of the layer. If objects of implementing class are immutable, may return itself.
+     * @return the copy
+     */
+    LayerRenderer copy();
 }

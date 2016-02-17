@@ -29,7 +29,7 @@ import org.penny_craal.icosamapper.map.layerrenderers.variabletypes.VariableType
  * A LayerRenderer that simply interprets the byte value as a shade of grey.
  * @author Ville Jokela
  */
-public class Greyscale extends LayerRendererHelper {
+public final class Greyscale extends LayerRendererHelper {
     private static final long serialVersionUID = 1L;
 
     public static final String type = "Greyscale";
@@ -73,5 +73,10 @@ public class Greyscale extends LayerRendererHelper {
     @Override
     public int hashCode() {
         return 144;     // all GreyscaleLRs are identical, so a pre-determined number is sufficient.
+    }
+
+    @Override
+    public LayerRenderer copy() {
+        return this;
     }
 }
