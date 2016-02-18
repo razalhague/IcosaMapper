@@ -59,7 +59,7 @@ public final class Layer implements TriangleContainer, Serializable {
     }
 
     @Override
-    public byte getElement(Path p) throws InvalidPathException {
+    public byte getElement(Path p) {
         return ih.getElement(p);
     }
 

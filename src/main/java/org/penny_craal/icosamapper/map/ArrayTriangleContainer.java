@@ -68,7 +68,7 @@ abstract public class ArrayTriangleContainer implements TriangleContainer, Seria
     }
     
     @Override
-    public byte getElement(Path p) throws InvalidPathException {
+    public byte getElement(Path p) {
         if (p.length() == 0) {
             return this.getMeanValue();
         } else if (p.length() == 1) {
@@ -76,7 +76,7 @@ abstract public class ArrayTriangleContainer implements TriangleContainer, Seria
         } else if (tris != null && tris[p.first()] != null) {
             return tris[p.first()].getElement(p.rest());
         } else {
-            throw new InvalidPathException(p);
+            return this.getMeanValue();
         }
     }
 

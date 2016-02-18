@@ -41,10 +41,9 @@ public interface TriangleContainer {
      * Gets the element addressed by the Path.
      * @param p the Path of the element
      * @return the value of the element
-     * @throws InvalidPathException when the given Path is invalid
      */
-    byte getElement(Path p) throws InvalidPathException;
-    
+    byte getElement(Path p);
+
     /**
      * Sets the element addressed by the Path.
      * @param p the Path of the element

@@ -19,13 +19,7 @@
 
 package org.penny_craal.icosamapper.ui;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Polygon;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 import java.util.List;
@@ -74,6 +68,8 @@ public class LayerPanel extends JPanel implements IMEventSource {
     private int drawDepth;
     private int opSize;
     private Insets insets;
+    private Path mouseLocation;
+
     private static final int MIN_DRAWAREA_SIZE = 100;
     private static final Insets DEFAULT_INSETS = new Insets(8, 8, 8, 8);
     // camelCase because this might later be made non-static and configurable
@@ -91,6 +87,7 @@ public class LayerPanel extends JPanel implements IMEventSource {
         this.insets = insets;
         this.opSize = opSize;
         zoom = null;
+        mouseLocation = null;
         Listener listener = new Listener();
         addMouseListener(listener);
         addMouseMotionListener(listener);
@@ -161,10 +158,12 @@ public class LayerPanel extends JPanel implements IMEventSource {
     public void setZoom(Path zoom) {
         System.out.println("zoom set to: " + zoom);
         this.zoom = zoom;
+        mouseLocation = null;
         repaint();
     }
 
     public void zoomOut() {
+        mouseLocation = null;
         if (zoom == null) {
             throw new RuntimeException("trying to zoom out when not zoomed in");
         } else {
@@ -223,24 +222,26 @@ public class LayerPanel extends JPanel implements IMEventSource {
                 }
             }
         } while (excepted);
+
+        paintTarget(g2d);
     }
 
     private boolean isPointUp(Path zoom) {
         boolean pointUp = zoom.first() < 10;    // determines the icosahedron part
         while (zoom.length() != 1) {
             zoom = zoom.rest();
-            if (pointUp) {
-                if (zoom.first() == 2 || zoom.first() == 5 || zoom.first() == 7) {
-                    pointUp = !pointUp;
-                }
-            } else {
-                if (zoom.first() == 1 || zoom.first() == 3 || zoom.first() == 6) {
-                    pointUp = !pointUp;
-                }
-            }
+            pointUp = childIsPointUp(zoom.first(), pointUp);
         }
 
         return pointUp;
+    }
+
+    private boolean childIsPointUp(byte child, boolean isPointUp) {
+        if (isPointUp) {
+            return !(child == 2 || child == 5 || child == 7);
+        } else {
+            return child == 1 || child == 3 || child == 6;
+        }
     }
 
     private void paintIcosahedron(
@@ -307,13 +308,7 @@ public class LayerPanel extends JPanel implements IMEventSource {
             boolean isPointUp
     ) {
         if (depth == 0) {
-            Polygon p = new Polygon();
-            p.addPoint((int) x,                 (int) (y + (isPointUp ? height : 0)));  // left side
-            p.addPoint((int) (x + width),       (int) (y + (isPointUp ? height : 0)));  // right side
-            p.addPoint((int) (x + width/2),     (int) (y + (isPointUp ? 0 : height)));  // point
-            g2d.setColor(new Color(values[rangeStart]));
-            g2d.draw(p);
-            g2d.fillPolygon(p);
+            paintSingleTriangle(g2d, x, y, width, height, isPointUp, new Color(values[rangeStart]), true);
         } else {
             int rangeInc = (rangeEnd - rangeStart)/9;
             if (isPointUp) {
@@ -403,7 +398,122 @@ public class LayerPanel extends JPanel implements IMEventSource {
             }
         }
     }
-    
+
+    private void paintTarget(Graphics2D g2d) {
+        if (mouseLocation == null) {
+            return;
+        }
+        Dimension drawArea = getDrawingArea();
+        byte value;
+        if (zoom == null) {
+            value = layer.getElement(mouseLocation);
+        } else {
+            value = layer.getElement(zoom.append(mouseLocation));
+        }
+        Color elementColor = new Color(layer.getLayerRenderer().renderByte(value));
+        Color color = contrastColor(elementColor);
+        if (zoom != null) {
+            paintTarget(g2d, mouseLocation, insets.left, insets.top, drawArea.getWidth(), drawArea.getHeight(), isPointUp(zoom), color);
+        } else {
+            double triangleWidth = drawArea.width / 5.5;
+            double triangleHeight = drawArea.height / 3;
+            double x, y;
+            boolean pointUp;
+            if (mouseLocation.first() < 5) {
+                x = insets.left + ((mouseLocation.first() % 5) * triangleWidth) + ((topIsSkewedLeft ? 0 : 0.5) * triangleWidth);
+                y = insets.top;
+                pointUp = true;
+            } else if (mouseLocation.first() < 10) {
+                x = insets.left + ((mouseLocation.first() % 5) * triangleWidth) + ((topIsSkewedLeft ? 0.5 : 0) * triangleWidth);
+                y = insets.top + triangleHeight;
+                pointUp = true;
+            } else if (mouseLocation.first() < 15) {
+                x = insets.left + ((mouseLocation.first() % 5) * triangleWidth) + ((topIsSkewedLeft ? 0 : 0.5) * triangleWidth);
+                y = insets.top + triangleHeight;
+                pointUp = false;
+            } else if (mouseLocation.first() < 20) {
+                x = insets.left + ((mouseLocation.first() % 5) * triangleWidth) + ((topIsSkewedLeft ? 0.5 : 0) * triangleWidth);
+                y = insets.top + (2 * triangleHeight);
+                pointUp = false;
+            } else {
+                throw new RuntimeException("nonsensical path value: " + mouseLocation);
+            }
+            if (mouseLocation.length() == 1) {
+                paintSingleTriangle(g2d, x, y, triangleWidth, triangleHeight, pointUp, color, false);
+            } else {
+                paintTarget(g2d, mouseLocation.rest(), x, y, triangleWidth, triangleHeight, pointUp, color);
+            }
+        }
+    }
+
+    private void paintTarget(Graphics2D g2d, Path path, double x, double y, double width, double height, boolean isPointUp, Color color) {
+        double newHeight = height/3, newWidth = width/3;
+        double newX, newY;
+        if (isPointUp) {
+            if (path.first() == 0) {
+                newX = x + newWidth;
+                newY = y;
+            } else if (path.first() < 4) {
+                newX = x + (0.5*newWidth) + ((path.first() - 1) * 0.5 * newWidth);
+                newY = y + newHeight;
+            } else if (path.first() < 9) {
+                newX = x + ((path.first() - 4) * 0.5 * newWidth);
+                newY = y + (newHeight * 2);
+            } else {
+                throw new RuntimeException("nonsensical path value: " + mouseLocation);
+            }
+        } else {
+            if (path.first() < 5) {
+                newX = x + (path.first() * 0.5 * newWidth);
+                newY = y;
+            } else if (path.first() < 8) {
+                newX = x + (0.5*newWidth) + ((path.first() - 5) * 0.5 * newWidth);
+                newY = y + newHeight;
+            } else if (path.first() == 8) {
+                newX = x + newWidth;
+                newY = y + (newHeight * 2);
+            } else {
+                throw new RuntimeException("nonsensical path value: " + mouseLocation);
+            }
+        }
+        if (path.length() == 1) {
+            paintSingleTriangle(g2d, newX, newY, newWidth, newHeight, childIsPointUp(path.first(), isPointUp), color, false);
+        } else {
+            paintTarget(
+                    g2d,
+                    path.rest(),
+                    newX,
+                    newY,
+                    newWidth,
+                    newHeight,
+                    childIsPointUp(path.first(), isPointUp),
+                    color);
+        }
+    }
+
+    private void paintSingleTriangle(Graphics2D g2d, double x, double y, double width, double height, boolean isPointUp, Color color, boolean fillTriangle) {
+        Polygon p = new Polygon();
+        p.addPoint((int) x,                 (int) (y + (isPointUp ? height : 0)));  // left side
+        p.addPoint((int) (x + width),       (int) (y + (isPointUp ? height : 0)));  // right side
+        p.addPoint((int) (x + width/2),     (int) (y + (isPointUp ? 0 : height)));  // point
+        g2d.setColor(color);
+        if (fillTriangle) {
+            g2d.fillPolygon(p);
+        } else {
+            g2d.setStroke(new BasicStroke(2));
+            g2d.draw(p);
+        }
+    }
+
+    private Color contrastColor(Color color) {
+        int avg = (color.getBlue() + color.getGreen() + color.getRed()) / 3;
+        if (avg > 128) {
+            return Color.black;
+        } else {
+            return Color.white;
+        }
+    }
+
     public static Layer createTestLayer() {
         Layer layer = new Layer("test-layer", new Greyscale(), (byte) 0);
         
@@ -425,23 +535,29 @@ public class LayerPanel extends JPanel implements IMEventSource {
     
     /**
      * Checks if the point is withing the drawing area.
-     * @param relPanel
+     * @param inRelationToPanel
      * @return 
      */
-    private boolean withinDrawingArea(Point relPanel) {
+    private boolean withinDrawingArea(Point inRelationToPanel) {
         Dimension panelSize = getSize();
-        if (relPanel.x < insets.left)
+        if (inRelationToPanel.x < insets.left) {
             return false;
-        if (relPanel.x >= (panelSize.width - insets.right))
+        } else if (inRelationToPanel.x >= (panelSize.width - insets.right)) {
             return false;
-        if (relPanel.y < insets.top)
+        } else if (inRelationToPanel.y < insets.top) {
             return false;
-        if (relPanel.y >= (panelSize.height - insets.bottom))
+        } else if (inRelationToPanel.y >= (panelSize.height - insets.bottom)) {
             return false;
-
-        return true;
+        } else {
+            return true;
+        }
     }
-    
+
+    private Dimension getDrawingArea() {
+        Dimension panelSize = getSize();
+        return new Dimension(panelSize.width - (insets.left + insets.right), panelSize.height - (insets.top + insets.bottom));
+    }
+
     // [skew:0=right,1=left][row][position:0=upper,1=lower][column]; -1 = no child
     private static final int[][][][] childFromIcosahedronSRPC = new int[][][][] {
         {
@@ -545,7 +661,37 @@ public class LayerPanel extends JPanel implements IMEventSource {
             );
         }
     }
-    
+
+    private Path getPathFromMouseLocation(Point inRelationToPanel) {
+        if (!withinDrawingArea(inRelationToPanel)) {
+            return null;
+        }
+        Path path;
+        Dimension mapSize = getDrawingArea();
+        Point relMap = new Point(inRelationToPanel.x - insets.left, inRelationToPanel.y - insets.top);
+        if (zoom == null) {
+            path = resolvePathFromRelCoordsInArray(
+                    relMap.getX() / mapSize.getWidth(),
+                    relMap.getY() / mapSize.getHeight(),
+                    topIsSkewedLeft,
+                    childFromIcosahedronSRPC,
+                    new LinkedList<Byte>(),
+                    opSize
+            );
+        } else /* zoom != null */ {
+            path = resolvePathFromRelCoordsInArray(
+                    relMap.getX() / mapSize.getWidth(),
+                    relMap.getY() / mapSize.getHeight(),
+                    isPointUp(zoom),
+                    childFromTrianglePRPC,
+                    new LinkedList<Byte>(),
+                    opSize
+            );
+        }
+
+        return path;
+    }
+
       ///////////////////
      // Listener crap //
     ///////////////////
@@ -567,50 +713,29 @@ public class LayerPanel extends JPanel implements IMEventSource {
     private class Listener extends MouseInputAdapter {
         @Override
         public void mouseClicked(MouseEvent me) {
-            Dimension panelSize = getSize();
-            Point relPanel = me.getPoint();
-            if (!withinDrawingArea(relPanel)) {
+            mouseLocation = getPathFromMouseLocation(me.getPoint());
+            if (mouseLocation == null) {
                 return;
             }
-            Path path;
-            Dimension mapSize = new Dimension(panelSize.width - (insets.left + insets.right), panelSize.height - (insets.top + insets.bottom));
-            Point relMap = new Point(relPanel.x - insets.left, relPanel.y - insets.top);
+            Path fullPath;
             if (zoom == null) {
-                path = resolvePathFromRelCoordsInArray(
-                        relMap.getX() / mapSize.getWidth(),
-                        relMap.getY() / mapSize.getHeight(),
-                        topIsSkewedLeft,
-                        childFromIcosahedronSRPC,
-                        new LinkedList<Byte>(),
-                        opSize
-                );
-            } else /* zoom != null */ {
-                path = resolvePathFromRelCoordsInArray(
-                        relMap.getX() / mapSize.getWidth(),
-                        relMap.getY() / mapSize.getHeight(),
-                        isPointUp(zoom),
-                        childFromTrianglePRPC,
-                        new LinkedList<Byte>(),
-                        opSize
-                );
-                if (path != null) {
-                    path = zoom.append(path);
-                }
+                fullPath = mouseLocation;
+            } else {
+                fullPath = zoom.append(mouseLocation);
             }
-            if (path == null) {
-                return; // outside of icosahedron
-            }
-            fireEvent(new Interact(LayerPanel.this, path));
+            fireEvent(new Interact(LayerPanel.this, fullPath));
         }
 
         @Override
         public void mouseEntered(MouseEvent me) {
-            // do nothing for now
+            mouseLocation = getPathFromMouseLocation(me.getPoint());
+            repaint();
         }
 
         @Override
         public void mouseExited(MouseEvent me) {
-            // do nothing for now
+            mouseLocation = null;
+            repaint();
         }
 
         @Override
@@ -620,7 +745,8 @@ public class LayerPanel extends JPanel implements IMEventSource {
 
         @Override
         public void mouseMoved(MouseEvent me) {
-            // do nothing for now
+            mouseLocation = getPathFromMouseLocation(me.getPoint());
+            repaint();
         }
     }
 }
