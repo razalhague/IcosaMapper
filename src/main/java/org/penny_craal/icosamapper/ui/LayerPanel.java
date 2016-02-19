@@ -24,7 +24,7 @@ import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 
 import org.penny_craal.icosamapper.map.layerrenderers.Greyscale;
@@ -723,7 +723,16 @@ public class LayerPanel extends JPanel implements IMEventSource {
             } else {
                 fullPath = zoom.append(mouseLocation);
             }
-            fireEvent(new Interact(LayerPanel.this, fullPath));
+            boolean isPrimary;
+            if (SwingUtilities.isLeftMouseButton(me)) {
+                isPrimary = true;
+            } else if (SwingUtilities.isRightMouseButton(me)) {
+                isPrimary = false;
+            } else {
+                return;
+            }
+            fireEvent(new Interact(LayerPanel.this, fullPath, isPrimary));
+            repaint();
         }
 
         @Override

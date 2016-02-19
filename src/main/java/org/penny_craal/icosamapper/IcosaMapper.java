@@ -177,9 +177,11 @@ public class IcosaMapper implements IMEventListener {
                 opSize = ((OpSizeSelected) ime).opSize;
                 break;
             case interact:
-                hasUnsavedChanges = true;
-                Path path = ((Interact) ime).path;
-                mapChanges = interact(path);
+                Interact interact = ((Interact) ime);
+                mapChanges = interact(interact.path, interact.isPrimary);
+                if (mapChanges) {
+                    hasUnsavedChanges = true;
+                }
                 break;
             case renameLayer:
                 RenameLayer rl = (RenameLayer) ime;
@@ -257,7 +259,11 @@ public class IcosaMapper implements IMEventListener {
         }
     }
 
-    private boolean interact(Path path) {
+    private boolean interact(Path path, boolean isPrimary) {
+        if ((tool == PaintBar.Tool.DRAW || tool == PaintBar.Tool.FILL) && !isPrimary) {
+            colour = map.getElement(layerName, path);
+            return false;
+        }
         switch (tool) {
             case DRAW:
                 try {
@@ -270,28 +276,30 @@ public class IcosaMapper implements IMEventListener {
                 // TODO: fill tool
                 return true;
             case DIVIDE:
-                try {
-                    map.divide(layerName, path);
-                } catch (InvalidPathException e) {
-                    throw new RuntimeException("could not divide element " + path + ", does not exist", e);
-                }
-                return true;
-            case UNITE:
-                try {
-                    map.unite(layerName, path);
-                } catch (InvalidPathException e) {
-                    throw new RuntimeException("could not unite element " + path + ", does not exist", e);
-                }
-                return true;
-            case ZOOM_IN:
-                if (map.getLayer(layerName).isValidPath(path)) {
-                    ui.zoomIn(path);
+                if (isPrimary) {
+                    try {
+                        map.divide(layerName, path);
+                    } catch (InvalidPathException e) {
+                        throw new RuntimeException("could not divide element " + path + ", does not exist", e);
+                    }
                 } else {
-                    throw new RuntimeException("trying to zoom into an invalid path");
+                    try {
+                        map.unite(layerName, path);
+                    } catch (InvalidPathException e) {
+                        throw new RuntimeException("could not unite element " + path + ", does not exist", e);
+                    }
                 }
-                return false;
-            case ZOOM_OUT:
-                ui.zoomOut();
+                return true;
+            case ZOOM:
+                if (isPrimary) {
+                    if (map.getLayer(layerName).isValidPath(path)) {
+                        ui.zoomIn(path);
+                    } else {
+                        throw new RuntimeException("trying to zoom into an invalid path");
+                    }
+                } else {
+                    ui.zoomOut();
+                }
                 return false;
             default:
                 throw new RuntimeException("unrecognized tool: " + tool);

@@ -28,14 +28,16 @@ import org.penny_craal.icosamapper.map.Path;
 public class Interact extends IMEvent {
     private static final long serialVersionUID = 1L;
     public final Path path;
+    public final boolean isPrimary;
 
-    public Interact(Object source, Path path) {
+    public Interact(Object source, Path path, boolean isPrimary) {
         super(source, EventType.interact);
         this.path = path;
+        this.isPrimary = isPrimary;
     }
 
     @Override
     public String toString() {
-        return "Interact: " + path;
+        return "Interact: " + path + ", " + (isPrimary ? "primary button" : "secondary button");
     }
 }

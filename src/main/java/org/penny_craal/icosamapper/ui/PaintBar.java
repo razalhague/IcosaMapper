@@ -44,10 +44,8 @@ public class PaintBar extends JPanel {
     private final static List<Button> interactButtons = new ArrayList<Button>() {{
         add(new Button(Tool.DRAW,       "draw on the map"));
         add(new Button(Tool.FILL,       "fill an area"));
-        add(new Button(Tool.DIVIDE,     "divide a triangle"));
-        add(new Button(Tool.UNITE,      "unite a triangle"));
-        add(new Button(Tool.ZOOM_IN,    "zoom in to a triangle"));
-        add(new Button(Tool.ZOOM_OUT,   "zoom out"));
+        add(new Button(Tool.DIVIDE,     "divide/unite a triangle"));
+        add(new Button(Tool.ZOOM,       "zoom in or out in the map"));
     }};
     
     public PaintBar(Tool tool) {
@@ -85,13 +83,11 @@ public class PaintBar extends JPanel {
     public enum Tool {
         DRAW        ("draw"),
         FILL        ("fill"),
-        DIVIDE      ("divide"),
-        UNITE       ("unite"),
-        ZOOM_IN     ("zoom-in"),
-        ZOOM_OUT    ("zoom-out"),
+        DIVIDE      ("divide-unite"),
+        ZOOM        ("zoom-in-out"),
         ;
         public final String toolName;
-        private Tool(String toolName) {
+        Tool(String toolName) {
             this.toolName = toolName;
         }
     }

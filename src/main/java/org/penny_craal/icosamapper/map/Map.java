@@ -89,9 +89,8 @@ public class Map implements Serializable {
      * @param layerName name of the layer
      * @param p         the path to the element
      * @return          the specified element
-     * @throws InvalidPathException when the given path does not point to an element
      */
-    public byte getElement(String layerName, Path p) throws InvalidPathException {
+    public byte getElement(String layerName, Path p) {
         return layers.get(layerName).getElement(p);
     }
     
