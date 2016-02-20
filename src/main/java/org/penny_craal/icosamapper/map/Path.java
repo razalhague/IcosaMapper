@@ -107,6 +107,15 @@ public class Path {
     }
 
     /**
+     * Returns a new Path with the byte appended to the end.
+     * @param next next child
+     * @return the new path
+     */
+    public Path append(byte next) {
+        return append(new Path(new byte[] {next}));
+    }
+
+    /**
      * Returns a new Path without the final element.
      * @return a new path that lacks the final element.
      */

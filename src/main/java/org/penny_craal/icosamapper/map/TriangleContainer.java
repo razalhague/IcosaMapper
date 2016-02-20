@@ -86,4 +86,6 @@ public interface TriangleContainer {
      * @return the copy
      */
     TriangleContainer copy();
+
+    boolean hasChildren(Path path) throws InvalidPathException;
 }

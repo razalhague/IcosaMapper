@@ -114,6 +114,11 @@ public final class Layer implements TriangleContainer, Serializable {
     }
 
     @Override
+    public boolean hasChildren(Path path) throws InvalidPathException {
+        return ih.hasChildren(path);
+    }
+
+    @Override
     public String toString() {
         return "{ name: " + name + ", LR: " + lr.getType() + ", " + ih.toString() + " }";
     }

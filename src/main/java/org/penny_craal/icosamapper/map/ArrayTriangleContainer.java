@@ -192,7 +192,18 @@ abstract public class ArrayTriangleContainer implements TriangleContainer, Seria
             throw new RuntimeException("impossible size " + getSize());
         }
     }
-    
+
+    @Override
+    public boolean hasChildren(Path path) throws InvalidPathException {
+        if (path.length() == 1) {
+            return tris != null && tris[path.first()] != null;
+        } else if (tris != null && tris[path.first()] != null) {
+            return tris[path.first()].hasChildren(path.rest());
+        } else {
+            throw new InvalidPathException(path);
+        }
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("{ ");
