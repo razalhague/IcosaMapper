@@ -69,7 +69,10 @@ public class LayerPanel extends JPanel implements IMEventSource {
     private int opSize;
     private Insets insets;
     private Path mouseLocation;
+    private int[] xPoints = new int[polygonArrayLength];
+    private int[] yPoints = new int[polygonArrayLength];
 
+    private static final int polygonArrayLength = 3;
     private static final int MIN_DRAWAREA_SIZE = 100;
     private static final Insets DEFAULT_INSETS = new Insets(8, 8, 8, 8);
     // camelCase because this might later be made non-static and configurable
@@ -492,16 +495,18 @@ public class LayerPanel extends JPanel implements IMEventSource {
     }
 
     private void paintSingleTriangle(Graphics2D g2d, double x, double y, double width, double height, boolean isPointUp, Color color, boolean fillTriangle) {
-        Polygon p = new Polygon();
-        p.addPoint((int) x,                 (int) (y + (isPointUp ? height : 0)));  // left side
-        p.addPoint((int) (x + width),       (int) (y + (isPointUp ? height : 0)));  // right side
-        p.addPoint((int) (x + width/2),     (int) (y + (isPointUp ? 0 : height)));  // point
+        xPoints[0] = (int) x;
+        xPoints[1] = (int) (x + width);
+        xPoints[2] = (int) (x + width/2);
+        yPoints[0] = (int) (y + (isPointUp ? height : 0));
+        yPoints[1] = (int) (y + (isPointUp ? height : 0));
+        yPoints[2] = (int) (y + (isPointUp ? 0 : height));
         g2d.setColor(color);
         if (fillTriangle) {
-            g2d.fillPolygon(p);
+            g2d.fillPolygon(xPoints, yPoints, polygonArrayLength);
         } else {
             g2d.setStroke(new BasicStroke(2));
-            g2d.draw(p);
+            g2d.drawPolygon(xPoints, yPoints, polygonArrayLength);
         }
     }
 
